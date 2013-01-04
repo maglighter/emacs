@@ -1,8 +1,0 @@
-(gnus-group-change-level "nndoc+gnus-help:gnus-help" 3 9 nil t)
-(gnus-group-set-info '("nndoc+gnus-help:gnus-help" 3 nil nil (nndoc "gnus-help" (nndoc-address "/usr/share/emacs/23.4/etc/gnus-tut.txt") (nndoc-article-type mbox))))
-(gnus-group-set-info '("nndoc+gnus-help:gnus-help" 3 nil nil (nndoc "gnus-help" (nndoc-address "/usr/share/emacs/23.4/etc/gnus-tut.txt") (nndoc-article-type mbox))))
-(gnus-group-change-level "nndraft:queue" 1 9 nil t)
-(gnus-group-set-info '("nndraft:queue" 1 nil nil (nndraft "")))
-(gnus-group-change-level "nndraft:drafts" 1 9 nil t)
-(gnus-group-set-info '("nndraft:drafts" 1 nil nil (nndraft "")))
-(gnus-group-set-info '("nndoc+gnus-help:gnus-help" 3 nil nil (nndoc "gnus-help" (nndoc-address "/usr/share/emacs/23.4/etc/gnus-tut.txt") (nndoc-article-type mbox))))
