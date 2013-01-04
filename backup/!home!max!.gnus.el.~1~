@@ -1,0 +1,5 @@
+     (setq user-mail-address "maglighter@gmail.com")
+     (setq user-full-name "Max")
+     (setq gnus-select-method '(nntp "news.rsdn.ru"))
+     (add-to-list 'gnus-secondary-select-methods '(nntp "localhost"))
+     (add-to-list 'gnus-secondary-select-methods '(nntp "news.gnus.org"))

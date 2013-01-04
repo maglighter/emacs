@@ -1,0 +1,754 @@
+###################
+####    	 719 карт       ####
+###################
+1. Кинуть файлы *.bsp из раздачи в папку  C:\[...]\Portal 2\portal2\maps\ (к другим таким же в ней файлам ). Остальные файлы, находящиеся в папках materials или models поместить в соответствующие папки.
+2. Вызвать консоль в игре и написать map [название_карты] (например map futurekillsreality)
+
+Примечание: Если у вас возникли проблемы с  освещением, введите в консоль "mat_fullbright 1", это должно решить вашу проблему. Когда все готово, установите параметр обратно в "mat_fullbright 0".
+Если какие-то карты не включаются введите в консоль "update_addon_paths" и попробуйте заново.
+
+
+
+|||||||||||||||||||||||||||||
+Создатель раздачи: grey_rat
+Помощник: EnterMan
+Помощник помощника: jerkXDD
+|||||||||||||||||||||||||||||
+
+------=NEW & UPDATE=------
+          From 07.05.2012
+o - opened; p - passed; r - rating (1-10); e - error; d - difficult (1-10)
+
+map 2mapstart					o 
+map 3mapstart					o
+map a3_03_offic scare				p r-1
+map AATC2					e
+map All In One					o
+map aperturescienceexcursionfunnel		p r-8
+map aperturescienceflingtest			e
+map aperturesciencelasertest			o d-8
+map aperturesciencelightsurfacetest		p r-6 d-5
+map aperturesciencepaneltest			p r-6 d-4
+map aperturescienceturrettest			p r-8 d-4
+map beamchain					o d-9
+map bubblenut44					o
+map buksh					o
+map complications				p r-8 d-2
+map cube_collector				o d-8
+map cube_v03					o
+map Cubes not for Noobs				o
+map deside    	  				p r-9 d-8
+map devilschamber				o
+map devilstower					o
+map faith					o
+map faithling_1					o
+map free_thought				o
+map g_fling_1					p r-9 d-4
+map gg_blue_only
+map gg_blue_only_2
+map gridlock
+map gubble18
+map headache
+map heavens_gate
+map Ignition_v1_3
+map kerplunk_v1_2
+map ksp_chamber01
+map kyo_blue_portal_flings_v2
+map level#2_an_uderground_visit
+map level#3_2_gels
+map level#5_surface
+map level4
+map level5
+map lever#4_to_the_surface
+map lvl_1
+map mp_coop_test1
+map mymap2
+map mymap2hard
+map mymap4
+map mymap4harder
+map nys1
+map observating
+map only one momen-um
+map op_level1
+map op_level2
+map op_level3
+map op_level4
+map p2_Trickery
+map portal_in_space_1
+map Prison-Escape
+map pu_001
+map reboundv1_1
+map replay_sp
+map Reversion
+map Rush
+map secondtest
+map sevengates
+map sixense_spongy_one2onescale
+map soundlogic new testing elements
+map sp_1984_V6
+map sp_a2_g_laser_1
+map sp_a25_weighted_wonderland
+map sp_a26_grox_conv_div
+map sp_a27_grox_ant_ap
+map sp_abetterbradd
+map sp_advancedpainting_04
+map sp_after_math
+map sp_andro_strain_v1_3
+map sp_arbc_fizzlefunnel
+map sp_around_the_bend
+map sp_attc
+map sp_backstage
+map sp_biggun
+map sp_birefringence_c
+map sp_bits_v1-2
+map sp_BlackCube
+map sp_bounce_01
+map sp_broad_ratio
+map sp_bs_a1_1p_cube_plus_button
+map sp_bs_a1_2p_flingtro
+map sp_bv_sunset_1
+map sp_cascade
+map sp_catch1-1
+map sp_catch1-2_hard
+map sp_chainfling_1
+map sp_challenge_room_1
+map SP_Chamber 1
+map SP_chamber 2
+map sp_chander_test_01
+map sp_chander_test_03
+map sp_chander_test_05
+map sp_chander_test_06
+map sp_chander_test_08
+map SP_Climbing_Companion_v1c
+map sp_container_cube_1
+map sp_cooling_tower_v1-5
+map sp_crossflinger
+map sp_cube_fizzlerV4
+map sp_cube_in_height_fizzler
+map sp_cubeDESTRUCTION
+map sp_damagepy_03
+map sp_deer_taunt
+map sp_demolition
+map sp_desertedchamber1
+map sp_doublegubble12
+map sp_ef_doublebill
+map sp_emancipated_polarity
+map sp_enclosure_01
+map sp_enclosure_02
+map sp_fling
+map sp_forbidden_tests
+map sp_fr_penrose_01
+map sp_fr_penrose_02
+map sp_GeLDOS_2
+map sp_getting_over_obstacles
+map sp_grayTestOne
+map sp_heavyduty
+map sp_hightide1_v04
+map sp_hightide2_v11
+map sp_I_Believe_I_Can_Fly
+map SP_Insulated
+map sp_juggling
+map sp_laser_fling
+map sp_laser_trick
+map sp_laserfling
+map sp_Lesson0
+map sp_level_25
+map sp_lp_lazr0s_v1_2
+map sp_madness_1
+map sp_magrathea
+map sp_malatu_zeserret_v17
+map sp_marginal_error
+map sp_mindsweeper
+map sp_ml_jailbreak
+map sp_ML_megacube
+map sp_ml_rta_lvl1_demo
+map sp_ml_rta_lvl2_demo
+map sp_mlcombo
+map sp_MLscarytest
+map sp_momentum_v5
+map sp_not_just_a_box
+map sp_one_geometric_task
+map sp_pm_art
+map sp_pm_gravity
+map sp_powerinterferencev2_3
+map sp_primal_decay
+map sp_rabbit_1971
+map sp_real1
+map sp_realconfetti
+map sp_rusted
+map sp_simples_test
+map sp_thaw
+map sp_the_cube_solver
+map sp_The_Hard_Way
+map sp_the_ledge_prt1
+map sp_the_ledge_prt2
+map sp_the_ledge_prt3
+map sp_the_ledge_prt4
+map sp_the2ndfunction
+map sp_triple_lazor
+map SP_turret syndrome
+map sp_tvh_islands_3
+map sp_underground_hustle
+map sp_wall_bridge
+map Sp00k_V5
+map splayer_zro_test02
+map spongebob_1
+map spongebob_2
+map su1
+map su2
+map su3
+map su4
+map su5
+map su6
+map su7
+map suspension
+map test_chamber_19
+map testing_is_the_future
+map testing_is_the_future_2
+map testing_is_the_future_3
+map TheBoxedArm
+map TheCatacombs
+map timemachinetesting
+map tmv_002
+map tmv_start
+map triplex
+map w_dest
+map whereami
+map wopg_paint_the_conveyor_demo
+map wopg_volleygel_demo
+map Yourchoice
+map ys_science_fun_2
+map ys_science_fun_2_a
+
+
+------=NEW & UPDATE=------
+          From 01.10.2011
+
+map 10testchambers
+map 3items
+map aatc
+map aperturesciencelevel1
+map ashley
+map beamtrap
+map danimap
+map enigma
+map HallofDodoen
+map inside_apeture
+map IntoTheDark
+map level2
+map ma_portal11
+map moonfinal21
+map nys1
+map nys2
+map nys3
+map nys4
+map nys5
+map pitk_indigenous
+map propolsionpanel
+map quadro
+map reactionpit
+map redacted
+map sp_Acrobatics_PortalRun_Part2
+map sp_aperture_advsalience
+map sp_aperture_salience
+map sp_being_adopted
+map sp_chander_test_02
+map sp_chander_test_03
+map sp_chander_test_04
+map sp_Compact_Compression_V2
+map sp_crossingthebeams
+map sp_Discophoran_a2
+map sp_diversity_gels
+map sp_eco_leaf_advancedv1
+map sp_eco_leaf_final
+map sp_fizzled_panels
+map sp_fizzled_panels_ch2
+map sp_fizzled_panels_ch3
+map sp_gssbs_chamber01
+map sp_headache_v11
+map sp_IonEnabled
+map sp_mapnamehere123
+map sp_monoportal1
+map sp_monoportal2
+map sp_monoportal3
+map sp_neat_1b
+map sp_no_companion_cube_for_you
+map sp_panelized_2
+map sp_portal_raider
+map sp_portal_raider_toxic_b2
+map sp_simulacra
+map sp_thebradd
+map sp_thecoldshoulder
+map sp_tictac_01
+map sp_too_many_fans_part_1
+map sp_too_many_fans_part_2
+map sp_tpwegth_ch4
+map sp_upanddownv3
+map sp_vendetta
+map sp_wedged
+map Star_Oasis_final
+map three_plus_one
+map Uselessness
+map vp_laboratories_demo
+map Workaround_R1c
+map 004-3-6-11
+map 95_Sp_strangeD
+map asbestos_is_harmless_v14
+map blue4you
+map CG_Additional_Ch8_TestsV2
+map chamber_09
+map First
+map floor_1_a
+map floor_1_b
+map floor_1_c
+map funnelandcube
+map kyo_m_aerial_faith
+map lab_life_testchamber01
+map lab_life_testchamber02
+map lab_life_testchamber03
+map last_tests
+map ma_portal_10
+map one+one+one
+map Paint_By_Numbers_Final
+map pm_testchamber_01
+map Portal_2_dead_chamber
+map sp_a0_button_door
+map sp_a2_testchmb_a_05
+map sp_a329_bridge
+map sp_a329_cubes
+map sp_a329_gelcube
+map sp_a329_tb
+map sp_a329_walls
+map sp_careful-cube
+map sp_catapult_cleanser
+map sp_citruz_sepulcros
+map sp_ck_lrp
+map sp_decode_122
+map sp_discontinued
+map sp_eco_leaf_fix_1
+map SP_Fatal_Choices
+map sp_fr_lasers_01_v1_1
+map SP_IndyEvil
+map sp_interception
+map sp_labyrinth
+map sp_laser_minimalism
+map sp_laser_pit_12
+map sp_lasertrick
+map sp_lilrobot_intro2
+map sp_loud_pipes
+map sp_lunacy
+map sp_meteora
+map sp_Mini-Faith
+map sp_mysterious
+map sp_olympic
+map sp_override
+map sp_purpsky_chamber1
+map sp_purpsky_chamber2
+map sp_purpsky_chamber3
+map sp_purpsky_chamber4
+map sp_quantum_entanglement_1
+map sp_rat_race
+map sp_rbccg_speed
+map sp_reboot
+map sp_sentry_point
+map sp_sl_laser_box
+map sp_something
+map sp_theskinnerbox
+map sp_thinkwithportals
+map sp_TPWEGTH_sample
+map sp_turing
+map sp_vengeance
+map sp_Vertical_Reachv1-2
+map sp_zimbardo
+map swift_fall
+map testchamber_117_04
+map thinkingwithlasers
+map Versatile_diversity
+map verticalprojection
+map ys_science_fun
+map CG-GPbeta2
+map mamba
+map sp_speedy deterioration
+map sp_sorryaboutthepotato
+map sp_rbc_02
+map discontinuedv2
+map CuriousChamber (CuriousChamber2, CuriousChamber3 - продолжение, включается автоматически)
+map fun_with_fizzlers
+map DH_This_Side_Up_V1
+map diversity
+map fff
+map sp_out_of_reach
+map sp_trigonometry
+map sp_angrybombs
+map sp_psicodelia_v190a {psicodelia test one v190a.vpk}
+map old 1
+map sp_suspension + [upd 01.07.11] Suspension  v1.4
+map brits_sp_02 [upd 26.06.11] First Transcendental Building Course 02  rc1
+map sp_switch_case  {sp_switch_case.vpk} [upd 02.07.11] Switch Case  1.2 (Переименованная switch_case_b1)
+map sp_eco_leaf_fix [upd 27.06.11] eco_leaf  6/27/11(Переименованая sp_eco_leaf)
+map sp_marcem_laserbox_funnel [upd 06.06.11] Marcem's Laserbox and Funnel  v3
+map sp_damagepy_02 [28.06.11] DaMaGepy's Portal 2 map #2 v1.17
+map sp_bright_side [upd 01.06.11] Bright Side  1.1
+map sp_geardev_infinifling [upd 04.06.11] Infinifling V2.5  99% Final
+map sp_will-t_cubes-n-funnels_v1-3 [upd 05.06.11] Cubes 'n' Funnels  1.3 (Переименованная sp_will-t_cubes-n-funnels_v1)
+map map sp_penrose_v8c_part1 (map sp_penrose_v8c_part2 - продолжение, включается автоматически)[upd 26.06.11] Penrose v8c (Переименованные sp_penrose_v7b_part1 и sp_penrose_v7b_part2)
+map sp_cross_laser
+map JAC
+map EraxyGlassmap
+map retro1
+map underground2
+map testmap_12 (testmap_13, testmap_3_movingbutton, testmap_4, testmap_6, testmap_7, testmap_9 - продолжение, включается автоматически) {testmaps.vpk}
+map sp_cube_fling
+map sp_veteran_v2
+map sp_marlow_underg_afp_v1
+map sp_rabbit_1971
+map sp_milgram_v2
+map DoubleDuece
+map challange 1
+map pitk_destroyed
+map sp_anti_oxidant
+map logaritm_v24
+map three_rooms {three_rooms.vpk}
+map sp_suspended [upd 21.06.11] Suspended  v2.5
+map sp_reddit
+map sp_cosmicd_00
+map fugue
+map blue_3
+map sp_hopeless
+map sp_Aperture_Training_Center
+map chamber_01
+map Dot-to-Dot
+map nys_chamber2_beta1
+map nys_chamber1_sp_beta4
+map sp_moon_man_v13
+map sp_arch02
+map now_what
+map the_hike_a13
+map heavy_metal {heavy_metal.vpk}
+map sp_leswordfish_portalbuttons_v2
+map sp_club1 {sp_club1.vpk}
+map sp_stairway_to_turret_heaven + [upd 10.06.11] Stairway to turret heaven v 1.1
+map sp_whichway_v21a [upd 13.06.11] Which way v.2.1a (Переименованая sp_whichway)
+map cg_ostcsav2 [upd 08.06.11] CG-Oversized Test Chamber Storage Area V.2 (Переименованая CG_OSTCSA)
+map pitk_affiliated [upd 10.06.11] Affiliated
+map first serious try [upd 10.06.11] First serious try
+map sp_experiment_challenge [upd 10.06.11] Experimental challenge  v2.4
+map the vault
+map bb_chamber1
+map remembering aperture
+map sp_challenge_accepted
+map sp_Induction_Gauntlet
+map sp_Molybdenum
+map qmaster_smi2011_sp_entry
+map sp_destroyed
+map sp_give_and_take
+map sp_funnels_n_fizzlers
+map thewishingwell
+map sp_epsilon
+map portal_core_map1
+map sp_bits_or_pieces
+map sp_bn
+map Sp_Cattle_Tuberculosis
+map sp_turret_reunion
+map sp_Retupmoc_Map
+map sp_advancedgels
+map sp_sb_faith_in_rotation
+map Big_Buddy
+map One_of_everything
+map prototype01-02
+map sp_a2_faithpaint_contestentry
+map competition_map
+map sp_reconstruct
+map sp_patent_pending
+map cubi
+map sp_b0_contest
+map sp_capone_01
+map sp_breakaway
+map sp-skyline
+map laser_bounce_paint
+map sp_mota_main_four
+map sp_laser_wall
+map sp_turrettower
+map TomesterLightAndGel
+map sp_onlyonewayout
+map fizzle
+map redcarpet
+map speedkills
+map sp_zab_cube_juggle_catch
+map science21
+map sp_dreamlike_state_1reva_1
+map abyss
+map sp_surprises_everywhere
+map sp_bloodys_chambers_b7
+map sp_your_not_done_yet
+map laser_path
+map funnel_vision
+map sp_vent_companions
+map sp_the_cube_did_it
+map sp_mindbreaker
+map sp_lasershine
+map sp_dkx_gtc
+map the_forgotten_chamber
+map sp_the_emancipation_station
+map sp_a1_laserdoor
+map sp_absolutism_a1
+map sp_aperture_syndrome
+map Sp_bin-irate
+map smi
+map sp_reversal
+map sp_cloudywithachanceofturrets
+map sp_testcodeg23
+map exp_chamber_1
+map sp_vurts_comp_map_final
+map curious_conundrum
+map sp_mh_wavelet
+map sp_tod_sprunrun
+map BallMaze
+map uuk_sp_contestmap
+map companion retrieval run
+map sp_a00_time_arch
+map spherescramble
+map TwinPillars
+map triple
+map pmk_6 + [upd 07.06.10] PMK 6
+map sp_cube_escort [upd 07.06.11] Cube escort
+map sp_coreciv [upd 07.06.11] (Переименованая sp_coreciv_alpha)
+map the_room [upd 07.06.11] The room
+map sp_e3_propulsion_v2 [upd 07.06.11] (Переименованая e3_propulsiongel_slide)
+map through_the_roof [upd 06.06.11] Through The Roof  0.4
+map the_abandoned_room_v2 [upd 06.06.11] The Abandoned Room v2 (Переименованая the_abandoned_room)
+map TheCube [upd 06.06.11] The Cube  2.0
+map sp_a1_boxfling_jsmaps [upd 06.06.11] Box Fling  v5 Final
+map sp_irregular_pyramid [upd 06.06.11] Irregular Pyramid  1.2.0
+map lob_delta_bunsen [upd 06.06.11] Sphere: Delta Bunsen!  3.0
+map sp_faith_in_goo_a2 [upd 06.06.11] Faith in Goo  2.1 (Переименованая sp_faith_in_goo_a1)
+map sp_thecrossroads [upd 06.06.11] The Crossroads  v 1.2
+map A Boxiful Mind [upd 06.06.11] A Boxiful Mind  1.02 (Переименованая SP_A Boxiful Mind)
+map sp_bridgeovertoxicwater2 [upd 06.06.11] Bridge Over Toxic Water  2.0 (Переименованая sp_bridgeovertoxicwater)
+map sp_apature_dungon [upd 06.06.11] Apature dungon
+map sp_stockpile [upd 06.06.11] Stockpile  1.3
+map sp_egg_hunt {egg hunt.vpk}
+map thinkingwithflight
+map spamnugget_01
+map sp_thinking_with_gravity
+map SP_MD_Aerial_Fling
+map PurpleHaze
+map sp_Ben2_portalcontest
+map chamber_06
+map VST_V1
+map sp_yingyang_thelagmaster
+map sp_oxide
+map sp_paintbox01
+map sp_schiller_01
+map sp_cradle_v1
+map sp_zeta_01_01
+map sp_tunafish
+map before_the_new
+map sp_p0p_anomaly
+map convergent_breakout
+map blue_02
+map sp_nvm_t1
+map sp_Black_Rooms
+map fat_turret_revolution
+map sp_dark_side_of_aperture
+map labyrinth_very_first_try_ever
+map sp_red_window
+map sp_custom_monstereuthanasia
+map sp_paradox
+map sp_propagation
+map sp_gelchamber
+map sp_z1_turret_dipping
+map sp_a6_laser_show
+map easy_champer
+map sp_rick_chamber_1
+map laserdanger_b2
+map EasyRoom
+map sp_engineer
+map sp_1_inthechamber
+map gotta_have_faithv3
+map Xackbox-Demolevel2
+map contest
+map final redone capstone map
+map destruction [upd 04.06.11] Destruction  1.2
+map sauerkraut [upd 05.06.11] Sauerkraut V1.2
+map sp_get_the_gel [upd 04.06.11] Download Get the Gel  1.5
+map sp_lit_01 [upd 03.06.11] Lost in Testing  v0.95
+map sp_panelized [upd 05.06.11] Panelized  1.5
+map sp_bridges_tomorrow_07 [02.06.11] Zhan's Bridges tomorrow07 (Переименованая sp_zhan_bridges_06_chmb1)
+map faithplatetestconcept [upd 05.06.11] {faithplatetestconcept.vpk}
+map sp_confined  [upd 05.06.11] {sp_confined.vpk}
+map sp_t2 [upd 05.06.11] (sp_t3 - продолжение, включается автоматически) {nc2in1.vpk}
+map sp_retrospective [upd 05.06.11] {retrospective.vpk}
+map revelations [upd 05.06.11] Segment Nine  1.06 {revelations.vpk}
+map sp_cubiculous
+map sp_rbc_entry
+map 003-27-5-11
+map 004-3-6-11
+map excursion immersion
+map madk_sp_distracted_by_love
+map falling_through_the_dark
+map sp_speedgelisfun_02
+map postmodern_puzzle
+map angry_turrets
+map fizzler_trap_lean_noworld
+map construct2
+map sp_superschamber_01
+map sp_rabbits_waving_panels
+map sp_tower_flings
+map sp_gravity
+map sp_speedbounceportal
+map portal2comp
+map brits_sp_ftbc_01
+map Portal_2_mapping-BenHenry [upd 03.06.11] Catch  3.0
+map Unnamed [02.06.11] (Переименованая FH_Gozer_Bane)
+map Turretery
+map RTSS
+map custom_lightning_strike
+map sp_cube_button
+map Overgrowth
+map sp_blackout
+map sp_allthingsphysics
+map sp_blimp
+map sp_fun_and_learning
+map laserfunnel_n397_v1
+map sp_LightBridge_Gel_v2
+map sp_whatsa1
+map m000
+map sp_gv_easy_2
+map smiideathree
+map sp_wopg_turrets_domino
+map portal_laser_test
+map sp_overgoo2 [upd 31.05.11] OverGoo v1.2 (Переименованая sp_over_goo)
+map sp_harpo04_b1
+map sp_edifice
+map sp_testchamber_sodium_1
+map sp_wheatleys_missing_chambers_1
+map op_level1 (op_level2, op_level3- продолжение, включается автоматически)
+map mobius_chamber_1
+map twcc_01 (twcc_pg - продолжение, включается автоматически)
+map sp_bright_side
+map cc_contest
+map cc_contest
+map Laser Freindly
+map Aerial_Devastation
+map test01
+map Gel_training
+map sp_p23v2
+map sp_clav1_entry01
+map sp_grox_dis_en
+map sp_customfling
+map sp_heavy_reuse [30.05.11] Heavy reuse  1.0.1
+map sp_aly_crushers007
+map sp_speed_wallbutton_boxracing
+map underground
+map madness_1
+map tws
+map portal_test_01
+map ThePitt_01
+map sp_breakdown
+map unique
+map sp_arch01
+map pillz_sp_cubestacking [upd 28.05.11] Cube Stacking  v2.2
+map sp_prodigy_chamber1 [upd 28.05.11]  Prodigy chamber1  0.0.1a
+map sp_twooneway_final [upd 28.05.11] [Final] Two One Way (Переименованая sp_twooneway)
+map sp_gottagofast [upd 27.05.11] Gotta Go Fast  2.0
+map jakiller_maptest_V2_2 [upd 27.05.11] Jakiller maptest V2.2 (Переименованая jakiller_maptest_V2_1)
+map a1_gels
+map sp_2cubes_v2
+map sp_damagepy_01 [upd 27.05.11] DaMaGepy's Portal 2 map #1 v1.72 (FINAL)
+map le_hardlaser_level_1_5 [upd 26.05.11] Le Hardlaser Level 1.5 (Переименованая Le_Hardlaser_Level)
+map sp_discouragement_chamber_9 [upd 26.05.11] Discouragement Chamber #9 v4
+map playingwithspheres
+map dontfall
+map 4portal_demo_beta
+map sp_experiment_challenge [upd 25.05.11] Experimental challenge  v1.2
+map sp_dontmakelemonade + [upd 24.05.11] Don't Make Lemonade  v1.2.1
+map sp_companion
+map sp_lasers
+map interruption
+map sp_amc1_005
+map sp_levelZ
+map sp_chamber_warmup [upd 24.05.11] chamber_warmup  1.2
+map sp_experiment_challenge [upd 23.05.11] Experimental challenge  v0.9
+map sp_enrichment_2 [upd 23.05.11] Enrichment :: Test two  v1.2.1
+map Missing_Geodome
+map sp_cube_collector
+map brits_sp_01
+map sp_hard_one
+map hajuzzasmap
+map hmm
+map sp_timecontrol
+map futurekillsreality [upd 19.05.11] futurekillsreality  1.04
+map Matt_MG_01
+map sp_lilrobot_intro2
+map blue_01
+map sp_quark_1 (sp_quark_2, sp_quark_3, sp_quark_4 - продолжение, включается автоматически)
+map sp_quark_extra
+map sp_bsp
+map first_map
+map sp_portal_boxpuzzle
+map sp_rbc_01 [upd 21.05.11] RubycarbuncIe's Test Chamber 1 V2
+map pitk_overgrown_chmb [upd 21.05.11] updated Overgrown chamber (переименованая pitk_map1)
+map grox_prtl_prc [upd 21.05.11] Portal Practice  1.0
+map sp_antimatter [upd 20.05.11] Antimatter One v4.1 (Переименованая antimatter)
+map sp_floors
+map sp_core1 (sp_core2 - продолжение, включается автоматически)
+map sp_laserlevels_v1_5 [upd 19.05.11] Laser Levels [v1.5] (Переименованая sp_laserlevels)
+map sp_antimatter
+map sp_e3_repulsion_gel_2
+map laser_articulation [upd 18.05.11] Laser Articulation  1.2
+map diprt_laser_fizzler
+map relinquish_test_v2
+map sp_late_chamber01 [upd 18.05.11] Late Chamber 01
+map e3-fplate
+map sp_lovetrip
+map brainbender01
+map sp_mota_test_1
+map sp_troubled_water
+map sp_dry_laser_01
+map sp_holes + [upd 17.05.11] Hole in the Sky VERSION 3.1 (переименованая chamber3)
+map pf_intro + ( pf_start_1 и pf_intro_PNDV- продолжение, включается автоматически)
+map sp_mongoose
+map sp_rlpudding02
+map sp_claustrophobia
+map MariusChamber_01
+map small_room_lev_1_v3 (small_room_lev_2_v1_5 - продолжение, включается автоматически.) [16.05.11] Small room (update1)  1.5  (Переименованные small_room_lev_1_v2 и small_room_lev_2_v1_4)
+map theunknown_v_1_2  [upd 15.05.11] The Unknown V 1.2 (переименованая theunknown)
+map sp_wits_maybe_finalv2 (переименованная sp_wits_maybe_final)
+map lasers
+map sp_marlow_1  [upd 15.05.11] Marlow's Map v.1  1.1
+map sp_crush_underground
+map a_underground_test
+map test_03
+map lob_old_faithful  (lob_sphere_of_roundness - продолжение, включается автоматически. Переименованнaя sphere_of_roundness)
+map stylus_01finalv2easier
+map sp_combustible_lemons
+map sp_identity_map_00 (Вручную запускать map sp_identity_map_01 и map sp_identity_map_02) (Переименованные sp_audiotrash_map_01 и sp_audiotrash_map_02)
+map ap_chamber1
+map sp_rlpudding01_v2 [upd 13.05.11] PuddingChamber01 v2
+map sp_pju_leaps_of_faith_1 [upd 11.05.11] Leaps of faith  v1 by pjuvigny
+map muffiny_test_01
+map sp_bioclean
+map entrapment-v1-1-1
+map cassatachamber_1  (Переименованая testchamber_1)
+map sp_daisycutter_01
+map sp_Acrobatics_PortalRun
+map firstmap1
+map applzor_chamber_01
+map sp_test_kl01 [UPD 06.05.11] Kl Test Map 1/4 (fix 2)
+map g_released1
+map portaltest_2 (portaltest_3, portaltest_4 - продолжение, включается автоматически)
+map sp_gel  (sp_gel_2 - продолжение, включается автоматически)
+map n5_fizzle_funnel
+map n5_sequential01
+map sp_gravity_trails_v2
+map synchronicity
+map sp_e3_crushers_v1
+map portal2_demomap-p2
+map sp_e3_repgel_wip
+
+|||||||||||||||||||||||||||||
+Создатель раздачи: grey_rat
+Помощник: EnterMan
+Помощник помощника: jerkXDD
+|||||||||||||||||||||||||||||

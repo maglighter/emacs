@@ -1,0 +1,2 @@
+#!/bin/bash
+echo "$_ -" "$(wget -U "Mozilla/5.0" -qO - "http://translate.google.com/translate_a/t?client=t&text=$(echo $_ | sed "s/[\"'<>]//g")&sl=en&tl=ru" | sed 's/\[\[\[\"//' | cut -d \" -f 1)""
