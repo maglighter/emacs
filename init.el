@@ -3,7 +3,7 @@
 ;; add directory with elisp files to the load-path
 (add-to-list 'load-path "~/.emacs.d/site-lisp/")
 
-;; hide tool bar &  menu bar & scroll bar
+;; hide tool bar & menu bar & scroll bar
 (tool-bar-mode nil)
 (menu-bar-mode nil)
 (scroll-bar-mode nil)
