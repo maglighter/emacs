@@ -8,9 +8,6 @@
 (menu-bar-mode nil)
 (scroll-bar-mode nil)
 
-;; enable ido mode
-(ido-mode t)
-
 ;; color theme loading
 (load "color-theme")
 (color-theme-tango)
@@ -137,6 +134,13 @@
 (global-set-key (kbd "C-x k")
 		'(lambda () (interactive) (kill-buffer (current-buffer))))
 
+;; replace default M-x behavior with some stuff of ido [v]
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "<menu>") 'smex)
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)
+(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command) ;standart M-x
+(global-set-key (kbd "C-c C-c <menu>") 'execute-extended-command)
+
 ;; replace by reqexp
 (global-set-key (kbd "C-c r") 'query-replace-regexp)
 
@@ -184,6 +188,20 @@
 
 
 ;;; Modes
+;; enable ido mode
+(ido-mode t)
+(add-hook 'ido-setup-hook
+          (lambda ()
+            (define-key ido-completion-map "\C-n"
+              'ido-select-text)
+	    (define-key ido-completion-map "\C-j"
+              'ido-exit-minibuffer)))
+
+;; replace default M-x behavior with some stuff of ido
+(require 'smex) ; [M-x]
+(setq smex-save-file "~/.emacs.d/.smex-items")
+(smex-initialize)
+
 ;; mode for listing of recent opened files
 (require 'recentf)
 (setq recentf-auto-cleanup 'never
