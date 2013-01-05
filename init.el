@@ -107,7 +107,10 @@
 
 ;; windows manipulations
 (global-set-key (kbd "C-'") 'toggle-windows-split) ; [v]
-(global-set-key (kbd "M-'") 'delete-window)
+(global-set-key (kbd "M-'") 
+		'(lambda ()
+		   (interactive)
+		   (if (= (count-windows) 1) (next-buffer) (delete-window))))
 (global-set-key (kbd "C-M-'") 'kill-buffer-and-window)
 
 ;; switch to last selected buffer
@@ -150,12 +153,21 @@
 ;; translate current word [v]
 (global-set-key (kbd "C-x t") 'max/translate)
 
+;; join current line with above
+(global-set-key (kbd "C-c q") 'join-line)
+
+;; menu with pointers to functions definitions
+(global-set-key (kbd "C-x C-k i") 'imenu)
+
 ;; shift+arrow to move between windows
 (windmove-default-keybindings)
 
 ;; increase/decrease text scale
 (define-key global-map (kbd "C-+") 'text-scale-increase)
 (define-key global-map (kbd "C--") 'text-scale-decrease)
+
+;; looks at the buffer and tries to expand word in various ways
+(global-set-key (kbd "M-/") 'hippie-expand)
 
 ;; interactive lisp interpretor
 (global-set-key [f6] 'ielm)
@@ -190,12 +202,20 @@
 ;;; Modes
 ;; enable ido mode
 (ido-mode t)
+(setq default-ido-decorations ido-decorations)
 (add-hook 'ido-setup-hook
           (lambda ()
+	    (setq ido-decorations default-ido-decorations)
             (define-key ido-completion-map "\C-n"
               'ido-select-text)
 	    (define-key ido-completion-map "\C-j"
-              'ido-exit-minibuffer)))
+              'ido-exit-minibuffer)
+	    (define-key ido-completion-map "\C-t"
+              '(lambda ()
+		(interactive)
+		 (if (equal default-ido-decorations ido-decorations)
+		     (setq ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]")))
+		  (setq ido-decorations default-ido-decorations))))))
 
 ;; replace default M-x behavior with some stuff of ido
 (require 'smex) ; [M-x]
@@ -205,7 +225,8 @@
 ;; mode for listing of recent opened files
 (require 'recentf)
 (setq recentf-auto-cleanup 'never
-      recentf-max-saved-items 100)
+      recentf-max-menu-items 25
+      recentf-max-saved-items 200)
 (recentf-mode t)
 
 ;; change default mode line [configure]
@@ -225,6 +246,12 @@
 (setq ac-auto-start nil)
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/site-lisp//ac-dict")
 (ac-config-default)
+
+;; activate occur inside isearch
+(define-key isearch-mode-map (kbd "C-o")
+  (lambda () (interactive)
+    (let ((case-fold-search isearch-case-fold-search))
+      (occur (if isearch-regexp isearch-string (regexp-quote isearch-string))))))
 
 ;; AUCTeX
 (setq TeX-auto-save t)
@@ -321,10 +348,13 @@ of windows in the frame simply by calling this command again."
 (defun recentf-ido-find-file ()
   "Find a recent file using ido."
   (interactive)
-  (let ((file
-	 (ido-completing-read "Choose recent file: " recentf-list nil t)))
+  (let ((default-ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]"))))
+  (let (
+	(file
+	 (ido-completing-read "Recent opened files: " recentf-list nil t))
+	)
     (when file
-      (find-file file))))
+      (find-file file)))))
 
 ;; if region - copy region, end of line - copy line, else - copy to the end
 (defun max/kill-ring-save (arg)
@@ -607,3 +637,5 @@ of windows in the frame simply by calling this command again."
 
 
 ;;; Test code
+
+
