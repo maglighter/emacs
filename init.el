@@ -29,13 +29,7 @@
 
 ;; source code directory
 (setq find-function-C-source-directory
-      "/usr/share/emacs/23.4/lisp/emacs23-23.4+1/src/"
-      source-directory  		; [! don't work]
-      "/usr/share/emacs/23.4/lisp/emacs23-23.4+1/lisp/")
-
-;; lisp source code directory [bicycle]
-(setq tags-file-name
-      "/usr/share/emacs/23.4/lisp/emacs23-23.4+1/lisp/TAGS")
+      "/usr/share/emacs/23.4/lisp/emacs23-23.4+1/src/")
 
 ;; replacement of selected region
 (delete-selection-mode t)
@@ -267,6 +261,10 @@
 (add-to-list 'iswitchb-buffer-ignore "*fsm-debug")
 (add-to-list 'iswitchb-buffer-ignore "*Completions")
 (add-to-list 'iswitchb-buffer-ignore "^[tT][aA][gG][sS]$")
+(add-hook 'iswitchb-setup-hook
+          (lambda ()
+            (define-key iswitchb-completion-map "\C-j"
+              'iswitchb-exit-minibuffer)))
 
 ;; support for CMake
 (autoload 'cmake-mode "cmake-mode" t)
@@ -637,5 +635,6 @@ of windows in the frame simply by calling this command again."
 
 
 ;;; Test code
-
+(autoload 'typing-of-emacs "The Typing Of Emacs, a game." t)
+(setq toe-treat-words 'downcase)
 
