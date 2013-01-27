@@ -27,7 +27,7 @@
 (set-register ?f '(file . "~/foo"))
 (set-register ?z '(file . "~/.zshrc"))
 
-;; source code directory
+;; emacs c source code directory
 (setq find-function-C-source-directory
       "/usr/share/emacs/23.4/lisp/emacs23-23.4+1/src/")
 
@@ -87,7 +87,7 @@
   (let ((buffer-backed-up nil))
     (backup-buffer)))
 
-(add-hook 'before-save-hook  'force-backup-of-buffer)
+(add-hook 'before-save-hook 'force-backup-of-buffer)
 
 ;;; ===================================================================
 
@@ -138,14 +138,18 @@
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command) ;standart M-x
 (global-set-key (kbd "C-c C-c <menu>") 'execute-extended-command)
 
+
+;; first moves to indentation then to beginning [v]
+(global-set-key (kbd "C-a") 'back-to-indentation-or-beginning)
+
 ;; replace by reqexp
 (global-set-key (kbd "C-c r") 'query-replace-regexp)
 
 ;; С-h <-> Backspace
 (define-key key-translation-map [?\C-h] [?\C-?])
 
-;; translate current word [v]
-(global-set-key (kbd "C-x t") 'max/translate)
+;; translate current word or region [v]
+(global-set-key (kbd "C-x t") 'max/translate-word-or-region)
 
 ;; join current line with above
 (global-set-key (kbd "C-c q") 'join-line)
@@ -237,7 +241,7 @@
 
 ;; mode for auto complete operators and other [read more]
 (require 'auto-complete-config)
-(setq ac-auto-start nil)
+(setq ac-auto-start t)
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/site-lisp//ac-dict")
 (ac-config-default)
 
@@ -261,9 +265,9 @@
 (add-to-list 'iswitchb-buffer-ignore "*fsm-debug")
 (add-to-list 'iswitchb-buffer-ignore "*Completions")
 (add-to-list 'iswitchb-buffer-ignore "^[tT][aA][gG][sS]$")
-(add-hook 'iswitchb-setup-hook
+(add-hook 'iswitchb-minibuffer-setup-hook
           (lambda ()
-            (define-key iswitchb-completion-map "\C-j"
+            (define-key iswitchb-mode-map "\C-j"
               'iswitchb-exit-minibuffer)))
 
 ;; support for CMake
@@ -323,6 +327,13 @@
 	    (define-key ido-completion-map
 	      (kbd "C-w") 'ido-delete-backward-word-updir)))
 
+;; first moves to indentation then to beginning [C-a]
+(defun back-to-indentation-or-beginning ()
+  (interactive)
+  (if (= (point) (save-excursion (back-to-indentation) (point)))
+      (beginning-of-line)
+    (back-to-indentation)))
+
 ;; toggle between split windows and a single window
 (defun toggle-windows-split()
   "Switch back and forth between one window and whatever split of
@@ -378,11 +389,16 @@ of windows in the frame simply by calling this command again."
 
 (ad-activate 'yank-pop)
 
-;; translate current word [C-x t]
-(defun max/translate ()
-  (interactive)
-  (setq myStr (thing-at-point 'word))
-  (shell-command (concat "~/.emacs.d/site-lisp/translate_arg " myStr)))
+;; translate current word or region [C-x t]
+(defun max/translate-word-or-region (arg)
+  (interactive "p")
+  (let ((myStr) (translate))
+    (if (region-active-p)
+	(setq myStr (buffer-substring (region-beginning) (region-end)))
+      (setq myStr (thing-at-point 'word)))
+    (setq translate (shell-command-to-string
+      (concat "~/.emacs.d/site-lisp/translate_arg " "\"" myStr "\"")))
+    (message "%s" (substring translate 0 (- (length translate) 1)))))
 
 ;; convert buffer: dos -> unix (utf-8)
 (defun max/dos2unix ()
@@ -585,7 +601,7 @@ of windows in the frame simply by calling this command again."
 (setq cperl-extra-newline-before-brace t)
 (setq cperl-indent-parens-as-block t)
 
-(defun perl-new-source-max (name)
+(defun max/perl-new-source (name)
   (interactive "sEnter new perl source file name: ")
   (find-file (concat "/home/max/src/perl/" name))
   (insert "#!/usr/bin/perl -w\n")
