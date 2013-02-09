@@ -1,16 +1,21 @@
 ;                      * Emacs CORE configuration file *
+;; default font
+(add-to-list 'default-frame-alist
+	     '(font . "Liberation Mono-12"))
 
 ;; add directory with elisp files to the load-path
 (add-to-list 'load-path "~/.emacs.d/site-lisp/")
 
-;; hide tool bar & menu bar & scroll bar
-(tool-bar-mode nil)
-(menu-bar-mode nil)
-(scroll-bar-mode nil)
+;; turn off: hide tool bar & menu bar & scroll bar
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
 
 ;; color theme loading
-(load "color-theme")
-(color-theme-tango)
+(load-theme 'wombat)
+
+;; don't show startup screen
+(setq inhibit-startup-screen t)
 
 ;; set history length
 (setq history-length 100)
@@ -28,8 +33,8 @@
 (set-register ?z '(file . "~/.zshrc"))
 
 ;; emacs c source code directory
-(setq find-function-C-source-directory
-      "/usr/share/emacs/23.4/lisp/emacs23-23.4+1/src/")
+;(setq find-function-C-source-directory
+;      "/usr/share/emacs/23.4/lisp/emacs23-23.4+1/src/")
 
 ;; replacement of selected region
 (delete-selection-mode t)
@@ -133,6 +138,7 @@
 
 ;; replace default M-x behavior with some stuff of ido [v]
 (global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "<print>") 'smex)
 (global-set-key (kbd "<menu>") 'smex)
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command) ;standart M-x
@@ -251,9 +257,12 @@
     (let ((case-fold-search isearch-case-fold-search))
       (occur (if isearch-regexp isearch-string (regexp-quote isearch-string))))))
 
+;; mode for opening and editing files with sudo privileges
+(require 'sudo-save)
+
 ;; AUCTeX
-(setq TeX-auto-save t)
-(setq TeX-parse-self t)
+;(setq TeX-auto-save t)
+;(setq TeX-parse-self t)
 
 ;; Iswitch
 (iswitchb-mode t)
@@ -509,7 +518,8 @@ of windows in the frame simply by calling this command again."
 			      (other-window -1)
 			      (if (string-match "^finished" msg)
 				  (progn
-				    (gdb (concat "gdb -silent --annotate=3 " max/buffer-name))
+				    ;(gdb (concat "gdb -i=mi -silent --annotate=3 " max/buffer-name))
+				    (gdb (concat "gdb -i=mi -silent " max/buffer-name))
 				    (insert "r")
 				    (comint-send-input))))
 
@@ -653,4 +663,5 @@ of windows in the frame simply by calling this command again."
 ;;; Test code
 (autoload 'typing-of-emacs "The Typing Of Emacs, a game." t)
 (setq toe-treat-words 'downcase)
+
 
