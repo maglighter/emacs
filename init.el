@@ -261,6 +261,8 @@
 (require 'sudo-save)
 
 ;; AUCTeX
+(load "auctex.el" nil t t)
+(load "preview-latex.el" nil t t)
 ;(setq TeX-auto-save t)
 ;(setq TeX-parse-self t)
 
@@ -278,6 +280,25 @@
           (lambda ()
             (define-key iswitchb-mode-map "\C-j"
               'iswitchb-exit-minibuffer)))
+
+;; EMMS configuration
+(require 'emms-setup)
+(emms-standard)
+(emms-default-players)
+
+;; Dired-x - extra dired mode
+(add-hook 'dired-load-hook
+	  (lambda ()
+	    (load "dired-x")
+	    ;; Set dired-x global variables here.  For example:
+	    (setq dired-guess-shell-gnutar "gtar")
+	    (setq dired-x-hands-off-my-keys nil)
+	    ))
+(add-hook 'dired-mode-hook
+	  (lambda ()
+	    ;; Set dired-x buffer-local variables here.  For example:
+					;(dired-omit-mode 1)
+	    ))
 
 ;; support for CMake
 (autoload 'cmake-mode "cmake-mode" t)
