@@ -1,0 +1,14 @@
+Create new win32 prefix (don't create folder before):
+WINEARCH=win32 WINEPREFIX=~/.wineprefixes/prefix winecfg
+win64 prefix:
+WINEPREFIX=~/.wineprefixes/prefix winecfg
+
+Run program from prefix x3:
+WINEARCH=win32 WINEPREFIX=~/.wineprefixes/x3 wine /home/max/.wineprefixes/x3/drive_c/Program\ Files/X3.Albion\ Prelude.v\ 1.1/X3TC.exe -language 7
+
+Run program with russian language:
+LANG=ru_RU.UTF-8 WINEARCH=win32 WINEPREFIX=~/.wineprefixes/morr wine setup.exe
+
+Install libs:
+WINEARCH=win32 WINEPREFIX=$HOME/.wineprefixes/prifix winetricks corefonts directx9 vcrun2005 vcrun2008 vcrun6
+

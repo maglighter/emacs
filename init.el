@@ -23,9 +23,10 @@
 ;; max size of messages log
 (setq message-log-max 2000)
 
-;; yes -> y, no -> n, return -> yes
+;; yes -> y, no -> n, C-j -> return -> yes
 (fset 'yes-or-no-p 'y-or-n-p)
 (define-key query-replace-map [return] 'act)
+(define-key query-replace-map (kbd "C-j") 'act)
 
 ;; registers point to files
 (set-register ?i '(file . "~/.emacs.d/init.el"))
@@ -76,7 +77,7 @@
 ;;; ===================================================================
 
 
-;;; Backup
+;;; Backup and history
 (setq
  backup-by-copying nil
  backup-directory-alist
@@ -93,6 +94,12 @@
     (backup-buffer)))
 
 (add-hook 'before-save-hook 'force-backup-of-buffer)
+
+(setq savehist-file "~/.emacs.d/.savehist")
+(setq savehist-additional-variables
+      '(kill-ring search-ring regexp-search-ring))
+(savehist-mode 1)
+
 
 ;;; ===================================================================
 
@@ -128,6 +135,7 @@
 
 ;; list of recent opened files
 (global-set-key (kbd "C-,") 'recentf-ido-find-file)
+
 
 ;; ibuffer
 (global-set-key (kbd "C-x C-b") 'ibuffer)
@@ -205,6 +213,11 @@
 
 ;;; Modes
 ;; enable ido mode
+(custom-set-variables
+ '(ido-enable-last-directory-history nil)
+ '(ido-record-commands nil)
+ '(ido-max-work-directory-list 0)
+ '(ido-max-work-file-list 0))
 (ido-mode t)
 (setq default-ido-decorations ido-decorations)
 (add-hook 'ido-setup-hook
@@ -219,7 +232,8 @@
 		(interactive)
 		 (if (equal default-ido-decorations ido-decorations)
 		     (setq ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]")))
-		  (setq ido-decorations default-ido-decorations))))))
+		  (setq ido-decorations default-ido-decorations)
+		  )))))
 
 ;; replace default M-x behavior with some stuff of ido
 (require 'smex) ; [M-x]
@@ -230,12 +244,13 @@
 (require 'recentf)
 (setq recentf-auto-cleanup 'never
       recentf-max-menu-items 25
-      recentf-max-saved-items 200)
+      recentf-max-saved-items 400)
+(setq recentf-save-file "/home/max/.emacs.d/.recentf")
 (recentf-mode t)
 
 ;; change default mode line [configure]
-(require 'powerline)
-(powerline-default)
+;(require 'powerline)
+;(powerline-default)
 
 ;; syntax checking on the fly [! read more]
 (require 'flymake)
@@ -248,6 +263,7 @@
 ;; mode for auto complete operators and other [read more]
 (require 'auto-complete-config)
 (setq ac-auto-start t)
+(setq ac-comphist-file "/home/max/.emacs.d/.ac-comphist.dat")
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/site-lisp//ac-dict")
 (ac-config-default)
 
@@ -520,89 +536,90 @@ of windows in the frame simply by calling this command again."
 
 
 ;;; Cpp [! rewrite]
-(setq max/gdb-process ""
-      max/buffer-name "")
-(add-hook 'gdb-mode-hook '(lambda ()
-			    (setq max/gdb-process
-				  (substring (buffer-name) 1 (- (length (buffer-name)) 1)))))
+;(setq max/gdb-process ""
+;      max/buffer-name "")
+;(add-hook 'gdb-mode-hook '(lambda ()
+;			    (setq max/gdb-process
+;				  (substring (buffer-name) 1 (- (length (buffer-name)) 1)))))
 ;; При включении c++-mode -> стиль "BSD", C-c C-c - авто-компиляция
 (add-hook 'c++-mode-hook '(lambda ()
 			    (c-set-style "bsd")
-			    (setq c-basic-offset 4)
-			    (setq compile-command "g++ ")
+			    (setq c-basic-offset 4)))
+;			    (setq compile-command "g++ ")
 			    ;;включает режим авто вставки переносов строк (после ;), С-с С-а
 					;(c-toggle-auto-state t)
-			    (local-set-key (kbd "C-c C-r") 'gud-run)
-			    ;;будет выполняться после завершения компиляции
-			    (defun max/cpp-notify-compilation-result(buffer msg)
-			      (interactive)
-			      (other-window -1)
-			      (if (string-match "^finished" msg)
-				  (progn
-				    ;(gdb (concat "gdb -i=mi -silent --annotate=3 " max/buffer-name))
-				    (gdb (concat "gdb -i=mi -silent " max/buffer-name))
-				    (insert "r")
-				    (comint-send-input))))
+;			    (local-set-key (kbd "C-c C-r") 'gud-run)
+;			    ;;будет выполняться после завершения компиляции
+;			    (defun max/cpp-notify-compilation-result(buffer msg)
+;			      (interactive)
+;			      (other-window -1)
+;			      (if (string-match "^finished" msg)
+;				  (progn
+;				    ;(gdb (concat "gdb -i=mi -silent --annotate=3 " max/buffer-name))
+;				    (gdb (concat "gdb -i=mi -silent " max/buffer-name))
+;				    (insert "r")
+;				    (comint-send-input))))
 
-			    (add-to-list 'compilation-finish-functions
-					 'max/cpp-notify-compilation-result)
 
-			    (defun max/cpp-compile-and-run ()
-			      (interactive)
-			      (save-buffer)
-			      (setq max/buffer-name
-				    (substring (buffer-name) 0 (- (length (buffer-name)) 4)))
-			      (if (not (eql max/gdb-process ""))
-				  (progn
-				    (if (get-buffer (concat "*" max/gdb-process "*"))
-					(if (shell-command "killall gdb")
-					    (kill-buffer (concat "*" max/gdb-process "*"))))
-				    (setq max/gdb-process "")))
-			      (delete-other-windows)
-			      (split-window-horizontally)
-			      (enlarge-window-horizontally 12)
-			      (compile (concat "g++ -g " max/buffer-name ".cpp -o " max/buffer-name)))
-			    (local-set-key (kbd "C-c r") 'gdb)
+;			    (add-to-list 'compilation-finish-functions
+;					 'max/cpp-notify-compilation-result)
+
+;			    (defun max/cpp-compile-and-run ()
+;			      (interactive)
+;			      (save-buffer)
+;			      (setq max/buffer-name
+;				    (substring (buffer-name) 0 (- (length (buffer-name)) 4)))
+;			      (if (not (eql max/gdb-process ""))
+;				  (progn
+;				    (if (get-buffer (concat "*" max/gdb-process "*"))
+;					(if (shell-command "killall gdb")
+;					    (kill-buffer (concat "*" max/gdb-process "*"))))
+;				    (setq max/gdb-process "")))
+;			      (delete-other-windows)
+;			      (split-window-horizontally)
+;			      (enlarge-window-horizontally 12)
+;			      (compile (concat "g++ -g " max/buffer-name ".cpp -o " max/buffer-name)))
+;			    (local-set-key (kbd "C-c r") 'gdb)
 			    (local-set-key (kbd "C-c c") 'comment-region)
-			    (local-set-key (kbd "C-c C-c") 'max/cpp-compile-and-run)))
+;			    (local-set-key (kbd "C-c C-c") 'max/cpp-compile-and-run)))
 ;;; ===================================================================
 
 
 ;;; Csharp [! rewrite]
-(setq max/csharp-add-to-command "")
-(defun max/csharp-mode-fn ()
-  "function that runs when csharp-mode is initialized for a buffer."
-  (c-set-style "bsd")
-  (setq c-basic-offset 4)
-  (setq compile-command "gmcs ")
-  ;;будет выполняться после завершения компиляции
-  (defun max/csharp-notify-compilation-result(buffer msg)
-    (interactive)
-    (other-window -1)
-    (if (string-match "^finished" msg)
-	(progn
-	  (eshell)
-	  (insert (concat "mono " max/buffer-name ".exe"))
-	  (eshell-send-input))))
+;(setq max/csharp-add-to-command "")
+;(defun max/csharp-mode-fn ()
+;  "function that runs when csharp-mode is initialized for a buffer."
+;  (c-set-style "bsd")
+;  (setq c-basic-offset 4)
+;  (setq compile-command "gmcs ")
+;  ;;будет выполняться после завершения компиляции
+;  (defun max/csharp-notify-compilation-result(buffer msg)
+;    (interactive)
+;    (other-window -1)
+;    (if (string-match "^finished" msg)
+;	(progn
+;	  (eshell)
+;	  (insert (concat "mono " max/buffer-name ".exe"))
+;	  (eshell-send-input))))
 
-  (add-to-list 'compilation-finish-functions
-	       'max/csharp-notify-compilation-result)
+;  (add-to-list 'compilation-finish-functions
+;	       'max/csharp-notify-compilation-result)
 
-  (defun max/csharp-compile-and-run ()
-    (interactive)
-    (save-buffer)
-    (setq max/buffer-name
-	  (substring (buffer-name) 0 (- (length (buffer-name)) 3)))
-    (delete-other-windows)
-    (split-window-horizontally)
-    (enlarge-window-horizontally 12)
-    (compile
-     (concat "gmcs " max/buffer-name ".cs " max/csharp-add-to-command)))
+;  (defun max/csharp-compile-and-run ()
+;    (interactive)
+;    (save-buffer)
+;    (setq max/buffer-name
+;	  (substring (buffer-name) 0 (- (length (buffer-name)) 3)))
+;    (delete-other-windows)
+;    (split-window-horizontally)
+;    (enlarge-window-horizontally 12)
+;    (compile
+;     (concat "gmcs " max/buffer-name ".cs " max/csharp-add-to-command)))
 
-  (local-set-key (kbd "C-c c") 'comment-region)
-  (local-set-key (kbd "C-c C-c") 'max/csharp-compile-and-run))
+;  (local-set-key (kbd "C-c c") 'comment-region)
+;  (local-set-key (kbd "C-c C-c") 'max/csharp-compile-and-run))
 
-(add-hook  'csharp-mode-hook 'max/csharp-mode-fn t)
+;(add-hook  'csharp-mode-hook 'max/csharp-mode-fn t)
 ;;; ===================================================================
 
 
@@ -643,46 +660,45 @@ of windows in the frame simply by calling this command again."
 
 
 ;;; Java [! rewrite]
-(setq max/java-add-to-command "")
-(defun max/java-mode-fn ()
-  "function that runs when java-mode is initialized for a buffer."
-  (c-set-style "bsd")
-  (setq c-basic-offset 4)
-  (setq compile-command "javac ")
-  ;;будет выполняться после завершения компиляции
-  (defun max/java-notify-compilation-result(buffer msg)
-    (interactive)
-    (other-window -1)
-    (if (string-match "^finished" msg)
-	(progn
-	  (eshell)
-	  (eshell-send-input)
-	  (insert (concat "java " max/buffer-name))
-	  (eshell-send-input))))
+;(setq max/java-add-to-command "")
+;(defun max/java-mode-fn ()
+;  "function that runs when java-mode is initialized for a buffer."
+;  (c-set-style "bsd")
+;  (setq c-basic-offset 4)
+;  (setq compile-command "javac ")
+;  ;;будет выполняться после завершения компиляции
+;  (defun max/java-notify-compilation-result(buffer msg)
+;    (interactive)
+;    (other-window -1)
+;    (if (string-match "^finished" msg)
+;	(progn
+;	  (eshell)
+;	  (eshell-send-input)
+;	  (insert (concat "java " max/buffer-name))
+;	  (eshell-send-input))))
 
-  (add-to-list 'compilation-finish-functions
-	       'max/java-notify-compilation-result)
+;  (add-to-list 'compilation-finish-functions
+;	       'max/java-notify-compilation-result)
 
-  (defun max/java-compile-and-run ()
-    (interactive)
-    (save-buffer)
-    (setq max/buffer-name
-	  (substring (buffer-name) 0 (- (length (buffer-name)) 5)))
-    (delete-other-windows)
-    (split-window-horizontally)
-    (enlarge-window-horizontally 12)
-    (compile
-     (concat "javac " max/buffer-name ".java " max/java-add-to-command)))
+;  (defun max/java-compile-and-run ()
+;    (interactive)
+;    (save-buffer)
+;    (setq max/buffer-name
+;	  (substring (buffer-name) 0 (- (length (buffer-name)) 5)))
+;    (delete-other-windows)
+;    (split-window-horizontally)
+;    (enlarge-window-horizontally 12)
+;    (compile
+;     (concat "javac " max/buffer-name ".java " max/java-add-to-command)))
 
   (local-set-key (kbd "C-c c") 'comment-region)
-  (local-set-key (kbd "C-c C-c") 'max/java-compile-and-run))
+;  (local-set-key (kbd "C-c C-c") 'max/java-compile-and-run))
 
-(add-hook  'java-mode-hook 'max/java-mode-fn t)
+;(add-hook  'java-mode-hook 'max/java-mode-fn t)
 ;;; ===================================================================
 
 
 ;;; Test code
 (autoload 'typing-of-emacs "The Typing Of Emacs, a game." t)
 (setq toe-treat-words 'downcase)
-
 
