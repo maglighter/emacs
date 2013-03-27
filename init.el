@@ -4,7 +4,7 @@
 	     '(font . "Liberation Mono-12"))
 
 ;; add directory with elisp files to the load-path
-(add-to-list 'load-path "~/.emacs.d/site-lisp/")
+(add-to-list 'load-path "/home/max/.emacs.d/site-lisp/")
 
 ;; turn off: hide tool bar & menu bar & scroll bar
 (tool-bar-mode -1)
@@ -12,7 +12,7 @@
 (scroll-bar-mode -1)
 
 ;; color theme loading
-(load-theme 'wombat)
+(load-theme 'wombat t)
 
 ;; don't show startup screen
 (setq inhibit-startup-screen t)
@@ -29,9 +29,9 @@
 (define-key query-replace-map (kbd "C-j") 'act)
 
 ;; registers point to files
-(set-register ?i '(file . "~/.emacs.d/init.el"))
-(set-register ?f '(file . "~/foo"))
-(set-register ?z '(file . "~/.zshrc"))
+(set-register ?i '(file . "/home/max/.emacs.d/init.el"))
+(set-register ?f '(file . "/home/max/foo"))
+(set-register ?z '(file . "/home/max/.zshrc"))
 
 ;; emacs c source code directory
 ;(setq find-function-C-source-directory
@@ -81,9 +81,9 @@
 (setq
  backup-by-copying nil
  backup-directory-alist
- '(("." . "~/.emacs.d/backup"))
+ '(("." . "/home/max/.emacs.d/backup"))
  auto-save-file-name-transforms
- '((".*" "~/.emacs.d/backup/" t))
+ '((".*" "/home/max/.emacs.d/backup/" t))
  delete-old-versions t
  kept-new-versions 8
  kept-old-versions 2
@@ -95,11 +95,10 @@
 
 (add-hook 'before-save-hook 'force-backup-of-buffer)
 
-(setq savehist-file "~/.emacs.d/.savehist")
+(setq savehist-file "/home/max/.emacs.d/.savehist")
 (setq savehist-additional-variables
       '(kill-ring search-ring regexp-search-ring))
 (savehist-mode 1)
-
 
 ;;; ===================================================================
 
@@ -237,7 +236,7 @@
 
 ;; replace default M-x behavior with some stuff of ido
 (require 'smex) ; [M-x]
-(setq smex-save-file "~/.emacs.d/.smex-items")
+(setq smex-save-file "/home/max/.emacs.d/.smex-items")
 (smex-initialize)
 
 ;; mode for listing of recent opened files
@@ -264,7 +263,7 @@
 (require 'auto-complete-config)
 (setq ac-auto-start t)
 (setq ac-comphist-file "/home/max/.emacs.d/.ac-comphist.dat")
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/site-lisp//ac-dict")
+(add-to-list 'ac-dictionary-directories "/home/max/.emacs.d/site-lisp//ac-dict")
 (ac-config-default)
 
 ;; activate occur inside isearch
@@ -275,6 +274,13 @@
 
 ;; mode for opening and editing files with sudo privileges
 (require 'sudo-save)
+
+;; maggit - git interface
+(autoload 'magit-status "magit" nil t)
+
+;; w3m - browser
+(require 'w3m-load)
+(setq w3m-init-file "/home/max/.emacs.d/.emacs-w3m")
 
 ;; AUCTeX
 (load "auctex.el" nil t t)
@@ -322,11 +328,11 @@
 (add-to-list 'auto-mode-alist '("\\.cmake\\'" . cmake-mode))
 
 ;; Yasnippets
-;(add-to-list 'load-path "~/.emacs.d/site-lisp/yasnippet")
+;(add-to-list 'load-path "/home/max/.emacs.d/site-lisp/yasnippet")
 ;(require 'yasnippet)
 ;(yas/global-mode 1)
 ;(yas/initialize)
-;(yas/load-directory "~/.emacs.d/site-lisp/yasnippet/snippets")
+;(yas/load-directory "/home/max/.emacs.d/site-lisp/yasnippet/snippets")
 
 ;; session manager
 ;(require 'session)
@@ -443,7 +449,7 @@ of windows in the frame simply by calling this command again."
 	(setq myStr (buffer-substring (region-beginning) (region-end)))
       (setq myStr (thing-at-point 'word)))
     (setq translate (shell-command-to-string
-      (concat "~/.emacs.d/site-lisp/translate_arg " "\"" myStr "\"")))
+      (concat "/home/max/.emacs.d/site-lisp/translate_arg " "\"" myStr "\"")))
     (message "%s" (substring translate 0 (- (length translate) 1)))))
 
 ;; convert buffer: dos -> unix (utf-8)
@@ -506,7 +512,7 @@ of windows in the frame simply by calling this command again."
 	    (setq lisp-indent-function 'common-lisp-indent-function)
 	    (setq show-trailing-whitespace t)))
 
-(load (expand-file-name "~/quicklisp/slime-helper.el"))
+(load (expand-file-name "/home/max/quicklisp/slime-helper.el"))
 (require 'slime)
 (slime-setup
  '(slime-fancy slime-indentation slime-tramp slime-asdf slime-sprof))
@@ -516,7 +522,7 @@ of windows in the frame simply by calling this command again."
       `((sbcl ("/usr/bin/sbcl") :coding-system utf-8-unix)))
 (eval-after-load 'slime
   '(progn
-     (setq slime-scratch-file "~/.emacs.d/tmp/scratch.lisp")
+     (setq slime-scratch-file "/home/max/.emacs.d/tmp/scratch.lisp")
      (setq slime-edit-definition-fallback-function 'find-tag)
      (setq slime-complete-symbol*-fancy t)
      (setq slime-complete-symbol-function 'slime-fuzzy-complete-symbol)
