@@ -1,7 +1,7 @@
 ;                      * Emacs CORE configuration file *
 ;; default font
-(add-to-list 'default-frame-alist
-	     '(font . "Liberation Mono-12"))
+;(add-to-list 'default-frame-alist
+;	     '(font . "Liberation Mono-12"))
 
 ;; add directory with elisp files to the load-path
 (add-to-list 'load-path "~/.emacs.d/site-lisp/")
@@ -14,14 +14,14 @@
 ;; color theme loading
 (load-theme 'wombat)
 
-;; don't show startup screen
-(setq inhibit-startup-screen t)
-
 ;; set history length
 (setq history-length 100)
 
 ;; max size of messages log
 (setq message-log-max 2000)
+
+;; don't show startup message
+(setq inhibit-splash-screen t)
 
 ;; yes -> y, no -> n, C-j -> return -> yes
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -31,7 +31,6 @@
 ;; registers point to files
 (set-register ?i '(file . "~/.emacs.d/init.el"))
 (set-register ?f '(file . "~/foo"))
-(set-register ?z '(file . "~/.zshrc"))
 
 ;; emacs c source code directory
 ;(setq find-function-C-source-directory
@@ -63,16 +62,23 @@
 (setq case-replace nil)
 
 ;; encoding: use UTF-8 environment [check]
-(set-language-environment 'UTF-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
-(setq x-select-enable-clipboard t)
-(define-coding-system-alias 'windows-1251 'cp1251)
-(prefer-coding-system 'koi8-r-unix)
-(prefer-coding-system 'windows-1251-dos)
-(prefer-coding-system 'utf-8-unix)
+;(set-language-environment 'UTF-8)
+;(set-terminal-coding-system 'utf-8)
+;(set-keyboard-coding-system 'utf-8)
+;(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
+;(setq x-select-enable-clipboard t)
+;(define-coding-system-alias 'windows-1251 'cp1251)
+;(prefer-coding-system 'koi8-r-unix)
+;(prefer-coding-system 'windows-1251-dos)
+;(prefer-coding-system 'utf-8-unix)
 (setq default-input-method 'russian-computer)
+
+;; Fulscreen
+(defun toggle-full-screen () (interactive) (shell-command "emacs_fullscreen.exe"))
+(global-set-key [f11] 'toggle-full-screen)
+
+;; default directory
+(setq command-line-default-directory "d:/home/")
 
 ;;; ===================================================================
 
@@ -81,9 +87,9 @@
 (setq
  backup-by-copying nil
  backup-directory-alist
- '(("." . "~/.emacs.d/backup"))
+ '(("." . "~/.emacs.d/backups"))
  auto-save-file-name-transforms
- '((".*" "~/.emacs.d/backup/" t))
+ '((".*" "~/.emacs.d/backups" t))
  delete-old-versions t
  kept-new-versions 8
  kept-old-versions 2
@@ -110,6 +116,7 @@
 
 ;; switch to next window
 (global-set-key (kbd "<C-tab>") 'other-window)
+(global-set-key (kbd "C-x o") '(lambda () (interactive)(other-window -1)))
 
 ;; windows manipulations
 (global-set-key (kbd "C-'") 'toggle-windows-split) ; [v]
@@ -136,7 +143,6 @@
 ;; list of recent opened files
 (global-set-key (kbd "C-,") 'recentf-ido-find-file)
 
-
 ;; ibuffer
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
@@ -151,7 +157,6 @@
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command) ;standart M-x
 (global-set-key (kbd "C-c C-c <menu>") 'execute-extended-command)
-
 
 ;; first moves to indentation then to beginning [v]
 (global-set-key (kbd "C-a") 'back-to-indentation-or-beginning)
@@ -185,8 +190,8 @@
 (global-set-key [f6] 'ielm)
 
 ;; connect to slime [v SLIME]
-(global-set-key [f5] 'slime)
-(global-set-key [(control f5)] 'slime-selector)
+;(global-set-key [f5] 'slime)
+;(global-set-key [(control f5)] 'slime-selector)
 
 ;;; ===================================================================
 
@@ -206,7 +211,6 @@
 (defalias 'rb 'revert-buffer)
 (defalias 'sh 'shell-command)
 (defalias 'wsm 'whitespace-mode)
-
 
 ;;; ===================================================================
 
@@ -245,7 +249,7 @@
 (setq recentf-auto-cleanup 'never
       recentf-max-menu-items 25
       recentf-max-saved-items 400)
-(setq recentf-save-file "/home/max/.emacs.d/.recentf")
+(setq recentf-save-file "~/.emacs.d/.recentf")
 (recentf-mode t)
 
 ;; change default mode line [configure]
@@ -263,8 +267,8 @@
 ;; mode for auto complete operators and other [read more]
 (require 'auto-complete-config)
 (setq ac-auto-start t)
-(setq ac-comphist-file "/home/max/.emacs.d/.ac-comphist.dat")
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/site-lisp//ac-dict")
+(setq ac-comphist-file "~/.emacs.d/.ac-comphist.dat")
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/site-lisp/ac-dict")
 (ac-config-default)
 
 ;; activate occur inside isearch
@@ -274,11 +278,11 @@
       (occur (if isearch-regexp isearch-string (regexp-quote isearch-string))))))
 
 ;; mode for opening and editing files with sudo privileges
-(require 'sudo-save)
+;(require 'sudo-save)
 
 ;; AUCTeX
-(load "auctex.el" nil t t)
-(load "preview-latex.el" nil t t)
+;(load "auctex.el" nil t t)
+;(load "preview-latex.el" nil t t)
 ;(setq TeX-auto-save t)
 ;(setq TeX-parse-self t)
 
@@ -298,9 +302,9 @@
               'iswitchb-exit-minibuffer)))
 
 ;; EMMS configuration
-(require 'emms-setup)
-(emms-standard)
-(emms-default-players)
+;(require 'emms-setup)
+;(emms-standard)
+;(emms-default-players)
 
 ;; Dired-x - extra dired mode
 (add-hook 'dired-load-hook
@@ -456,7 +460,7 @@ of windows in the frame simply by calling this command again."
 
 ;;; Eshell
 (setq eshell-history-size 99999)
-(setq eshell-history-file-name "/home/max/.histfile")
+(setq eshell-history-file-name "~/.histfile")
 (global-set-key (kbd "C-x m") 'eshell)
 (setq eshell-cmpl-cycle-completions nil
       ehsell-save-history-on-exit t
@@ -494,44 +498,44 @@ of windows in the frame simply by calling this command again."
 
 
 ;;; Slime
-(setq auto-mode-alist
-      (append '(("\\.lisp$"   . lisp-mode)
-		("\\.lsp$"    . lisp-mode)
-		("\\.cl$"     . lisp-mode)
-		("\\.asd$"    . lisp-mode)
-		("\\.system$" . lisp-mode))
-	      auto-mode-alist))
-(add-hook 'lisp-mode-hook
-	  (lambda ()
-	    (setq lisp-indent-function 'common-lisp-indent-function)
-	    (setq show-trailing-whitespace t)))
-
-(load (expand-file-name "~/quicklisp/slime-helper.el"))
-(require 'slime)
-(slime-setup
- '(slime-fancy slime-indentation slime-tramp slime-asdf slime-sprof))
-(setq slime-net-coding-system 'utf-8-unix)
-(setq slime-default-lisp 'sbcl)
-(setq slime-lisp-implementations
-      `((sbcl ("/usr/bin/sbcl") :coding-system utf-8-unix)))
-(eval-after-load 'slime
-  '(progn
-     (setq slime-scratch-file "~/.emacs.d/tmp/scratch.lisp")
-     (setq slime-edit-definition-fallback-function 'find-tag)
-     (setq slime-complete-symbol*-fancy t)
-     (setq slime-complete-symbol-function 'slime-fuzzy-complete-symbol)
-     (setq slime-when-complete-filename-expand t)
-     (setq slime-truncate-lines nil)
-     (setq slime-autodoc-use-multiline-p t)
-     (slime-autodoc-mode)))
-(add-hook 'lisp-mode-hook
-	  (lambda ()
-	    (setq slime-use-autodoc-mode t)))
-(defun max/customized-lisp-keyboard ()
-  (define-key slime-repl-mode-map (kbd "C-c ;") 'slime-insert-balanced-comments)
-  (local-set-key [C-c tab] 'slime-fuzzy-complete-symbol)
-  (local-set-key [return] 'newline-and-indent))
-(add-hook 'lisp-mode-hook 'max/customized-lisp-keyboard)
+;(setq auto-mode-alist
+;      (append '(("\\.lisp$"   . lisp-mode)
+;		("\\.lsp$"    . lisp-mode)
+;		("\\.cl$"     . lisp-mode)
+;		("\\.asd$"    . lisp-mode)
+;		("\\.system$" . lisp-mode))
+;	      auto-mode-alist))
+;(add-hook 'lisp-mode-hook
+;	  (lambda ()
+;	    (setq lisp-indent-function 'common-lisp-indent-function)
+;	    (setq show-trailing-whitespace t)))
+;
+;(load (expand-file-name "~/quicklisp/slime-helper.el"))
+;(require 'slime)
+;(slime-setup
+; '(slime-fancy slime-indentation slime-tramp slime-asdf slime-sprof))
+;(setq slime-net-coding-system 'utf-8-unix)
+;(setq slime-default-lisp 'sbcl)
+;(setq slime-lisp-implementations
+;      `((sbcl ("/usr/bin/sbcl") :coding-system utf-8-unix)))
+;(eval-after-load 'slime
+;  '(progn
+;     (setq slime-scratch-file "~/.emacs.d/tmp/scratch.lisp")
+;     (setq slime-edit-definition-fallback-function 'find-tag)
+;     (setq slime-complete-symbol*-fancy t)
+;     (setq slime-complete-symbol-function 'slime-fuzzy-complete-symbol)
+;     (setq slime-when-complete-filename-expand t)
+;     (setq slime-truncate-lines nil)
+;     (setq slime-autodoc-use-multiline-p t)
+;     (slime-autodoc-mode)))
+;(add-hook 'lisp-mode-hook
+;	  (lambda ()
+;	    (setq slime-use-autodoc-mode t)))
+;(defun max/customized-lisp-keyboard ()
+;  (define-key slime-repl-mode-map (kbd "C-c ;") 'slime-insert-balanced-comments)
+;  (local-set-key [C-c tab] 'slime-fuzzy-complete-symbol)
+;  (local-set-key [return] 'newline-and-indent))
+;(add-hook 'lisp-mode-hook 'max/customized-lisp-keyboard)
 ;;; ===================================================================
 
 
@@ -651,7 +655,7 @@ of windows in the frame simply by calling this command again."
 
 (defun max/perl-new-source (name)
   (interactive "sEnter new perl source file name: ")
-  (find-file (concat "/home/max/src/perl/" name))
+  (find-file (concat "~/src/perl/" name))
   (insert "#!/usr/bin/perl -w\n")
   (cperl-mode)
   (save-buffer)
@@ -701,4 +705,4 @@ of windows in the frame simply by calling this command again."
 ;;; Test code
 (autoload 'typing-of-emacs "The Typing Of Emacs, a game." t)
 (setq toe-treat-words 'downcase)
-
+(setq toe-starting-time-per-word 4)
