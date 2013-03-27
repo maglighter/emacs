@@ -30,8 +30,11 @@ show information about remote rep. ()
   git remote show [remote-server]
 associate a name to a remote server, for the git project of current dir:
   git remote add github https://github.com/xahlee/xah_emacs_init.git  
-  
 
+Remotely create new repository in GitHub:
+curl -u 'USER' https://api.github.com/user/repos -d '{"name":"REPO"}'
+git remote add origin git@github.com:USER/REPO.git
+git push origin master
   
 	  
 

@@ -30,7 +30,7 @@
 
 ;; registers point to files
 (set-register ?i '(file . "~/.emacs.d/init.el"))
-(set-register ?f '(file . "~/foo"))
+(set-register ?f '(file . "~/foo.txt"))
 
 ;; emacs c source code directory
 ;(setq find-function-C-source-directory
