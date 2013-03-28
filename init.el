@@ -707,4 +707,3 @@ of windows in the frame simply by calling this command again."
 ;;; Test code
 (autoload 'typing-of-emacs "The Typing Of Emacs, a game." t)
 (setq toe-treat-words 'downcase)
-
