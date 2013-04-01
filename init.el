@@ -179,6 +179,11 @@
 ;; shift+arrow to move between windows
 (windmove-default-keybindings)
 
+;; change some dired shortcuts
+(define-key global-map (kbd "C-x C-d")
+  '(lambda () (interactive)(ido-dired)(ido-next-match)(ido-prev-match)(ido-exit-minibuffer)))
+(define-key global-map (kbd "C-x d") 'ido-list-directory)
+
 ;; increase/decrease text scale
 (define-key global-map (kbd "C-+") 'text-scale-increase)
 (define-key global-map (kbd "C--") 'text-scale-decrease)
