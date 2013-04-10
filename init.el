@@ -6,6 +6,10 @@
 ;; add directory with elisp files to the load-path
 (add-to-list 'load-path "/home/max/.emacs.d/site-lisp/")
 
+;; packages repository
+;(add-to-list 'package-archives
+;  '("melpa" . "http://melpa.milkbox.net/packages/") t)
+
 ;; turn off: hide tool bar & menu bar & scroll bar
 (tool-bar-mode -1)
 (menu-bar-mode -1)
@@ -30,7 +34,7 @@
 
 ;; registers point to files
 (set-register ?i '(file . "/home/max/.emacs.d/init.el"))
-(set-register ?f '(file . "/home/max/foo"))
+(set-register ?f '(file . "/home/max/.emacs.d/help/foo"))
 (set-register ?z '(file . "/home/max/.zshrc"))
 
 ;; emacs c source code directory
@@ -81,9 +85,9 @@
 (setq
  backup-by-copying nil
  backup-directory-alist
- '(("." . "/home/max/.emacs.d/backup"))
+ '(("." . "/data/.emacs_backup/"))
  auto-save-file-name-transforms
- '((".*" "/home/max/.emacs.d/backup/" t))
+ '((".*" "/data/.emacs_backup/" t))
  delete-old-versions t
  kept-new-versions 8
  kept-old-versions 2
@@ -95,7 +99,7 @@
 
 (add-hook 'before-save-hook 'force-backup-of-buffer)
 
-(setq savehist-file "/home/max/.emacs.d/.savehist")
+(setq savehist-file "/data/.emacs_backup/savehist")
 (setq savehist-additional-variables
       '(kill-ring search-ring regexp-search-ring))
 (savehist-mode 1)
@@ -156,7 +160,9 @@
 (global-set-key (kbd "C-a") 'back-to-indentation-or-beginning)
 
 ;; replace by reqexp
-(global-set-key (kbd "C-c r") 'query-replace-regexp)
+;(require 'visual-regexp)
+;(define-key global-map (kbd "C-c r") 'vr/replace)
+;(define-key global-map (kbd "C-c q") 'vr/query-replace)
 
 ;; С-h <-> Backspace
 (define-key key-translation-map [?\C-h] [?\C-?])
@@ -165,7 +171,7 @@
 (global-set-key (kbd "C-x t") 'max/translate-word-or-region)
 
 ;; join current line with above
-(global-set-key (kbd "C-c q") 'join-line)
+;(global-set-key (kbd "C-c q") 'join-line)
 
 ;; menu with pointers to functions definitions
 (global-set-key (kbd "C-x C-k i") 'imenu)
@@ -641,10 +647,9 @@ of windows in the frame simply by calling this command again."
   ;; (setq tab-width 2)
   (local-set-key [return] 'newline-and-indent)
   (setq indent-tabs-mode nil)
-  (line-number-mode 1)
-  (column-number-mode 1)
   (abbrev-mode 1)
   (turn-on-eldoc-mode)
+  (cperl-set-style "BSD")
 ;  (cperl-mode)
   (setq compile-command (concat "perl -cw " buffer-file-name))
   )

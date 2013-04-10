@@ -1,0 +1,35 @@
+hdd:
+/data/Downloads
+/data/.wineprefixes
+/data/Virtualbox VMs
+/data/firefox/cache
+
+ram:
+tmpfs /tmp	 tmpfs defaults,noatime		  0 0
+tmpfs /var/spool tmpfs defaults,noatime,mode=1777 0 0
+tmpfs /var/log 	 tmpfs defaults,noatime,mode=0755 0 0
+
+ssd:
+UUID=5E1C-0130      	/boot/efi 	vfat      	noatime		0 2
+UUID=something /   ext4 relatime,discard,errors=remount-ro 0 1
+/
+/home
+/var
+
+swap: [2gb]]
+echo 1 > /proc/sys/vm/swappiness
+
+/etc/sysctl.conf
+vm.swappiness=1
+vm.vfs_cache_pressure=50
+
+clone the /boot/efi using dd
+
+    dd if=/dev/sda1 of=/dev/sdb1
+
+add an efi record for the clone
+
+    efibootmgr -c -g -d /dev/sdb -p 1 -L "opensuse" -l '\EFI\opensuse\grubx64.efi'
+
+sudo cp -afv /mnt/old_drive_boot/. /mnt/new_drive_boot
+sudo blkid

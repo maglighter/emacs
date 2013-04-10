@@ -1,0 +1,108 @@
+[Sat Apr  6 2013]
+*** You have joined channel #qet  [21:02]
+*** Topic for #qet: #qet : Salon IRC dйdiй а QElectroTech - les schйmas
+    йlectriques ne sont pas des schйmas йlectroniques | version 0.3 alpha
+    released
+*** #qet: topic set by xavier, 2012-05-13 04:25:23
+*** Users on #qet: max scorpio810 youssef david_666 joshua RemiFedora cfdev
+    slowbrain misric scorpio nishiki xavier 
+*** #qet modes: +n
+*** #qet was created on 2010-12-19 03:22:35
+<youssef> Hello max
+<max> hi!  [21:03]
+ERC> /nick fleshlight
+*** Your new nickname is fleshlight
+<youssef> welcome fleshlight
+<youssef> scorpio, xavier I have invited fleshlight who is interrested in
+	  programming  [21:04]
+<fleshlight> thanks:)
+<fleshlight> yes, hi to all
+<youssef> let me introduce you the other people
+<youssef> xavier and slowbrain are the founder of the project. xavier is or
+	  retired lead programmer and manager of the project  [21:05]
+<xavier> Hi fleshlight 
+<xavier> nice nickname :')
+<fleshlight> hi xavier
+<youssef> now, scorpio, cfdev and joshua are contributing to the code
+<fleshlight> i know  [21:06]
+<youssef> we have also packagers, symbol drawers and other contributors in
+	  this channel
+<xavier> and I am running for my freedom
+<xavier> having let a pile of code that need some love...
+<xavier> needs*
+<xavier> That's C++/Qt4; many things can be rewritten and refactored freely
+	 since I will not be there anymore to justify why this or that was
+	 made this way  [21:07]
+<xavier> Oh, also, there are still many French comments, so the game is kinda
+	 "gotta translate em all" ...  [21:08]
+<fleshlight> hah  [21:09]
+<fleshlight> http://svnweb.tuxfamily.org/listing.php?repname=qet/qet
+<fleshlight> is this your svn repository?
+<xavier> Still, most contributors, especially those around, speak French
+	 natively, so they can help
+<xavier> yep
+* youssef is going to eat and will be back later  [21:10]
+<scorpio810> hi fleshlight
+<fleshlight> hi scorpio810 
+<fleshlight> so, from where i can start?  [21:11]
+<cfdev> hi everybody :)
+<cfdev> oua english speak  [21:12]
+<fleshlight> hi
+<xavier> I guess diving a bit in the code (start with main.cpp, QETApp,
+	 QET{Diagram,Element}Editor, etc.) would help you getting an idea of
+	 the current shape of QET; also, trying the software itself, may help
+								        [21:13]
+<cfdev> <fleshlight> so, from where i can start? : scorpio810 ?
+<xavier> next, scorpio810, cfdev and joshua recently started working on new
+	 features
+<xavier> (right after my departure announce)
+<xavier> so they may explain what they are trying to achieve  [21:14]
+<xavier> Most exchanges related to the development occur here, btw  [21:15]
+<xavier> the forum just gathers news and some end-users questions, the mailing
+	 list is mainly used to remain informed of commits  [21:16]
+<scorpio810> <cfdev> <fleshlight> so, from where i can start? : scorpio810 ? i
+	     dont know easy, difficult ?  [21:28]
+<fleshlight> now i will try to understand program code  [21:31]
+<scorpio810> ok :)  [21:33]
+<xavier> fleshlight: by the way, what language / toolkits / frameworks / libs
+	 do you usually work with?  [21:43]
+<fleshlight> c++, perl, a bit java, now i learn opengl for my diploma  [21:46]
+<xavier> Nice
+<xavier> Any former experience with Qt?
+<fleshlight> no
+<xavier> Don't worry, once you know C++, it's a very pleasant toolkit  [21:48]
+<xavier> (though some parts are not as polished/maintained as we would need)
+<fleshlight> and what libs do you use except Qt?  [21:50]
+<xavier> Currently: zero.
+<xavier> It's pure Qt
+<xavier> Well, scorpio810 and cfdev bolted some kind of external rich text
+	 editor into QET recently
+<xavier> but it is Qt-based too.
+*** RemiFedora (~remi@pom51-2-82-241-130-121.fbx.proxad.net) has quit: "Soyez
+    sage en mon absence..."  [21:51]
+<xavier> fleshlight: do your studies involve producing electric diagrams?
+								        [21:53]
+<fleshlight> we had course, that included it, we worked in program workbench
+								        [21:56]
+<xavier> ok
+<xavier> that was the main issue with me... no use of what I was
+	 programming...
+<fleshlight> Electronics WorkBench :)  [21:57]
+<scorpio810> i'm sorry, but i'm very tied tongnight 
+<scorpio810> i'm sorry, but i'm very tied tongnight 5X8 equip  [21:59]
+<xavier> 'night scorpio810 
+<youssef> good night scorpio
+<fleshlight> good night!
+<scorpio810> thanks all  [22:00]
+* youssef is back a bit later
+*** scorpio810 (~laurent@214.194.98.84.rev.sfr.net) has quit: "Konversation
+    terminated!"
+<cfdev> xavier:  ?  [22:34]
+<youssef> I have just discovered openhatch maybe a good place to recruit new
+	  contributors. I am looking at the documentation  [22:38]
+<cfdev> how to center the zoom in diagramview ?  [22:40]
+ERC> /help  [22:44]
+ERC> /away  [22:45]
+*** Does this mean you're really back?
+ERC> /bye  [22:46]
+ERC> 
