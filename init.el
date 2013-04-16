@@ -6,6 +6,10 @@
 ;; add directory with elisp files to the load-path
 (add-to-list 'load-path "~/.emacs.d/site-lisp/")
 
+;; add packages repository
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
+
 ;; turn off: hide tool bar & menu bar & scroll bar
 (tool-bar-mode -1)
 (menu-bar-mode -1)
@@ -161,8 +165,9 @@
 ;; first moves to indentation then to beginning [v]
 (global-set-key (kbd "C-a") 'back-to-indentation-or-beginning)
 
-;; replace by reqexp
-(global-set-key (kbd "C-c r") 'query-replace-regexp)
+;; visual regexp bindings
+(define-key global-map (kbd "C-c r") 'vr/query-replace)
+(define-key global-map (kbd "C-c q") 'vr/replace)
 
 ;; С-h <-> Backspace
 (define-key key-translation-map [?\C-h] [?\C-?])
