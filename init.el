@@ -7,8 +7,9 @@
 (add-to-list 'load-path "/home/max/.emacs.d/site-lisp/")
 
 ;; packages repository
-;(add-to-list 'package-archives
-;  '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(require 'package)
+(add-to-list 'package-archives
+	     '("melpa" . "http://melpa.milkbox.net/packages/") t)
 
 ;; turn off: hide tool bar & menu bar & scroll bar
 (tool-bar-mode -1)
@@ -16,7 +17,7 @@
 (scroll-bar-mode -1)
 
 ;; color theme loading
-(load-theme 'wombat t)
+(load-theme 'wombat)
 
 ;; don't show startup screen
 (setq inhibit-startup-screen t)
@@ -114,6 +115,9 @@
 ;; switch to next window
 (global-set-key (kbd "<C-tab>") 'other-window)
 
+;; С-h <-> Backspace
+(define-key key-translation-map [?\C-h] [?\C-?])
+
 ;; windows manipulations
 (global-set-key (kbd "C-'") 'toggle-windows-split) ; [v]
 (global-set-key (kbd "M-'") 
@@ -139,7 +143,6 @@
 ;; list of recent opened files
 (global-set-key (kbd "C-,") 'recentf-ido-find-file)
 
-
 ;; ibuffer
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
@@ -159,13 +162,13 @@
 ;; first moves to indentation then to beginning [v]
 (global-set-key (kbd "C-a") 'back-to-indentation-or-beginning)
 
-;; replace by reqexp
-;(require 'visual-regexp)
-;(define-key global-map (kbd "C-c r") 'vr/replace)
-;(define-key global-map (kbd "C-c q") 'vr/query-replace)
+;; replace by reqexp [E]
+(define-key global-map (kbd "C-c r") 'vr/query-replace)
+(define-key global-map (kbd "C-c q") 'vr/replace)
 
-;; С-h <-> Backspace
-(define-key key-translation-map [?\C-h] [?\C-?])
+;; quick move cursor [v][E]
+(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
+(define-key global-map (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
 
 ;; translate current word or region [v]
 (global-set-key (kbd "C-x t") 'max/translate-word-or-region)
@@ -219,10 +222,14 @@
 ;;; Modes
 ;; enable ido mode
 (custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(ido-enable-last-directory-history nil)
- '(ido-record-commands nil)
  '(ido-max-work-directory-list 0)
- '(ido-max-work-file-list 0))
+ '(ido-max-work-file-list 0)
+ '(ido-record-commands nil))
 (ido-mode t)
 (setq default-ido-decorations ido-decorations)
 (add-hook 'ido-setup-hook
@@ -241,9 +248,8 @@
 		  )))))
 
 ;; replace default M-x behavior with some stuff of ido
-(require 'smex) ; [M-x]
 (setq smex-save-file "/home/max/.emacs.d/.smex-items")
-(smex-initialize)
+;(smex-initialize)
 
 ;; mode for listing of recent opened files
 (require 'recentf)
@@ -265,12 +271,12 @@
 (setq auto-mode-alist
       (append '(("\\.cs$" . csharp-mode)) auto-mode-alist))
 
-;; mode for auto complete operators and other [read more]
-(require 'auto-complete-config)
+;; mode for auto complete operators and other [read more][E]
+;(require 'auto-complete-config)
 (setq ac-auto-start t)
 (setq ac-comphist-file "/home/max/.emacs.d/.ac-comphist.dat")
-(add-to-list 'ac-dictionary-directories "/home/max/.emacs.d/site-lisp//ac-dict")
-(ac-config-default)
+;(add-to-list 'ac-dictionary-directories "/home/max/.emacs.d/site-lisp//ac-dict")
+;(ac-config-default)
 
 ;; activate occur inside isearch
 (define-key isearch-mode-map (kbd "C-o")
@@ -281,11 +287,20 @@
 ;; mode for opening and editing files with sudo privileges
 (require 'sudo-save)
 
+;; quick move cursor [E]
+
+(setq ace-jump-mode-case-fold t)
+(autoload 'ace-jump-mode "ace-jump-mode" "Emacs quick move minor mode" t)
+(autoload 'ace-jump-mode-pop-mark "ace-jump-mode" "Ace jump back:-)" t)
+(eval-after-load "ace-jump-mode" '(ace-jump-mode-enable-mark-sync))
+;(setq ace-jump-mode-move-keys
+;      (loop for i from ?a to ?z collect i))
+
 ;; maggit - git interface
 (autoload 'magit-status "magit" nil t)
 
 ;; w3m - browser
-(require 'w3m-load)
+;(require 'w3m-load)
 (setq w3m-init-file "/home/max/.emacs.d/.emacs-w3m")
 
 ;; AUCTeX
@@ -339,14 +354,6 @@
 ;(yas/global-mode 1)
 ;(yas/initialize)
 ;(yas/load-directory "/home/max/.emacs.d/site-lisp/yasnippet/snippets")
-
-;; session manager
-;(require 'session)
-;(add-hook 'after-init-hook 'session-initialize)
-
-;; anything mode
-;(require 'anything-match-plugin)
-; (require 'anything-config)
 
 ;;; ===================================================================
 
@@ -438,7 +445,7 @@ of windows in the frame simply by calling this command again."
 (define-key minibuffer-local-map
   (kbd "M-w") 'max/kill-ring-save)
 
-;; if last command wasn't yank -> show kill ring
+;; if last command wasn't yank -> show kill ring [E]
 (defadvice yank-pop (around kill-ring-browse-maybe (arg))
   "If last action was not a yank, run `browse-kill-ring' instead."
   (if (not (eq last-command 'yank))
@@ -702,7 +709,7 @@ of windows in the frame simply by calling this command again."
 ;    (compile
 ;     (concat "javac " max/buffer-name ".java " max/java-add-to-command)))
 
-  (local-set-key (kbd "C-c c") 'comment-region)
+(local-set-key (kbd "C-c c") 'comment-region)
 ;  (local-set-key (kbd "C-c C-c") 'max/java-compile-and-run))
 
 ;(add-hook  'java-mode-hook 'max/java-mode-fn t)
@@ -710,5 +717,9 @@ of windows in the frame simply by calling this command again."
 
 
 ;;; Test code
-(autoload 'typing-of-emacs "The Typing Of Emacs, a game." t)
+;(autoload 'typing-of-emacs "The Typing Of Emacs, a game." t)
 (setq toe-treat-words 'downcase)
+(custom-set-faces)
+
+
+;; E - elpa
