@@ -1,15 +1,20 @@
 ;                      * Emacs CORE configuration file *
+;; load common lisp (loop)
+(require 'cl)
+
 ;; default font
 (add-to-list 'default-frame-alist
 	     '(font . "Liberation Mono-12"))
+(package-initialize)
 
 ;; add directory with elisp files to the load-path
 (add-to-list 'load-path "/home/max/.emacs.d/site-lisp/")
 
 ;; packages repository
 (require 'package)
-(add-to-list 'package-archives
-	     '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ("marmalade" . "http://marmalade-repo.org/packages/")
+                         ("melpa" . "http://melpa.milkbox.net/packages/")))
 
 ;; turn off: hide tool bar & menu bar & scroll bar
 (tool-bar-mode -1)
@@ -273,10 +278,14 @@
 
 ;; mode for auto complete operators and other [read more][E]
 ;(require 'auto-complete-config)
-(setq ac-auto-start t)
 (setq ac-comphist-file "/home/max/.emacs.d/.ac-comphist.dat")
-;(add-to-list 'ac-dictionary-directories "/home/max/.emacs.d/site-lisp//ac-dict")
-;(ac-config-default)
+(require 'auto-complete-config)
+(global-auto-complete-mode t)
+(setq ac-expand-on-auto-complete nil)
+(setq ac-auto-start 2)
+(setq ac-dwim nil) ; To get pop-ups with docs even if a word is uniquely completed
+(define-key ac-completing-map (kbd "C-n") 'ac-next)
+(define-key ac-completing-map (kbd "C-p") 'ac-previous)
 
 ;; activate occur inside isearch
 (define-key isearch-mode-map (kbd "C-o")
@@ -293,8 +302,8 @@
 (autoload 'ace-jump-mode "ace-jump-mode" "Emacs quick move minor mode" t)
 (autoload 'ace-jump-mode-pop-mark "ace-jump-mode" "Ace jump back:-)" t)
 (eval-after-load "ace-jump-mode" '(ace-jump-mode-enable-mark-sync))
-;(setq ace-jump-mode-move-keys
-;      (loop for i from ?a to ?z collect i))
+(setq ace-jump-mode-move-keys
+      (loop for i from ?a to ?z collect i))
 
 ;; maggit - git interface
 (autoload 'magit-status "magit" nil t)
@@ -717,9 +726,9 @@ of windows in the frame simply by calling this command again."
 
 
 ;;; Test code
-;(autoload 'typing-of-emacs "The Typing Of Emacs, a game." t)
 (setq toe-treat-words 'downcase)
 (custom-set-faces)
 
+(require 'dired-details+)
 
 ;; E - elpa
