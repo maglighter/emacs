@@ -1,0 +1,25 @@
+;;;; Emacs Bookmark Format Version 1 ;;;;
+;;; This format is meant to be slightly human-readable;
+;;; nevertheless, you probably don't want to edit it.
+;;; -*- End Of Bookmark File Format Version Stamp -*-
+(("Foo"
+ (filename . "~/.emacs.d/help/foo")
+ (front-context-string . "Git.\nfile status")
+ (rear-context-string)
+ (position . 1))
+("refind_linux.conf"
+ (filename . "/sudo:root@localhost:/boot/efi/EFI/arch/refind_linux.conf")
+ (front-context-string . "\"Boot to X\"	\"roo")
+ (rear-context-string)
+ (position . 1))
+("Init file"
+ (filename . "~/.emacs.d/init.el")
+ (front-context-string . ";               ")
+ (rear-context-string)
+ (position . 1))
+("refind.conf"
+ (filename . "/sudo:root@localhost:/boot/efi/EFI/refind/refind.conf")
+ (front-context-string . "#\n# refind.conf\n")
+ (rear-context-string)
+ (position . 1))
+)
