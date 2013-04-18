@@ -1,4 +1,7 @@
 ;                      * Emacs CORE configuration file *
+; load common lisp features
+(require 'cl)
+
 ;; default font
 ;(add-to-list 'default-frame-alist
 ;	     '(font . "Liberation Mono-12"))
@@ -8,7 +11,10 @@
 
 ;; add packages repository
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ("marmalade" . "http://marmalade-repo.org/packages/")
+                         ("melpa" . "http://melpa.milkbox.net/packages/")))
+(package-initialize)
 
 ;; turn off: hide tool bar & menu bar & scroll bar
 (tool-bar-mode -1)
@@ -175,6 +181,9 @@
 ;; translate current word or region [v]
 (global-set-key (kbd "C-x t") 'max/translate-word-or-region)
 
+;; evaluate expression or region [v]
+(global-set-key (kbd "C-x C-e") 'max/eval-expression-or-region)
+
 ;; join current line with above
 (global-set-key (kbd "C-c q") 'join-line)
 
@@ -257,7 +266,7 @@
 ;; mode for listing of recent opened files
 (require 'recentf)
 (setq recentf-auto-cleanup 'never
-      recentf-max-menu-items 25
+      recentf-max-menu-items 50
       recentf-max-saved-items 400)
 (setq recentf-save-file "~/.emacs.d/.recentf")
 (recentf-mode t)
@@ -269,16 +278,10 @@
 ;; syntax checking on the fly [! read more]
 (require 'flymake)
 
-;; mode for editing c# files
-(autoload 'csharp-mode "csharp-mode" "Major mode for editing C# code." t)
-(setq auto-mode-alist
-      (append '(("\\.cs$" . csharp-mode)) auto-mode-alist))
-
 ;; mode for auto complete operators and other [read more]
 (require 'auto-complete-config)
 (setq ac-auto-start t)
 (setq ac-comphist-file "~/.emacs.d/.ac-comphist.dat")
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/site-lisp/ac-dict")
 (ac-config-default)
 
 ;; activate occur inside isearch
@@ -316,7 +319,8 @@
 ;(emms-standard)
 ;(emms-default-players)
 
-;; Dired-x - extra dired mode
+;; Dired configs
+; Dired-x - extra dired mode
 (add-hook 'dired-load-hook
 	  (lambda ()
 	    (load "dired-x")
@@ -329,11 +333,36 @@
 	    ;; Set dired-x buffer-local variables here.  For example:
 					;(dired-omit-mode 1)
 	    ))
+(require 'dired-details+)
 
 ;; support for CMake
 (autoload 'cmake-mode "cmake-mode" t)
 (add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-mode))
 (add-to-list 'auto-mode-alist '("\\.cmake\\'" . cmake-mode))
+
+;; ace jump mode major function
+(add-to-list 'load-path "/full/path/where/ace-jump-mode.el/in/")
+(autoload
+  'ace-jump-mode
+  "ace-jump-mode"
+  "Emacs quick move minor mode"
+  t)
+;; only lowerercase characters
+;(setq ace-jump-mode-move-keys
+;      (loop for i from ?a to ?z collect i))
+;; ignore case sensitive
+(setq ace-jump-mode-case-fold t)
+;; you can select the key you prefer to
+(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
+;; enable a more powerful jump back function from ace jump mode
+(autoload
+  'ace-jump-mode-pop-mark
+  "ace-jump-mode"
+  "Ace jump back:-)"
+  t)
+(eval-after-load "ace-jump-mode"
+  '(ace-jump-mode-enable-mark-sync))
+(define-key global-map (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
 
 ;; Yasnippets
 ;(add-to-list 'load-path "~/.emacs.d/site-lisp/yasnippet")
@@ -449,6 +478,15 @@ of windows in the frame simply by calling this command again."
 
 (ad-activate 'yank-pop)
 
+;; eval expression or region [C-x C-e]
+(defun max/eval-expression-or-region (arg)
+  (interactive "p")
+  (if (region-active-p)
+	(eval-region (region-beginning) (region-end))
+      (progn
+	(move-end-of-line 1)
+	(eval-last-sexp (point)))))
+  
 ;; translate current word or region [C-x t]
 (defun max/translate-word-or-region (arg)
   (interactive "p")
@@ -507,133 +545,11 @@ of windows in the frame simply by calling this command again."
 ;;; ===================================================================
 
 
-;;; Slime
-;(setq auto-mode-alist
-;      (append '(("\\.lisp$"   . lisp-mode)
-;		("\\.lsp$"    . lisp-mode)
-;		("\\.cl$"     . lisp-mode)
-;		("\\.asd$"    . lisp-mode)
-;		("\\.system$" . lisp-mode))
-;	      auto-mode-alist))
-;(add-hook 'lisp-mode-hook
-;	  (lambda ()
-;	    (setq lisp-indent-function 'common-lisp-indent-function)
-;	    (setq show-trailing-whitespace t)))
-;
-;(load (expand-file-name "~/quicklisp/slime-helper.el"))
-;(require 'slime)
-;(slime-setup
-; '(slime-fancy slime-indentation slime-tramp slime-asdf slime-sprof))
-;(setq slime-net-coding-system 'utf-8-unix)
-;(setq slime-default-lisp 'sbcl)
-;(setq slime-lisp-implementations
-;      `((sbcl ("/usr/bin/sbcl") :coding-system utf-8-unix)))
-;(eval-after-load 'slime
-;  '(progn
-;     (setq slime-scratch-file "~/.emacs.d/tmp/scratch.lisp")
-;     (setq slime-edit-definition-fallback-function 'find-tag)
-;     (setq slime-complete-symbol*-fancy t)
-;     (setq slime-complete-symbol-function 'slime-fuzzy-complete-symbol)
-;     (setq slime-when-complete-filename-expand t)
-;     (setq slime-truncate-lines nil)
-;     (setq slime-autodoc-use-multiline-p t)
-;     (slime-autodoc-mode)))
-;(add-hook 'lisp-mode-hook
-;	  (lambda ()
-;	    (setq slime-use-autodoc-mode t)))
-;(defun max/customized-lisp-keyboard ()
-;  (define-key slime-repl-mode-map (kbd "C-c ;") 'slime-insert-balanced-comments)
-;  (local-set-key [C-c tab] 'slime-fuzzy-complete-symbol)
-;  (local-set-key [return] 'newline-and-indent))
-;(add-hook 'lisp-mode-hook 'max/customized-lisp-keyboard)
-;;; ===================================================================
-
-
 ;;; Cpp [! rewrite]
-;(setq max/gdb-process ""
-;      max/buffer-name "")
-;(add-hook 'gdb-mode-hook '(lambda ()
-;			    (setq max/gdb-process
-;				  (substring (buffer-name) 1 (- (length (buffer-name)) 1)))))
 ;; При включении c++-mode -> стиль "BSD", C-c C-c - авто-компиляция
 (add-hook 'c++-mode-hook '(lambda ()
 			    (c-set-style "bsd")
-			    (setq c-basic-offset 4)))
-;			    (setq compile-command "g++ ")
-			    ;;включает режим авто вставки переносов строк (после ;), С-с С-а
-					;(c-toggle-auto-state t)
-;			    (local-set-key (kbd "C-c C-r") 'gud-run)
-;			    ;;будет выполняться после завершения компиляции
-;			    (defun max/cpp-notify-compilation-result(buffer msg)
-;			      (interactive)
-;			      (other-window -1)
-;			      (if (string-match "^finished" msg)
-;				  (progn
-;				    ;(gdb (concat "gdb -i=mi -silent --annotate=3 " max/buffer-name))
-;				    (gdb (concat "gdb -i=mi -silent " max/buffer-name))
-;				    (insert "r")
-;				    (comint-send-input))))
-
-
-;			    (add-to-list 'compilation-finish-functions
-;					 'max/cpp-notify-compilation-result)
-
-;			    (defun max/cpp-compile-and-run ()
-;			      (interactive)
-;			      (save-buffer)
-;			      (setq max/buffer-name
-;				    (substring (buffer-name) 0 (- (length (buffer-name)) 4)))
-;			      (if (not (eql max/gdb-process ""))
-;				  (progn
-;				    (if (get-buffer (concat "*" max/gdb-process "*"))
-;					(if (shell-command "killall gdb")
-;					    (kill-buffer (concat "*" max/gdb-process "*"))))
-;				    (setq max/gdb-process "")))
-;			      (delete-other-windows)
-;			      (split-window-horizontally)
-;			      (enlarge-window-horizontally 12)
-;			      (compile (concat "g++ -g " max/buffer-name ".cpp -o " max/buffer-name)))
-;			    (local-set-key (kbd "C-c r") 'gdb)
-			    (local-set-key (kbd "C-c c") 'comment-region)
-;			    (local-set-key (kbd "C-c C-c") 'max/cpp-compile-and-run)))
-;;; ===================================================================
-
-
-;;; Csharp [! rewrite]
-;(setq max/csharp-add-to-command "")
-;(defun max/csharp-mode-fn ()
-;  "function that runs when csharp-mode is initialized for a buffer."
-;  (c-set-style "bsd")
-;  (setq c-basic-offset 4)
-;  (setq compile-command "gmcs ")
-;  ;;будет выполняться после завершения компиляции
-;  (defun max/csharp-notify-compilation-result(buffer msg)
-;    (interactive)
-;    (other-window -1)
-;    (if (string-match "^finished" msg)
-;	(progn
-;	  (eshell)
-;	  (insert (concat "mono " max/buffer-name ".exe"))
-;	  (eshell-send-input))))
-
-;  (add-to-list 'compilation-finish-functions
-;	       'max/csharp-notify-compilation-result)
-
-;  (defun max/csharp-compile-and-run ()
-;    (interactive)
-;    (save-buffer)
-;    (setq max/buffer-name
-;	  (substring (buffer-name) 0 (- (length (buffer-name)) 3)))
-;    (delete-other-windows)
-;    (split-window-horizontally)
-;    (enlarge-window-horizontally 12)
-;    (compile
-;     (concat "gmcs " max/buffer-name ".cs " max/csharp-add-to-command)))
-
-;  (local-set-key (kbd "C-c c") 'comment-region)
-;  (local-set-key (kbd "C-c C-c") 'max/csharp-compile-and-run))
-
-;(add-hook  'csharp-mode-hook 'max/csharp-mode-fn t)
+			    (local-set-key (kbd "C-c c") 'comment-region)))
 ;;; ===================================================================
 
 
