@@ -290,6 +290,13 @@
     (let ((case-fold-search isearch-case-fold-search))
       (occur (if isearch-regexp isearch-string (regexp-quote isearch-string))))))
 
+;; maggit - git interface
+(autoload 'magit-status "magit" nil t)
+
+;; w3m - browser
+;(require 'w3m-load)
+(setq w3m-init-file "/home/max/.emacs.d/.emacs-w3m")
+
 ;; mode for opening and editing files with sudo privileges
 ;(require 'sudo-save)
 
@@ -353,7 +360,7 @@
 ;; ignore case sensitive
 (setq ace-jump-mode-case-fold t)
 ;; you can select the key you prefer to
-(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
+(define-key global-map (kbd "M-z") 'ace-jump-mode)
 ;; enable a more powerful jump back function from ace jump mode
 (autoload
   'ace-jump-mode-pop-mark
@@ -480,12 +487,12 @@ of windows in the frame simply by calling this command again."
 
 ;; eval expression or region [C-x C-e]
 (defun max/eval-expression-or-region (arg)
-  (interactive "p")
+  (interactive "P")
   (if (region-active-p)
 	(eval-region (region-beginning) (region-end))
       (progn
 	(move-end-of-line 1)
-	(eval-last-sexp (point)))))
+	(eval-last-sexp arg))))
   
 ;; translate current word or region [C-x t]
 (defun max/translate-word-or-region (arg)
@@ -544,6 +551,31 @@ of windows in the frame simply by calling this command again."
   (find-dired dir (mapconcat 'identity opts " ")))
 ;;; ===================================================================
 
+;;; Cygwin
+;(cygwin-mount-activate)
+
+(let* ((cygwin-root "c:/cygwin")
+         (cygwin-bin (concat cygwin-root "/bin")))
+    (when (and (eq 'windows-nt system-type)
+  	     (file-readable-p cygwin-root))
+    
+      (setq exec-path (cons cygwin-bin exec-path))
+      (setenv "PATH" (concat cygwin-bin ";" (getenv "PATH")))
+    
+      ;; By default use the Windows HOME.
+      ;; Otherwise, uncomment below to set a HOME
+      ;;      (setenv "HOME" (concat cygwin-root "/home/eric"))
+    
+      ;; NT-emacs assumes a Windows shell. Change to baash.
+      (setq shell-file-name "bash")
+      (setenv "SHELL" shell-file-name) 
+      (setq explicit-shell-file-name shell-file-name) 
+    
+      ;; This removes unsightly ^M characters that would otherwise
+      ;; appear in the output of java applications.
+      (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)))
+
+;;; ===================================================================
 
 ;;; Cpp [! rewrite]
 ;; При включении c++-mode -> стиль "BSD", C-c C-c - авто-компиляция
