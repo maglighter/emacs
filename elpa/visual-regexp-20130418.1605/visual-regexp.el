@@ -4,7 +4,7 @@
 
 ;; Author: Marko Bencun <mbencun@gmail.com>
 ;; URL: https://github.com/benma/visual-regexp.el/
-;; Version: 20130412.1654
+;; Version: 20130418.1605
 ;; X-Original-Version: 0.2
 ;; Package-Requires: ((cl-lib "0.2"))
 ;; Keywords: regexp, replace, visual, feedback
@@ -704,7 +704,6 @@ E [not supported in visual-regexp]"
 		  ;; show replacement feedback for current occurrence
 		  (unless replaced
 		    (vr--do-replace-feedback-match-callback next-replacement match-data i))
-		  (message "HU %s" next-replacement)
 		  ;; Bind message-log-max so we don't fill up the message log
 		  ;; with a bunch of identical messages.
 		  (let ((message-log-max nil))

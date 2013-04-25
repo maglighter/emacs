@@ -4,7 +4,7 @@
 
 
 ;;;### (autoloads (vr/query-replace vr/replace) "visual-regexp" "visual-regexp.el"
-;;;;;;  (20845 39299 624596 729000))
+;;;;;;  (20850 43781 827030 892000))
 ;;; Generated autoloads from visual-regexp.el
 
 (autoload 'vr/replace "visual-regexp" "\
@@ -19,8 +19,8 @@ Use vr/query-replace like you would use query-replace-regexp.
 
 ;;;***
 
-;;;### (autoloads nil nil ("visual-regexp-pkg.el") (20845 39299 635593
-;;;;;;  594000))
+;;;### (autoloads nil nil ("visual-regexp-pkg.el") (20850 43781 859458
+;;;;;;  345000))
 
 ;;;***
 

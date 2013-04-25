@@ -40,7 +40,7 @@
 
 ;; registers point to files
 (set-register ?i '(file . "/home/max/.emacs.d/init.el"))
-(set-register ?f '(file . "/home/max/.emacs.d/help/foo"))
+(set-register ?f '(file . "/home/max/.emacs.d/foo.org"))
 (set-register ?z '(file . "/home/max/.zshrc"))
 
 ;; emacs c source code directory
@@ -172,8 +172,11 @@
 (define-key global-map (kbd "C-c q") 'vr/replace)
 
 ;; quick move cursor [v][E]
-(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
+(define-key global-map (kbd "M-z") 'ace-jump-mode)
 (define-key global-map (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
+
+;; eval expression or region [v]
+(global-set-key (kbd "C-x C-e") 'max/eval-last-expression-or-region)
 
 ;; translate current word or region [v]
 (global-set-key (kbd "C-x t") 'max/translate-word-or-region)
@@ -270,11 +273,6 @@
 
 ;; syntax checking on the fly [! read more]
 (require 'flymake)
-
-;; mode for editing c# files
-(autoload 'csharp-mode "csharp-mode" "Major mode for editing C# code." t)
-(setq auto-mode-alist
-      (append '(("\\.cs$" . csharp-mode)) auto-mode-alist))
 
 ;; mode for auto complete operators and other [read more][E]
 ;(require 'auto-complete-config)
@@ -462,6 +460,15 @@ of windows in the frame simply by calling this command again."
     ad-do-it))
 
 (ad-activate 'yank-pop)
+
+;; eval expression or region [C-x C-e]
+(defun max/eval-last-expression-or-region (arg)
+  (interactive "P")
+  (if (region-active-p)
+      (eval-region (region-beginning) (region-end))
+    (progn
+      (move-end-of-line 1)
+      (eval-last-sexp arg))))
 
 ;; translate current word or region [C-x t]
 (defun max/translate-word-or-region (arg)
