@@ -40,7 +40,7 @@
 
 ;; registers point to files
 (set-register ?i '(file . "~/.emacs.d/init.el"))
-(set-register ?f '(file . "~/foo.txt"))
+(set-register ?f '(file . "~/foo.org"))
 
 ;; emacs c source code directory
 ;(setq find-function-C-source-directory
@@ -96,8 +96,10 @@
 ;;; Backup and history
 (setq
  backup-by-copying nil
+ backup-by-copying-when-mismatch t
+ backup-by-copying-when-linked t
  backup-directory-alist
- '(("." . "~/.emacs.d/backups"))
+ '((".*" . "~/.emacs.d/backups"))
  auto-save-file-name-transforms
  '((".*" "~/.emacs.d/backups" t))
  delete-old-versions t
