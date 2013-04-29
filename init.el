@@ -43,10 +43,6 @@
 (set-register ?f '(file . "/home/max/.emacs.d/foo.org"))
 (set-register ?z '(file . "/home/max/.zshrc"))
 
-;; emacs c source code directory
-;(setq find-function-C-source-directory
-;      "/usr/share/emacs/23.4/lisp/emacs23-23.4+1/src/")
-
 ;; replacement of selected region
 (delete-selection-mode t)
 
@@ -72,6 +68,9 @@
 ;; ignore case-sensitive with search
 (setq case-replace nil)
 
+;; minimal left, right fringe width size
+(fringe-mode 4)
+
 ;; encoding: use UTF-8 environment [check]
 (set-language-environment 'UTF-8)
 (set-terminal-coding-system 'utf-8)
@@ -89,7 +88,7 @@
 
 ;;; Backup and history
 (setq
- backup-by-copying nil
+ backup-by-copying t
  backup-directory-alist
  '(("." . "/data/.emacs_backup/"))
  auto-save-file-name-transforms
@@ -117,7 +116,7 @@
 ;; kill emacs process [v]
 (global-set-key (kbd "C-x c") 'max/kill-emacs)
 
-;; switch to next window
+;; switch to next/previous window
 (global-set-key (kbd "<C-tab>") 'other-window)
 
 ;; С-h <-> Backspace
@@ -163,7 +162,6 @@
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command) ;standart M-x
 (global-set-key (kbd "C-c C-c <menu>") 'execute-extended-command)
 
-
 ;; first moves to indentation then to beginning [v]
 (global-set-key (kbd "C-a") 'back-to-indentation-or-beginning)
 
@@ -174,6 +172,11 @@
 ;; quick move cursor [v][E]
 (define-key global-map (kbd "M-z") 'ace-jump-mode)
 (define-key global-map (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
+
+;; if region - copy region, end of line - copy line, else copy to the end [v]
+(global-set-key (kbd "M-w") 'max/kill-ring-save)
+(define-key minibuffer-local-map
+  (kbd "M-w") 'max/kill-ring-save)
 
 ;; eval expression or region [v]
 (global-set-key (kbd "C-x C-e") 'max/eval-last-expression-or-region)
@@ -197,6 +200,9 @@
 ;; looks at the buffer and tries to expand word in various ways
 (global-set-key (kbd "M-/") 'hippie-expand)
 
+;; emacs process viewer
+(global-set-key (kbd "C-x p") 'proced)
+
 ;; interactive lisp interpretor
 (global-set-key [f6] 'ielm)
 
@@ -204,6 +210,9 @@
 (global-set-key [f5] 'slime)
 (global-set-key [(control f5)] 'slime-selector)
 
+;; key-chord mode keys
+(key-chord-define-global " f"     'iswitchb-buffer)
+(key-chord-define-global " k"     'kill-whole-line)
 ;;; ===================================================================
 
 
@@ -256,15 +265,15 @@
 		  )))))
 
 ;; replace default M-x behavior with some stuff of ido
-(setq smex-save-file "/home/max/.emacs.d/.smex-items")
+(setq smex-save-file "/home/max/.emacs.d/temp/.smex-items")
 ;(smex-initialize)
 
 ;; mode for listing of recent opened files
 (require 'recentf)
 (setq recentf-auto-cleanup 'never
-      recentf-max-menu-items 25
+      recentf-max-menu-items 50
       recentf-max-saved-items 400)
-(setq recentf-save-file "/home/max/.emacs.d/.recentf")
+(setq recentf-save-file "/home/max/.emacs.d/temp/.recentf")
 (recentf-mode t)
 
 ;; change default mode line [configure]
@@ -276,14 +285,14 @@
 
 ;; mode for auto complete operators and other [read more][E]
 ;(require 'auto-complete-config)
-(setq ac-comphist-file "/home/max/.emacs.d/.ac-comphist.dat")
+(setq ac-comphist-file "/home/max/.emacs.d/temp/.ac-comphist.dat")
 (require 'auto-complete-config)
 (global-auto-complete-mode t)
 (setq ac-expand-on-auto-complete nil)
 (setq ac-auto-start 2)
 (setq ac-dwim nil) ; To get pop-ups with docs even if a word is uniquely completed
-(define-key ac-completing-map (kbd "C-n") 'ac-next)
-(define-key ac-completing-map (kbd "C-p") 'ac-previous)
+;(define-key ac-completing-map (kbd "C-n") 'ac-next)
+;(define-key ac-completing-map (kbd "C-p") 'ac-previous)
 
 ;; activate occur inside isearch
 (define-key isearch-mode-map (kbd "C-o")
@@ -293,6 +302,9 @@
 
 ;; mode for opening and editing files with sudo privileges
 (require 'sudo-save)
+
+;; enables mode for execute commands by pressing two buttons simultaneously
+(key-chord-mode t)
 
 ;; quick move cursor [E]
 
@@ -349,6 +361,7 @@
 	    ;; Set dired-x buffer-local variables here.  For example:
 					;(dired-omit-mode 1)
 	    ))
+(global-set-key (kbd "C-x C-j") 'dired-jump)
 
 ;; support for CMake
 (autoload 'cmake-mode "cmake-mode" t)
@@ -437,20 +450,21 @@ of windows in the frame simply by calling this command again."
     (when file
       (find-file file)))))
 
-;; if region - copy region, end of line - copy line, else - copy to the end
+;; if region copy region, end of line, select line, else select to the end [M-w]
 (defun max/kill-ring-save (arg)
   (interactive "p")
   (if (region-active-p)
       (kill-ring-save (region-beginning)
 		      (region-end))
-    (if (= (point) (line-end-position)) 
-	(kill-ring-save (line-beginning-position) (line-end-position))
-      (kill-ring-save (point) (line-end-position)))))
-
-(global-set-key (kbd "M-w") 'max/kill-ring-save)
-
-(define-key minibuffer-local-map
-  (kbd "M-w") 'max/kill-ring-save)
+    (if (= (point) (line-end-position))
+	(progn 
+	  (back-to-indentation-or-beginning)
+	  (set-mark-command nil) 
+	  (move-end-of-line nil)
+	  (setq deactivate-mark nil))
+      (progn (set-mark-command nil) 
+	     (move-end-of-line nil)
+	     (setq deactivate-mark nil)))))
 
 ;; if last command wasn't yank -> show kill ring [E]
 (defadvice yank-pop (around kill-ring-browse-maybe (arg))
@@ -739,3 +753,5 @@ of windows in the frame simply by calling this command again."
 (require 'dired-details+)
 
 ;; E - elpa
+ 
+

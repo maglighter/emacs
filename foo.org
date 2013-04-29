@@ -1,36 +1,39 @@
 * Git
-file status can be: untracked -> unmodified -> modified -> staged (index)
-.gitignore - file that contain names of files, globs which wouldn't be included in repository
-create repository:
-  git init
-add file to version control & add file to index for next commit (add to staged | update):
-  git add <file>
-status of each file in rep. (changed/unchanged/untracked), branch:
-  git status
-compare changed files
-  git diff [--staged - diff indexed files]
-make snapshot of indexed files 
-  git commit [-a - without 'git add' for changed files] [-m ' ' - info]
-      	     [--amend - replace last commit]
-delete file from index and from working dir:
-  git rm [--cached - delete only from index]
-move file
-  git mv <source> <target>
-view commites log:
-  git log [-p - show diff] [-2 - last 2 commit] [--stat - statistics]
-      	  [--pretty=oneline - one line for each commit]
-	  [--pretty=format:"%h - %an, %ar : %s"]
-display remote-name for current rep. (default: origin)
-  git remote [-v - list of all remote-names and URL's]
-get all missing files from remote-name (update)
-  git pull [server-name] | git fetch [remote-name]
-push branch -  master on server - origin
-  git push [server-name] [branch]
-show information about remote rep. ()
-  git remote show [remote-server]
-associate a name to a remote server, for the git project of current dir:
-  git remote add github https://github.com/xahlee/xah_emacs_init.git
+    file status can be: untracked -> unmodified -> modified -> staged (index)
+    .gitignore - file that contain names of files, globs which wouldn't be included in repository
+    create repository:
+      git init
+    add file to version control & add file to index for next commit (add to staged | update):
+      git add <file>
+    status of each file in rep. (changed/unchanged/untracked), branch:
+      git status
+    compare changed files
+      git diff [--staged - diff indexed files]
+    make snapshot of indexed files 
+      git commit [-a - without 'git add' for changed files] [-m ' ' - info]
+		 [--amend - replace last commit]
+    delete file from index and from working dir:
+      git rm [--cached - delete only from index]
+    move file
+      git mv <source> <target>
+    view commites log:
+      git log [-p - show diff] [-2 - last 2 commit] [--stat - statistics]
+	      [--pretty=oneline - one line for each commit]
+	      [--pretty=format:"%h - %an, %ar : %s"]
+    display remote-name for current rep. (default: origin)
+      git remote [-v - list of all remote-names and URL's]
+    get all missing files from remote-name (update)
+      git pull [server-name] | git fetch [remote-name]
+    push branch -  master on server - origin
+      git push [server-name] [branch]
+    show information about remote rep. ()
+      git remote show [remote-server]
+    associate a name to a remote server, for the git project of current dir:
+      git remote add github https://github.com/xahlee/xah_emacs_init.git
 * Emacs
+** Remember
+   C-M-SPC - select next word
+   align-regexp - align by regexp
 ** Unbinded keys
 *** UNBINDED
     M-[
@@ -42,8 +45,9 @@ associate a name to a remote server, for the git project of current dir:
 
 *** REBINDED:
     M-z old: zap-to-char; now: ace-jump
+    C-x p - proced
 
-M-x describe-bindings
+    M-x describe-bindings
 
 ** Macroses
    Запись макроса:
@@ -275,6 +279,8 @@ point-max
   WINEARCH=win32 WINEPREFIX=$HOME/.wineprefixes/prifix winetricks corefonts directx9 vcrun2005 vcrun2008 vcrun6
   
 * Compilation and Debuging
+** CMake
+   
 ** GDB
 Точка останова:
   (b)reak [точка | функция]
@@ -685,11 +691,11 @@ dereferencing - разыменование = indirection - косвенное о
 
 
 * Games track
- + Wasteland 2 [kickstarter]
- + X Rebirth
- + Torment: Tides of Numenera [kickstarter]
- + Project Eternity [kickstarter]
- + The Age of Decadence [Rim][fallout-like]
+  Wasteland 2 [kickstarter]
+  X Rebirth
+  Torment: Tides of Numenera [kickstarter]
+  Project Eternity [kickstarter]
+  The Age of Decadence [Rim][fallout-like]
 * ERC log
 [Sat Apr  6 2013]
 --- You have joined channel #qet  [21:02]
