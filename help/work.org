@@ -1,0 +1,359 @@
+* SVN
+command line for server manager.
+svn://10.41.1.90:443/DBSync.Multi/GUI/DBSyncGUI2/DbSync2
+TestTools
+svn://svn2.wisdomforce.net:8080/TestTools
+mbubnov
+He36FGj
+
+* Shares
+\\KZW171169S\setups
+\\10.51.40.82\Builds
+\\KZW171144\OraDocs
+\\10.51.4.152\pub\bigblackbug
+ftp://10.51.40.82 share 1q2w3e4r
+
+* Autotests
+maximb
+maximb
+
+* Oracle
+MBUBNOV
+dlnk
+
+Alternative for DDL's:
+10.51.40.26
+user: src / dest
+passw: test
+instance: orcl
+
+* DB2
+db2admin  
+bubnoV
+DB: SOURCE/TARGET
+
+* MSSQL
+sa
+INfa1234
+For autotest:
+DB:
+ms sql server
+host:
+10.51.40.114
+port:
+1433
+user:
+sa
+passw:
+sas
+
+* Greenplum
+targDB:
+autotest
+host:
+10.51.40.112
+port:
+5432
+user:
+gpadmin
+passw:
+gpadmin
+
+* Email
+infaMB@2012
+mbubnov@informatica.com
+
+* Linux
+C:\OraDocs\linux_builds
+Линуксовые билды старых версий (хф3 и 9.5.0 напомни попозже докопировать)
+Там же putty – для коннекта по ссх, winscp – удобно копировать файлы, dbsync.key – на всякий случай, если СМ будет жаловаться что срок действия лицензии закончился то тоже нужно будет копировать каждый раз для очередной версии.
+Распаковываю я обычно сначалаg unzip имя архива, потом tar –xvf имя архива.
+Затем перехожу в распакованную папку и прогоняю настройку энвайремента и запуск СМ
+
+export DBSYNC_HOME=`pwd` 
+export LD_LIBRARY_PATH=`pwd`/support:$LD_LIBRARY_PATH
+export DD_INSTALLDIR=`pwd`/dd 
+export LD_LIBRARY_PATH=`pwd`/dd/lib:$LD_LIBRARY_PATH
+export ODBCINST=$DBSYNC_HOME/dd/odbcinst.ini
+./server_manager.sh port=18004 udp_port=18005 dbsync_home=`pwd`
+
+СМ лучше запускать с прописанным портом , т.к. там могут быть запущены СМ от других тестировщиков и девелоперов (диапазон портов уже распределяли, можешь юзать мой, от 18000 до 18010)
+СМ обычно прибиваем через kill номер процесса
+Процессы я смотрю через ps –ef|grep server_manager
+
+Линукс для работы: 10.51.40.26, oracle/84218421
+Оракл на этом линуксе: dbsync_user/dbsync_user, sid=orcl
+
+* SQL
+** DB2
+create schema:
+call DB2ADMIN.CREATE_SCHEMA('D2G_DDL2_SRC_2924_');
+call DB2ADMIN.DROP_TABLE_IF_EXISTS('D2G_DDL2_SRC_2924_','D2G_2924_ADD_COL');
+
+create table D2G_DDL2_SRC_2924_.D2G_2924_ADD_COL (int1 integer not null,PRIMARY KEY (int1));
+
+
+create table SRC.cnfl_res_1_1(int1 integer not null primary key, fm varchar(20), im varchar(20), otch varchar(20));
+
+CONNECT TO TARGET;
+GRANT  CREATEIN,DROPIN,ALTERIN ON SCHEMA TARG TO USER DB2ADMIN WITH GRANT OPTION;
+CONNECT RESET;
+
+** Oracle
+// If problems with oracle listener, try:
+sqlplus / as sysdba
+lsnrctl start
+lsnrctl
+connect as / sysdba
+
+startup
+shutdown immediate
+
+startup mount
+select log_mode from v$database;
+// if ARCHIVELOG:
+alter database noarchivelog;
+alter database open;
+
+// Connection to oracle autotest database
+connect dbsync_user/dbsync_user@(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=10.51.40.114)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=orcl)))
+
+ORA_TARGET = MBUBNOV
+INSTANCE=orcl
+D:\app\mbubnov\fast_recovery_area
+
+// Oracle example:
+CREATE TABLE "MBUBNOV"."EXMPL1"
+(IDKEY NUMBER(10,0) NOT NULL/*MS SQL Server datatype: INT(10, 0)*/,
+DATA VARCHAR2(20 BYTE)/*MS SQL Server datatype: VARCHAR(0, 0)*/,
+PRIMARY KEY (IDKEY)
+);
+
+// Oracle grant add column (target)
+GRANT ALTER ANY TABLE TO // MSSQL add column
+ALTER TABLE [dbo].[TABLE_NAME=exmpl.dbo.EXMPL1] ADD [COLUMN_NAME] TYPE;
+
+// delete column
+ALTER TABLE tblName DROP COLUMN columnName
+
+// delete all rows from table
+TRUNCATE TABLE TABLE_NAME 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    SELECT - extracts data from a database
+    UPDATE - updates data in a database
+    DELETE - deletes data from a database
+    INSERT INTO - inserts new data into a database
+
+    CREATE DATABASE - creates a new database
+    ALTER DATABASE - modifies a database
+    CREATE TABLE - creates a new table
+    ALTER TABLE - modifies a table
+    DROP TABLE - deletes a table
+    CREATE INDEX - creates an index (search key)
+    DROP INDEX - deletes an index
+
+// show only unical values
+SELECT DISTINCT column_name(s)
+FROM table_name
+
+// sort by
+SELECT column_name(s)
+FROM table_name
+ORDER BY column_name(s) ASC|DESC
+
+// insertion
+INSERT INTO table_name [(column1, column2, column3,...)]
+VALUES (value1, value2, value3,...)
+
+// update
+UPDATE table_name
+SET column1=value, column2=value2,...
+WHERE some_column=some_value
+
+// delete
+DELETE FROM table_name
+WHERE some_column=some_value
+
+SELECT TOP number|percent column_name(s)
+FROM table_name
+
+MySQL Syntax:
+SELECT column_name(s)
+FROM table_name
+LIMIT number
+
+Oracle Syntax:
+SELECT column_name(s)
+FROM table_name
+WHERE ROWNUM <= number
+
+// regexp (wildcards); % - *; '%end_symbols', 'begin_symbols%', 'middle_symbols%'
+% 	  	A substitute for zero or more characters
+_		A substitute for exactly one character
+[charlist] 	Any single character in charlist
+[^charlist] 	Any single character not in charlist
+[!charlist]
+
+SELECT column_name(s)
+FROM table_name
+WHERE column_name LIKE pattern
+
+// listing 1,2,3...
+SELECT column_name(s)
+FROM table_name
+WHERE column_name IN (value1,value2,...)
+
+// range 1..3
+SELECT column_name(s)
+FROM table_name
+BETWEEN value1 AND value2
+
+// Alias Syntax for Tables
+SELECT column_name(s)
+FROM table_name
+AS alias_name
+// Alias Syntax for Columns
+SELECT column_name AS alias_name
+FROM table_name
+
+Exmpl:
+SELECT po.OrderID, p.LastName, p.FirstName
+FROM Persons AS p, Product_Orders AS po
+WHERE p.LastName='Hansen' AND p.FirstName='Ola' 
+
+// JOIN = INNER JOIN; LEFT JOIN; RIGHT JOIN; FULL JOIN;
+SELECT column_name(s)
+FROM table_name1
+INNER JOIN table_name2
+ON table_name1.column_name=table_name2.column_name
+
+// UNION - only distincts, UNION ALL - all values
+SELECT column_name(s) FROM table_name1
+UNION
+SELECT column_name(s) FROM table_name2
+
+// Insertion columns in table
+SELECT column_name(s)
+INTO new_table_name [IN externaldatabase]
+FROM old_tablename
+
+// Create databse
+CREATE DATABASE database_name
+
+// Create table
+CREATE TABLE table_name
+(
+column_name1 data_type,
+column_name2 data_type,
+column_name3 data_type,
+....
+)
+
+SQL Constraints:
+    NOT NULL - enforces a column to NOT accept NULL values.
+    UNIQUE - uniquely identifies each record in a database table
+    	     Ex: P_Id int NOT NULL UNIQUE or CONSTRAINT uc_PersonID UNIQUE
+	     (P_Id,LastName)
+    PRIMARY KEY
+    FOREIGN KEY - points to a PRIMARY KEY in another table
+    CHECK - used to limit the value range that can be placed in a column
+    	    Ex: CHECK (P_Id>0)
+    DEFAULT - used to insert a default value into a column, if no other value is	    specified
+
+// Creates an index on a table. Duplicate values are allowed:
+CREATE INDEX index_name
+ON table_name (column_name)
+// Duplicate values not allowed
+CREATE UNIQUE INDEX index_name
+ON table_name (column_name)
+// Delete indexes
+DROP INDEX index_name ON table_name
+// Delete table
+DROP TABLE table_name
+// Delete database
+DROP DATABASE database_name
+// Delete data in the table
+TRUNCATE TABLE table_name
+
+// Modify table
+ALTER TABLE table_name
+ADD column_name datatype
+
+
+
+DevTrack example
+INFA338673 	Unable to apply a DDL column change for column [S_CLOB]
+
+http://10.51.40.27:7777/pls/udrtr/f?p=101:5:0::NO:5:P5_RC_ID:21850
+1. Create configuration with DDL capturing
+2. Map tables
+3. Drop columns and replicate (ALTER TABLE O2D_DDL_2.O2D_DDL_2_RAWLOBTYPES DROP (S_RAW_MAX, S_RAW_MIN, S_CLOB);)
+4. Add data and replicate
+3. Add columns:
+ALTER TABLE O2D_DDL_2.O2D_DDL_2_RAWLOBTYPES ADD (
+    S_RAW_MAX RAW(2000),
+    S_RAW_MIN RAW(1),
+    S_CLOB CLOB);
+4. Insert data and replicate (INSERT INTO O2D_DDL_2.O2D_DDL_2_RAWLOBTYPES (S_RAW_MAX,  S_RAW_MID, S_RAW_MIN, S_BLOB, S_CLOB, S_PK_FORMAPPING) VALUES (hextoraw('23bc'), hextoraw('af32'), hextoraw('2A'), hextoraw('453d7a34'), hextoraw('633e7a32'), 4)
+5. Get Applier error:
+[Tue Mar 26 2013 17:14:14.451] Unable to apply a DDL column change for column [S_CLOB]
+SQL: ALTER TABLE "O2D_DDL_2"."O2D_DDL_2_RAWLOBTYPES" ADD COLUMN "S_CLOB" CLOB(0)
+MSG: -604 [IBM][CLI Driver][DB2/NT] SQL0604N  The length, precision, or scale attribute for column, distinct type, structured type, array type, attribute of structured type, routine, cast target type, type mapping, or global variable "S_CLOB" is not valid.  SQLSTATE=42611
+
+
+
+1. create configuration with DDL capturing
+2. map tables
+3. change source datatypes, and replicate it:
+ALTER TABLE O2O_DDL_5.O2O_DDL_5_NUMBERTYPES MODIFY S_NUMBER_MAX INTEGER; (was NUMBER(38,10);)
+...
+4. insert data in source, replicate
+5. get Applier error:
+6. [Tue Apr 23 2013 17:45:27.375] Fatal otl_exception in MyOtlStream::flush(int,bool) (51932)
+[Tue Apr 23 2013 17:45:27.376] Fatal otl_exception in OTLApplierHelper::FlushAllStreams (51932)
+[Tue Apr 23 2013 17:45:27.376] Sql: INSERT INTO "O2O_DDL_5_T"."O2O_DDL_5_NUMBERTYPES"("S_NUMBER_MAX","S_NUMBER_MID","S_NUMBER_MIN","S_INTEGER","S_BINARY_DOUBLE","S_BINARY_FLOAT","S_DECIMAL_MAX","S_DECIMAL_MID","S_DECIMAL_MIN","S_DOUBLE_PRECISION_FLOAT_MAX","S_DOUBLE_PRECISION_FLOAT_MID","S_DOUBLE_PRECISION_FLOAT_MIN","S_PK_FORMAPPING") VALUES (:P1,:P2,:P3,:P4,:P5,:P6,:P7,:P8,:P9,:P10,:P11,:P12,:P13) 
+[Tue Apr 23 2013 17:45:27.376] Msg: 1722 ORA-01722: invalid number
+[Tue Apr 23 2013 17:45:27.385] Fatal otl_exception in ParallelPostRecordTask::svc (51932)
+[Tue Apr 23 2013 17:45:27.385] Msg: -99 ParallelPostRecordTask::FlushAllStreams Failed
+[Tue Apr 23 2013 17:45:27.394] Apply thread 0 aborted with error code 2
+[Tue Apr 23 2013 17:45:27.394] Apply cycle aborted due to fatal errors, correct the specified problems and run the apply cycle again.
+[Tue Apr 23 2013 17:45:27.408] Error during finalization of PostTaskExecutor.
+
+
+* Other
+;; Change the file name under which the current buffer will be saved.  
+(set-visited-file-name)
+
+Visit a different file instead of the one visited last
+`C-x C-v'
+
+dired current file folder
+C-x C-j
+
+;; when resize windows/buffer size, resizes text
+;(visual-line-mode)
+
+;; setting left/righr fringes
+;(fringe-mode)
+
+(setq visible-bell t)
+
+(setq echo-keystrokes 0.1)

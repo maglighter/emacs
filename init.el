@@ -40,7 +40,8 @@
 
 ;; registers point to files
 (set-register ?i '(file . "~/.emacs.d/init.el"))
-(set-register ?f '(file . "~/foo.org"))
+(set-register ?w '(file . "~/.emacs.d/help/work.org"))
+(set-register ?f '(file . "~/.emacs.d/foo.org"))
 
 ;; emacs c source code directory
 ;(setq find-function-C-source-directory
@@ -179,6 +180,11 @@
 
 ;; С-h <-> Backspace
 (define-key key-translation-map [?\C-h] [?\C-?])
+
+;; if region copy region, end of line, select line, else select to the end [v]
+(global-set-key (kbd "M-w") 'max/kill-ring-save)
+(define-key minibuffer-local-map
+  (kbd "M-w") 'max/kill-ring-save)
 
 ;; translate current word or region [v]
 (global-set-key (kbd "C-x t") 'max/translate-word-or-region)
@@ -463,20 +469,21 @@ of windows in the frame simply by calling this command again."
     (when file
       (find-file file)))))
 
-;; if region - copy region, end of line - copy line, else - copy to the end
+;; if region copy region, end of line, select line, else select to the end [M-w]
 (defun max/kill-ring-save (arg)
   (interactive "p")
   (if (region-active-p)
       (kill-ring-save (region-beginning)
-		      (region-end))
-    (if (= (point) (line-end-position)) 
-	(kill-ring-save (line-beginning-position) (line-end-position))
-      (kill-ring-save (point) (line-end-position)))))
-
-(global-set-key (kbd "M-w") 'max/kill-ring-save)
-
-(define-key minibuffer-local-map
-  (kbd "M-w") 'max/kill-ring-save)
+(region-end))
+    (if (= (point) (line-end-position))
+(progn
+(back-to-indentation-or-beginning)
+(set-mark-command nil)
+(move-end-of-line nil)
+(setq deactivate-mark nil))
+      (progn (set-mark-command nil)
+(move-end-of-line nil)
+(setq deactivate-mark nil)))))
 
 ;; if last command wasn't yank -> show kill ring
 (defadvice yank-pop (around kill-ring-browse-maybe (arg))
