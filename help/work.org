@@ -19,7 +19,7 @@ maximb
 
 * Oracle
 MBUBNOV
-dlnk
+bbnv
 
 Alternative for DDL's:
 10.51.40.26
@@ -29,7 +29,7 @@ instance: orcl
 
 * DB2
 db2admin  
-bubnoV
+bbnV
 DB: SOURCE/TARGET
 
 * MSSQL
@@ -63,6 +63,35 @@ gpadmin
 infaMB@2012
 mbubnov@informatica.com
 
+* SUN
+  infa348767
+** Stop SM
+  $ lsof server_manager
+  $ kill ...
+* HPUX
+  
+  source ../run
+  ./server_manager RUN_AS_SERVICE port=18004 udp_port=18005 dbsync_home=`pwd`
+** Stop SM
+  $ lsof server_manager
+  $ kill ...
+** Add NETEZZA driver
+   в LD_LIBRARY_PATH добавить /opt/netezza/lib64/ 16:27 
+   в odbcinst.ini  16:27 
+   прописать  16:27 
+   полный путь до драйвера  16:28 
+   /opt/netezza/lib64/libnzodbc.sl 
+
+* AIX
+  source ../run
+  ./server_manager.sh port=18004 udp_port=18005 dbsync_home=`pwd`
+** Stop SM:
+  $ netstat -Ana|grep LISTEN|grep 18004
+     f1000e000590f3b8 tcp4 ...
+  $ rmsock f1000e000590f3b8 tcpcb
+     The socket 0xf1000e000590f008 is being held by proccess 7405806
+  $ kill 7405806
+  
 * Linux
 C:\OraDocs\linux_builds
 Линуксовые билды старых версий (хф3 и 9.5.0 напомни попозже докопировать)
@@ -337,8 +366,1072 @@ ALTER TABLE O2O_DDL_5.O2O_DDL_5_NUMBERTYPES MODIFY S_NUMBER_MAX INTEGER; (was NU
 [Tue Apr 23 2013 17:45:27.394] Apply cycle aborted due to fatal errors, correct the specified problems and run the apply cycle again.
 [Tue Apr 23 2013 17:45:27.408] Error during finalization of PostTaskExecutor.
 
+* Supported DDLs
+Failed: m2v_4, m2v_5, o2v_1, s2v_3, s2v_5, s2td_2, s2t_5.
+** Sources
+*** DB2
+  ALTER TABLE table_name ADD column_name datatype [NULL|NOT NULL]
+  ALTER TABLE table_name ADD CONSTRAINT constraint_name {PRIMARY KEY|UNIQUE} (column_name)
+  ALTER TABLE table_name ALTER COLUMN column_name SET DATA TYPE datatype
+  ALTER TABLE table_name ALTER COLUMN column_name SET NOT NULL
+?  ALTER TABLE table_name ALTER column_name DROP NOT NULL
+  ALTER TABLE table_name DROP column_name
+  ALTER TABLE table_name DROP CONSTRAINT constraint_name
+  CREATE [UNIQUE] INDEX index_name ON table_name
+  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY] [UNIQUE])
+  CREATE TABLE table_name AS (SELECT statement)
+-  CREATE TABLE table_name LIKE table_name
+  DROP INDEX index_name
+  DROP TABLE table_name
+  TRUNCATE TABLE table_name
+  
+  Notes:
+  The Applier processes the CREATE INDEX statement only if this statement creates an index in the same schema
+as the parent table.
+  When a CREATE TABLE AS (SELECT...) operation occurs on the source, Data Replication creates a target table
+using the appropriate CREATE TABLE statement. After you execute REFRESH statements for the source table,
+Data Replication begins applying DML operations to the target table
 
+*** MSSQL
+The Extractor for Microsoft SQL Server sources can process the following DDL operations:
+  ALTER TABLE table_name ADD column_name datatype [IDENTITY] [NULL|NOT NULL] [UNIQUE]
+  ALTER TABLE table_name ADD CONSTRAINT constraint_name PRIMARY KEY {CLUSTERED|NONCLUSTERED}
+  ALTER TABLE table_name ALTER COLUMN column_name datatype [NULL|NOT NULL]
+  ALTER TABLE table_name DROP COLUMN column_name
+  ALTER TABLE table_name DROP CONSTRAINT constraint_name
+  CREATE [UNIQUE] [CLUSTERED] INDEX index_name ON table_name (column_name)
+  CREATE TABLE table_name (column_name datatype [IDENTITY] [NULL|NOT NULL] [UNIQUE])
+  DROP INDEX index_name ON table_name
+  DROP TABLE table_name
+  SELECT * INTO new_table_name FROM existing_table_name
+
+Notes:
+  Data Replication incorrectly replicates a SELECT * INTO operation if the source columns have LOB datatypes
+such as IMAGE, NTEXT, NVARCHAR(MAX), TEXT, VARBINARY(MAX), and VARCHAR(MAX).
+  Data Replication can replicate DDL operations that include identity columns. When replicating these DDL
+operations to Oracle targets, which do not use identity columns, Data Replication replaces identity columns with
+standard table columns.
+  Data Replication does not support the replication of TRUNCATE TABLE operations from Microsoft SQL Server
+sources.
+  After a CREATE TABLE operation occurs on the source, you must manually enable Replicate mode for this table to
+replicate change data to the target.
+
+*** Oracle
+The Extractor for Oracle sources can process the following DDL operations:
+  ALTER TABLE table_name ADD (column_name datatype [CONSTRAINT constraint_name {NOT NULL|UNIQUE}]
+  [ENCRYPT|ENCRYPT USING|DECRYPT] [SALT|NO SALT])
+  ALTER TABLE table_name ADD CONSTRAINT constraint_name
+  ALTER TABLE table_name DROP (column_name)
+  ALTER TABLE table_name DROP CONSTRAINT constraint_name
+  ALTER TABLE table_name DROP {UNIQUE (column_name)|PRIMARY KEY}
+  ALTER TABLE table_name MODIFY (column_name datatype [ENCRYPT|ENCRYPT USING|DECRYPT] [SALT|NO SALT])
+  ALTER TABLE table_name RENAME COLUMN column_name TO new_column_name
+  CREATE INDEX index_name ON table_name
+  CREATE TABLE table_name (column_name datatype [CONSTRAINT constraint_name {NOT NULL|UNIQUE}]
+[ENCRYPT|ENCRYPT USING|DECRYPT] [SALT|NO SALT])
+  CREATE TABLE table_name AS SELECT statement
+  DROP INDEX index_name
+  DROP TABLE table_name
+  TRUNCATE TABLE table_name
+
+Notes:
+  For replication configurations with Oracle source and Oracle targets, Data Replication replicates index-organized
+tables to identical index-organized target tables. If you have a target type other than Oracle, Data Replication
+replicates index-organized tables to ordinary target tables.
+  If you replicate a CREATE TABLE operation that creates an index-organized table on the source and the primary
+key column is not the first column in this table, the Applier creates the table on the target with the primary key as the
+first column. Consequently, the Applier cannot replicate change data to this target table.
+  Data Replication does not support replication of CREATE TABLE ... AS SELECT statements that create an indexorganized
+table.
+  If you replicate a CREATE TABLE operation that creates a table with a column that has LONG datatype on the
+source, the Applier changes the column order in the corresponding target table. The Applier swaps the LONG
+column with the last table column on the target. If the source table defines a primary key that includes the last table
+column, the Applier creates a primary key that includes the LONG column instead of the last column for the target
+table.
+  Data Replication can replicate CREATE TABLE AS SELECT * FROM operations if the replicated table does not
+contain LOB data.
+  Data Replication does not support the replication of function-based indexes.
+  Data Replication does not support the replication of function-based default values.
+  Data Replication does not support the replication of indexes that are associated with a constraint. Data Replication
+replicates constraints without the associated index.
+  Data Replication does not support the replication of the ENCRYPT keyword for Oracle source columns. On the
+target, Data Replication creates corresponding columns without the ENCRYPT keyword.
+  Data Replication does not replicate temporary tables.
+
+*** SYBASE ASE
+The Extractor for Sybase ASE sources can process the following DDL operations:
+  ALTER TABLE table_name ADD column_name datatype [NULL]
+  ALTER TABLE table_name DROP column_name
+  ALTER TABLE table_name MODIFY column_name [NULL|NOT NULL]
+  CREATE NONCLUSTERED INDEX index_name ON table_name (column_name)    
+  CREATE TABLE table_name (column_name datatype [NULL] [PRIMARY KEY])
+  DROP INDEX index_name
+  DROP TABLE table_name
+  TRUNCATE TABLE table_name
+
+Notes:
+  Data Replication does not replicate ALTER TABLE operations that set the NULL option for columns that have the
+NOT NULL constraint. Data Replication does not replicate these DDL operations for Sybase columns with the
+following datatypes: char, varchar, nchar, nvarchar, unichar, univarchar, binary, varbinary, text, image, and
+unitext.
+  Data Replication does not replicate ALTER TABLE operations that change column length without changing the
+column datatype.
+  When a CREATE TABLE AS SELECT operation occurs on the source, Data Replication creates an empty target
+table using an appropriate CREATE TABLE statement. Data Replication does not copy data from the parent table
+to the target table.
+  If you execute multiple CREATE TABLE, ALTER TABLE, and DROP TABLE statements at the same time by using
+a script or Interactive SQL, you must end each statement with the go command. Otherwise, the Extractor cannot
+correctly process these statements.
+  Data Replication can replicate DDL operations that include identity columns. When replicating these DDL
+operations to Oracle targets that do not use identity columns, Data Replication replaces identity columns with
+standard table columns.
+
+** d2X
+*** DB2
+The Applier task can apply the following DDL operations to DB2 for Linux, UNIX, and Windows targets:
+2  ALTER TABLE table_name ADD column datatype [NULL|NOT NULL]
+5  ALTER TABLE table_name ADD CONSTRAINT constraint_name {PRIMARY KEY|UNIQUE} (column_name)
+a7  ALTER TABLE table_name ALTER COLUMN column_name SET DATA TYPE datatype
+a7  ALTER TABLE table_name ALTER COLUMN column_name SET NOT NULL
+a7  ALTER TABLE table_name ALTER column_name DROP NOT NULL
+2  ALTER TABLE table_name DROP column_name
+5  ALTER TABLE table_name DROP CONSTRAINT constraint_name
+n  ALTER TABLE table_name RENAME COLUMN column_name TO new_column_name
+a7  CREATE [UNIQUE] INDEX index_name ON table_name
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY] [UNIQUE])
+a7  DROP INDEX index_name
+a7  DROP TABLE table_name
+5  TRUNCATE TABLE table_name
+
+Notes:
+  The Applier processes the CREATE INDEX statement only if this statement creates an index in the same schema
+as the parent table.
+
+*** Greenplum
+The Applier task can apply the following DDL operations to Greenplum targets:
+2  ALTER TABLE table_name ADD column_name datatype [NULL]
+3  ALTER TABLE table_name ADD CONSTRAINT constraint_name PRIMARY KEY (column_name)
+3  ALTER TABLE table_name ALTER COLUMN column_name SET NOT NULL
+5  ALTER TABLE table_name ALTER COLUMN column_name TYPE datatype
+2  ALTER TABLE table_name DROP COLUMN column_name CASCADE
+3  ALTER TABLE table_name DROP CONSTRAINT constraint_name CASCADE
+3  CREATE INDEX index_name ON table_name (column_name)
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL]) DISTRIBUTED RANDOMLY
+3  DROP INDEX index_name CASCADE
+1  DROP TABLE table_name
+4  TRUNCATE TABLE table_name
+
+e3 create table table_name as (select S_CHAR, count(*) as c_quantity from tablename S_CHAR )
+
+
+Notes:
+  For Oracle sources, Data Replication, by default, cannot replicate DROP CONSTRAINT operations that drop a
+primary key. When extracting these DDL operations, the Extractor sets the NULL option on the primary key
+columns. However, Greenplum does not support altering primary key columns. If you execute DROP
+CONSTRAINT operations that drop a primary key on the source, set the apply.skip_alter_column_failed_ddl
+runtime parameter to 0. This setting causes the Applier to not set the NULL option for the primary key columns on
+the target. You can then set the NULL option for these columns manually.
+  To replicate CREATE TABLE and ADD COLUMN operations to Greenplum targets in Audit Apply and Merge Apply
+modes, you must specify table and column names in all lowercase on the source. If you use uppercase, the Applier
+cannot replicate subsequent DML operations for the new table or column.    
+
+*** MSSQL
+The Applier task can apply the following DDL operations to Microsoft SQL Server targets:
+2  ALTER TABLE table_name ADD column_name datatype [IDENTITY] [NULL|NOT NULL] [UNIQUE]
+3  ALTER TABLE table_name ADD CONSTRAINT constraint_name PRIMARY KEY {CLUSTERED|NONCLUSTERED}
+3  ALTER TABLE table_name ALTER COLUMN column_name datatype [NULL|NOT NULL]
+2  ALTER TABLE table_name DROP COLUMN column_name
+3  ALTER TABLE table_name DROP CONSTRAINT constraint_name
+3  CREATE [UNIQUE] [CLUSTERED] INDEX index_name ON table_name (column_name)
+1  CREATE TABLE table_name (column_name datatype [IDENTITY] [NULL|NOT NULL] [UNIQUE])
+a6  DROP INDEX index_name ON table_name
+1  DROP TABLE table_name
+4  SELECT * INTO new_table_name FROM existing_table_name
+4  TRUNCATE TABLE table_name
+
+Note:
+Data Replication replicates RENAME COLUMN operations from Oracle sources to Microsoft SQL Server
+targets as the following operation:
+EXEC sp_rename 'table_name.[old_column_name]', 'new_column_name', 'COLUMN'
+
+*** MySQL
+The Applier task can apply the following DDL operations to MySQL targets:
+2  ALTER TABLE table_name ADD column_name datatype [NULL|NOT NULL]
+3  ALTER TABLE table_name ADD CONSTRAINT constraint_name PRIMARY KEY (column_name)
+n   ALTER TABLE table_name CHANGE old_column_name new_column_name datatype [NULL|NOT NULL]
+2  ALTER TABLE table_name DROP COLUMN column_name
+3  ALTER TABLE table_name DROP PRIMARY KEY
+3  ALTER TABLE table_name MODIFY column_name datatype [NULL|NOT NULL]
+3  CREATE [UNIQUE] INDEX index_name ON table_name (column_name);
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY (column_name)])
+3  DROP INDEX index_name ON table_name
+1  DROP TABLE table_name
+
+4  SELECT * INTO new_table_name FROM existing_table_name
+
+Note:
+Data Replication replicates TRUNCATE operations from sources to MySQL targets as DELETE FROM
+operations.
+
+*** Netezza
+The Applier task can apply the following DDL operations to Netezza targets:
+2  ALTER TABLE table_name ADD column_name datatype [NULL|NOT NULL]
+3  ALTER TABLE table_name ADD CONSTRAINT constraint_name UNIQUE (column_name)
+2  ALTER TABLE table_name DROP COLUMN column_name CASCADE
+3  ALTER TABLE table_name DROP CONSTRAINT constraint_name CASCADE
+5  ALTER TABLE table_name MODIFY COLUMN column_name datatype
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY (column_name)]) DISTRIBUTE ON {(column_name)|RANDOM}
+1  DROP TABLE table_name
+
+4  Create as select
+
+Notes:
+  Data Replication does not replicate indexes that were created on a source database to Netezza targets because
+Netezza does not use indexes.
+  Data Replication does not replicate ALTER COLUMN operations that add NULL and NOT NULL constraints to a
+source column to Netezza targets because Netezza does not support these types of DDL operations.
+  Data Replication does not replicate ALTER COLUMN operations that modify a column datatype to Netezza targets
+because Netezza does not support these types of DDL operations.
+  Data Replication does not replicate ALTER COLUMN operations that modify the length of columns that have a
+datatype other than VARCHAR to Netezza targets because Netezza does not support these types of DDL
+operations.
+  Data Replication does not replicate ADD COLUMN operations that add a column that has a NOT NULL constraint
+but no default value from Oracle sources to Netezza targets. Netezza does not support these types of DDL
+operations.
+  Data Replication replicates TRUNCATE operations from sources to Netezza targets as DELETE FROM
+operations.
+  To replicate CREATE TABLE operation to Netezza targets, Data Replication creates a table on the target and
+distributes data on the columns that are mapped to the primary key columns on the source. If the source table does
+not have a primary key definition, Data Replication uses the DISTRIBUTE ON RANDOM clause.    
+
+*** Oracle
+The Applier task can apply the following DDL operations to Oracle targets:
+2  ALTER TABLE table_name ADD (column_name datatype [CONSTRAINT constraint_name {NOT NULL|UNIQUE}]
+3  ALTER TABLE table_name ADD CONSTRAINT constraint_name
+2  ALTER TABLE table_name DROP (column_name)
+3  ALTER TABLE table_name DROP CONSTRAINT constraint_name
+3  ALTER TABLE table_name DROP {UNIQUE (column_name)|PRIMARY KEY}
+5  ALTER TABLE table_name MODIFY (column_name datatype
+n  ALTER TABLE table_name RENAME COLUMN column_name TO new_column_name
+3  CREATE INDEX index_name ON table_name
+1  CREATE TABLE table_name (column_name datatype [CONSTRAINT constraint_name {NOT NULL|UNIQUE}]
+4  CREATE TABLE table_name AS SELECT statement
+3  DROP INDEX index_name
+1  DROP TABLE table_name
+4  TRUNCATE TABLE table_name
+
+Notes:
+  When replicating DDL changes from Microsoft SQL Server sources to Oracle targets, Data Replication does not
+replicate ALTER COLUMN operations that change a column datatype from VARCHAR(n) to VARCHAR(MAX).
+Data Replication maps the SQL Server VARCHAR(MAX) datatype to the Oracle CLOB datatype, but Oracle does
+not support an ALTER COLUMN operation that changes a VARCHAR column to a CLOB column.
+  To replicate CREATE TABLE and ADD COLUMN operations to Oracle targets in Audit Apply and Merge Apply
+modes, you must specify table and column names in all uppercase on the source. If you use lowercase, the Applier
+cannot replicate subsequent DML operations for the new table or column.    
+
+*** PostgreSQL
+The Applier task can apply the following DDL operations to PostgreSQL targets:
+2  ALTER TABLE table_name ADD column_name datatype
+3  ALTER TABLE table_name ADD CONSTRAINT constraint_name [PRIMARY KEY|UNIQUE] (column_name)
+5  ALTER TABLE table_name ALTER COLUMN column_name SET DATA TYPE datatype
+3  ALTER TABLE table_name ALTER COLUMN column_name SET NOT NULL
+2  ALTER TABLE table_name DROP COLUMN column_name CASCADE
+3  ALTER TABLE table_name DROP CONSTRAINT constraint_name CASCADE
+3  CREATE INDEX index_name ON table_name (column_name)
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY (column_name))
+3  DROP INDEX index_name CASCADE
+1  DROP TABLE table_name
+  TRUNCATE table_name
+
+4 create as select
+
+
+Note:
+Data Replication does not enclose table names in quotes when replicating the TRUNCATE TABLE
+operations. Consequently, the Applier ends abnormally when replicating the TRUNCATE TABLE statements for
+the target tables that have case-sensitive names.    
+
+*** SybaseASE
+The Applier task can apply the following DDL operations to Sybase ASE targets:
+2  ALTER TABLE table_name ADD column_name datatype [NULL|NOT NULL]
+2  ALTER TABLE table_name DROP column_name
+5  ALTER TABLE table_name MODIFY column_name datatype [NULL|NOT NULL]
+3  CREATE INDEX index_name ON table_name (column_name)
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL]) LOCK DATAROWS
+3  DROP INDEX table_name.index_name
+1  DROP TABLE table_name
+4  TRUNCATE TABLE table_name
+
+3  Add primary key
+3  Drop primary key
+4  create as select
+
+Note:
+Data Replication does not replicate DDL operations that add a nullable BIT column from Microsoft SQL Server
+sources to Sybase ASE targets because Sybase ASE does not support nullable BIT columns.    
+
+*** Teradata
+The Applier task can apply the following DDL operations to Teradata targets:
+2  ALTER TABLE table_name ADD column_name datatype [NULL|NOT NULL]
+3  ALTER TABLE table_name ADD CONSTRAINT constraint_name UNIQUE (column_name)
+3  ALTER TABLE table_name DROP CONSTRAINT constraint_name
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL]) PRIMARY INDEX (column_name)
+3  CREATE UNIQUE INDEX index_name (column_name) ON table_name
+3  DROP INDEX index_name ON table_name
+1  DROP TABLE table_name
+
+3 set not null
+4 create as select
+5 alter table set datatype
+
+Notes:
+  Data Replication does not replicate ALTER TABLE operations that modify a source column datatype to Teradata
+targets because Teradata does not support these types of DDL operations.
+  Data Replication does not replicate DROP COLUMN operations for the source columns that are part of the primary
+key. For source tables that do not have a primary key, Data Replication does not replicate DROP COLUMN
+operations for the first column.
+  Data Replication replicates TRUNCATE operations from sources to Teradata targets as DELETE ALL
+operations.    
+
+*** Vertica
+The Applier task can apply the following DDL operations to Vertica targets:
+3  ALTER TABLE table_name ADD CONSTRAINT constraint_name {UNIQUE|PRIMARY KEY} (column_name)
+3  ALTER TABLE table_name DROP CONSTRAINT constraint_name CASCADE
+2  ALTER TABLE table_name ADD column_name datatype
+2  ALTER TABLE table_name DROP COLUMN column_name CASCADE
+  ALTER TABLE table_name ALTER COLUMN column_name SET DEFAULT default_value
+  ALTER TABLE table_name ALTER COLUMN column_name SET NOT NULL
+5  ALTER TABLE table_name ALTER COLUMN column_name SET DATA TYPE datatype
+n  ALTER TABLE table_name RENAME COLUMN column_name TO new_column_name
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY (column_name)])
+[SEGMENTED BY HASH (column_name) ALL NODES]
+1  DROP TABLE table_name
+4  TRUNCATE TABLE table_name
+
+3 create index
+3 drop index
+
+
+Notes:
+  The Applier ends abnormally when applying a source ADD column_name operation that has the NULL, NOT
+NULL, or DEFAULT clause.
+  Data Replication replicates ALTER COLUMN operations that change column datatypes only for target BINARY,
+VARBINARY, CHAR, and VARCHAR columns that have no default values.    
+
+** m2X
+*** DB2
+The Applier task can apply the following DDL operations to DB2 for Linux, UNIX, and Windows targets:
+2  ALTER TABLE table_name ADD column datatype [NULL|NOT NULL]
+  ALTER TABLE table_name ADD CONSTRAINT constraint_name {PRIMARY KEY|UNIQUE} (column_name)
+5  ALTER TABLE table_name ALTER COLUMN column_name SET DATA TYPE datatype
+n  ALTER TABLE table_name ALTER COLUMN column_name SET NOT NULL
+n  ALTER TABLE table_name ALTER column_name DROP NOT NULL
+2  ALTER TABLE table_name DROP column_name
+  ALTER TABLE table_name DROP CONSTRAINT constraint_name
+n  ALTER TABLE table_name RENAME COLUMN column_name TO new_column_name
+3  CREATE [UNIQUE] INDEX index_name ON table_name
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY] [UNIQUE])
+3  DROP INDEX index_name
+1  DROP TABLE table_name
+n  TRUNCATE TABLE table_name
+
+4  create as select 
+
+Notes:
+  The Applier processes the CREATE INDEX statement only if this statement creates an index in the same schema
+as the parent table.
+
+*** Greenplum
+The Applier task can apply the following DDL operations to Greenplum targets:
+2  ALTER TABLE table_name ADD column_name datatype [NULL]
+  ALTER TABLE table_name ADD CONSTRAINT constraint_name PRIMARY KEY (column_name)
+n  ALTER TABLE table_name ALTER COLUMN column_name SET NOT NULL
+5  ALTER TABLE table_name ALTER COLUMN column_name TYPE datatype
+2  ALTER TABLE table_name DROP COLUMN column_name CASCADE
+  ALTER TABLE table_name DROP CONSTRAINT constraint_name CASCADE
+3  CREATE INDEX index_name ON table_name (column_name)
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL]) DISTRIBUTED RANDOMLY
+3  DROP INDEX index_name CASCADE
+1  DROP TABLE table_name
+n  TRUNCATE TABLE table_name
+
+4  create table as select
+
+
+Notes:
+  For Oracle sources, Data Replication, by default, cannot replicate DROP CONSTRAINT operations that drop a
+primary key. When extracting these DDL operations, the Extractor sets the NULL option on the primary key
+columns. However, Greenplum does not support altering primary key columns. If you execute DROP
+CONSTRAINT operations that drop a primary key on the source, set the apply.skip_alter_column_failed_ddl
+runtime parameter to 0. This setting causes the Applier to not set the NULL option for the primary key columns on
+the target. You can then set the NULL option for these columns manually.
+  To replicate CREATE TABLE and ADD COLUMN operations to Greenplum targets in Audit Apply and Merge Apply
+modes, you must specify table and column names in all lowercase on the source. If you use uppercase, the Applier
+cannot replicate subsequent DML operations for the new table or column.    
+
+*** MSSQL
+The Applier task can apply the following DDL operations to Microsoft SQL Server targets:
+2  ALTER TABLE table_name ADD column_name datatype [IDENTITY] [NULL|NOT NULL] [UNIQUE]
+  ALTER TABLE table_name ADD CONSTRAINT constraint_name PRIMARY KEY {CLUSTERED|NONCLUSTERED}
+5  ALTER TABLE table_name ALTER COLUMN column_name datatype [NULL|NOT NULL]
+2  ALTER TABLE table_name DROP COLUMN column_name
+  ALTER TABLE table_name DROP CONSTRAINT constraint_name
+3  CREATE [UNIQUE] [CLUSTERED] INDEX index_name ON table_name (column_name)
+1  CREATE TABLE table_name (column_name datatype [IDENTITY] [NULL|NOT NULL] [UNIQUE])
+3  DROP INDEX index_name ON table_name
+1  DROP TABLE table_name
+  SELECT * INTO new_table_name FROM existing_table_name
+n  TRUNCATE TABLE table_name
+
+4  Create As Select
+
+Note:
+Data Replication replicates RENAME COLUMN operations from Oracle sources to Microsoft SQL Server
+targets as the following operation:
+EXEC sp_rename 'table_name.[old_column_name]', 'new_column_name', 'COLUMN'
+
+*** MySQL
+The Applier task can apply the following DDL operations to MySQL targets:
+2  ALTER TABLE table_name ADD column_name datatype [NULL|NOT NULL]
+  ALTER TABLE table_name ADD CONSTRAINT constraint_name PRIMARY KEY (column_name)
+n  ALTER TABLE table_name CHANGE old_column_name new_column_name datatype [NULL|NOT NULL]
+2  ALTER TABLE table_name DROP COLUMN column_name
+  ALTER TABLE table_name DROP PRIMARY KEY
+5  ALTER TABLE table_name MODIFY column_name datatype [NULL|NOT NULL]
+3  CREATE [UNIQUE] INDEX index_name ON table_name (column_name);
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY (column_name)])
+3  DROP INDEX index_name ON table_name
+1  DROP TABLE table_name
+
+4  SELECT * INTO new_table_name FROM existing_table_name
+
+Note:
+Data Replication replicates TRUNCATE operations from sources to MySQL targets as DELETE FROM
+operations.
+
+*** Netezza
+The Applier task can apply the following DDL operations to Netezza targets:
+2  ALTER TABLE table_name ADD column_name datatype [NULL|NOT NULL]
+  ALTER TABLE table_name ADD CONSTRAINT constraint_name UNIQUE (column_name)
+2  ALTER TABLE table_name DROP COLUMN column_name CASCADE
+  ALTER TABLE table_name DROP CONSTRAINT constraint_name CASCADE
+5  ALTER TABLE table_name MODIFY COLUMN column_name datatype
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY (column_name)]) DISTRIBUTE ON {(column_name)|RANDOM}
+1  DROP TABLE table_name
+
+4  Create as select
+
+Notes:
+  Data Replication does not replicate indexes that were created on a source database to Netezza targets because
+Netezza does not use indexes.
+  Data Replication does not replicate ALTER COLUMN operations that add NULL and NOT NULL constraints to a
+source column to Netezza targets because Netezza does not support these types of DDL operations.
+  Data Replication does not replicate ALTER COLUMN operations that modify a column datatype to Netezza targets
+because Netezza does not support these types of DDL operations.
+  Data Replication does not replicate ALTER COLUMN operations that modify the length of columns that have a
+datatype other than VARCHAR to Netezza targets because Netezza does not support these types of DDL
+operations.
+  Data Replication does not replicate ADD COLUMN operations that add a column that has a NOT NULL constraint
+but no default value from Oracle sources to Netezza targets. Netezza does not support these types of DDL
+operations.
+  Data Replication replicates TRUNCATE operations from sources to Netezza targets as DELETE FROM
+operations.
+  To replicate CREATE TABLE operation to Netezza targets, Data Replication creates a table on the target and
+distributes data on the columns that are mapped to the primary key columns on the source. If the source table does
+not have a primary key definition, Data Replication uses the DISTRIBUTE ON RANDOM clause.    
+
+*** Oracle
+The Applier task can apply the following DDL operations to Oracle targets:
+2  ALTER TABLE table_name ADD (column_name datatype [CONSTRAINT constraint_name {NOT NULL|UNIQUE}]
+1  ALTER TABLE table_name ADD CONSTRAINT constraint_name
+6  ALTER TABLE table_name DROP (column_name)
+1  ALTER TABLE table_name DROP CONSTRAINT constraint_name
+1  ALTER TABLE table_name DROP {UNIQUE (column_name)|PRIMARY KEY}
+5  ALTER TABLE table_name MODIFY (column_name datatype
+n  ALTER TABLE table_name RENAME COLUMN column_name TO new_column_name
+3  CREATE INDEX index_name ON table_name
+1  CREATE TABLE table_name (column_name datatype [CONSTRAINT constraint_name {NOT NULL|UNIQUE}]
+3  CREATE TABLE table_name AS SELECT statement
+3  DROP INDEX index_name
+1  DROP TABLE table_name
+n  TRUNCATE TABLE table_name
+
+Notes:
+  When replicating DDL changes from Microsoft SQL Server sources to Oracle targets, Data Replication does not
+replicate ALTER COLUMN operations that change a column datatype from VARCHAR(n) to VARCHAR(MAX).
+Data Replication maps the SQL Server VARCHAR(MAX) datatype to the Oracle CLOB datatype, but Oracle does
+not support an ALTER COLUMN operation that changes a VARCHAR column to a CLOB column.
+  To replicate CREATE TABLE and ADD COLUMN operations to Oracle targets in Audit Apply and Merge Apply
+modes, you must specify table and column names in all uppercase on the source. If you use lowercase, the Applier
+cannot replicate subsequent DML operations for the new table or column.    
+
+*** PostgreSQL
+The Applier task can apply the following DDL operations to PostgreSQL targets:
+2  ALTER TABLE table_name ADD column_name datatype
+  ALTER TABLE table_name ADD CONSTRAINT constraint_name [PRIMARY KEY|UNIQUE] (column_name)
+5  ALTER TABLE table_name ALTER COLUMN column_name SET DATA TYPE datatype
+n  ALTER TABLE table_name ALTER COLUMN column_name SET NOT NULL
+2  ALTER TABLE table_name DROP COLUMN column_name CASCADE
+  ALTER TABLE table_name DROP CONSTRAINT constraint_name CASCADE
+d3  CREATE INDEX index_name ON table_name (column_name)
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY (column_name))
+d3  DROP INDEX index_name CASCADE
+1  DROP TABLE table_name
+n  TRUNCATE table_name
+
+4  create as select
+
+
+Note:
+Data Replication does not enclose table names in quotes when replicating the TRUNCATE TABLE
+operations. Consequently, the Applier ends abnormally when replicating the TRUNCATE TABLE statements for
+the target tables that have case-sensitive names.    
+
+*** SybaseASE
+The Applier task can apply the following DDL operations to Sybase ASE targets:
+2  ALTER TABLE table_name ADD column_name datatype [NULL|NOT NULL]
+6  ALTER TABLE table_name DROP column_name
+4  ALTER TABLE table_name MODIFY column_name datatype [NULL|NOT NULL]
+3  CREATE INDEX index_name ON table_name (column_name)
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL]) LOCK DATAROWS
+3  DROP INDEX table_name.index_name
+1  DROP TABLE table_name
+n  TRUNCATE TABLE table_name
+
+1  Add constraint
+
+
+Note:
+Data Replication does not replicate DDL operations that add a nullable BIT column from Microsoft SQL Server
+sources to Sybase ASE targets because Sybase ASE does not support nullable BIT columns.    
+
+*** Teradata
+The Applier task can apply the following DDL operations to Teradata targets:
+2  ALTER TABLE table_name ADD column_name datatype [NULL|NOT NULL]
+  ALTER TABLE table_name ADD CONSTRAINT constraint_name UNIQUE (column_name)
+  ALTER TABLE table_name DROP CONSTRAINT constraint_name
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL]) PRIMARY INDEX (column_name)
+3  CREATE UNIQUE INDEX index_name (column_name) ON table_name
+3  DROP INDEX index_name ON table_name
+1  DROP TABLE table_name
+
+4 create as select
+5 alter table alter column c d null
+
+Notes:
+  Data Replication does not replicate ALTER TABLE operations that modify a source column datatype to Teradata
+targets because Teradata does not support these types of DDL operations.
+  Data Replication does not replicate DROP COLUMN operations for the source columns that are part of the primary
+key. For source tables that do not have a primary key, Data Replication does not replicate DROP COLUMN
+operations for the first column.
+  Data Replication replicates TRUNCATE operations from sources to Teradata targets as DELETE ALL
+operations.    
+
+*** Vertica
+The Applier task can apply the following DDL operations to Vertica targets:
+  ALTER TABLE table_name ADD CONSTRAINT constraint_name {UNIQUE|PRIMARY KEY} (column_name)
+  ALTER TABLE table_name DROP CONSTRAINT constraint_name CASCADE
+2  ALTER TABLE table_name ADD column_name datatype
+2  ALTER TABLE table_name DROP COLUMN column_name CASCADE
+n  ALTER TABLE table_name ALTER COLUMN column_name SET DEFAULT default_value
+n  ALTER TABLE table_name ALTER COLUMN column_name SET NOT NULL
+5  ALTER TABLE table_name ALTER COLUMN column_name SET DATA TYPE datatype
+n  ALTER TABLE table_name RENAME COLUMN column_name TO new_column_name
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY (column_name)])
+[SEGMENTED BY HASH (column_name) ALL NODES]
+1  DROP TABLE table_name
+n  TRUNCATE TABLE table_name
+
+3 create index
+3 drop index
+4 cas
+
+Notes:
+  The Applier ends abnormally when applying a source ADD column_name operation that has the NULL, NOT
+NULL, or DEFAULT clause.
+  Data Replication replicates ALTER COLUMN operations that change column datatypes only for target BINARY,
+VARBINARY, CHAR, and VARCHAR columns that have no default values.
+** o2X
+*** DB2
+The Applier task can apply the following DDL operations to DB2 for Linux, UNIX, and Windows targets:
+2  ALTER TABLE table_name ADD column datatype [NULL|NOT NULL]
+3  ALTER TABLE table_name ADD CONSTRAINT constraint_name {PRIMARY KEY|UNIQUE} (column_name)
+5  ALTER TABLE table_name ALTER COLUMN column_name SET DATA TYPE datatype
+?  ALTER TABLE table_name ALTER COLUMN column_name SET NOT NULL
+  ALTER TABLE table_name ALTER column_name DROP NOT NULL
+2  ALTER TABLE table_name DROP column_name
+3  ALTER TABLE table_name DROP CONSTRAINT constraint_name
+4  ALTER TABLE table_name RENAME COLUMN column_name TO new_column_name
+3  CREATE [UNIQUE] INDEX index_name ON table_name
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY] [UNIQUE])
+3  DROP INDEX index_name
+1  DROP TABLE table_name
+4  TRUNCATE TABLE table_name
+
+4  cas
+
+Notes:
+  The Applier processes the CREATE INDEX statement only if this statement creates an index in the same schema
+as the parent table.
+
+*** Greenplum
+The Applier task can apply the following DDL operations to Greenplum targets:
+2  ALTER TABLE table_name ADD column_name datatype [NULL]
+3  ALTER TABLE table_name ADD CONSTRAINT constraint_name PRIMARY KEY (column_name)
+?  ALTER TABLE table_name ALTER COLUMN column_name SET NOT NULL
+5  ALTER TABLE table_name ALTER COLUMN column_name TYPE datatype
+2  ALTER TABLE table_name DROP COLUMN column_name CASCADE
+3  ALTER TABLE table_name DROP CONSTRAINT constraint_name CASCADE
+3  CREATE INDEX index_name ON table_name (column_name)
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL]) DISTRIBUTED RANDOMLY
+3  DROP INDEX index_name CASCADE
+1  DROP TABLE table_name
+4  TRUNCATE TABLE table_name
+
+4  create table table_name as (select S_CHAR, count(*) as c_quantity from tablename S_CHAR )
+4  rename column
+
+Notes:
+  For Oracle sources, Data Replication, by default, cannot replicate DROP CONSTRAINT operations that drop a
+primary key. When extracting these DDL operations, the Extractor sets the NULL option on the primary key
+columns. However, Greenplum does not support altering primary key columns. If you execute DROP
+CONSTRAINT operations that drop a primary key on the source, set the apply.skip_alter_column_failed_ddl
+runtime parameter to 0. This setting causes the Applier to not set the NULL option for the primary key columns on
+the target. You can then set the NULL option for these columns manually.
+  To replicate CREATE TABLE and ADD COLUMN operations to Greenplum targets in Audit Apply and Merge Apply
+modes, you must specify table and column names in all lowercase on the source. If you use uppercase, the Applier
+cannot replicate subsequent DML operations for the new table or column.    
+
+*** MSSQL
+The Applier task can apply the following DDL operations to Microsoft SQL Server targets:
+2  ALTER TABLE table_name ADD column_name datatype [IDENTITY] [NULL|NOT NULL] [UNIQUE]
+3  ALTER TABLE table_name ADD CONSTRAINT constraint_name PRIMARY KEY {CLUSTERED|NONCLUSTERED}
+5  ALTER TABLE table_name ALTER COLUMN column_name datatype [NULL|NOT NULL]
+2  ALTER TABLE table_name DROP COLUMN column_name
+3  ALTER TABLE table_name DROP CONSTRAINT constraint_name
+3  CREATE [UNIQUE] [CLUSTERED] INDEX index_name ON table_name (column_name)
+1  CREATE TABLE table_name (column_name datatype [IDENTITY] [NULL|NOT NULL] [UNIQUE])
+3  DROP INDEX index_name ON table_name
+1  DROP TABLE table_name
+4  SELECT * INTO new_table_name FROM existing_table_name
+4  TRUNCATE TABLE table_name
+
+Note:
+Data Replication replicates RENAME COLUMN operations from Oracle sources to Microsoft SQL Server
+targets as the following operation:
+EXEC sp_rename 'table_name.[old_column_name]', 'new_column_name', 'COLUMN'
+
+*** MySQL
+The Applier task can apply the following DDL operations to MySQL targets:
+2  ALTER TABLE table_name ADD column_name datatype [NULL|NOT NULL]
+3  ALTER TABLE table_name ADD CONSTRAINT constraint_name PRIMARY KEY (column_name)
+5  ALTER TABLE table_name ALTER column_name datatype [NULL|NOT NULL]
+2  ALTER TABLE table_name DROP COLUMN column_name
+3  ALTER TABLE table_name DROP PRIMARY KEY
+  ALTER TABLE table_name MODIFY column_name datatype [NULL|NOT NULL]
+3  CREATE [UNIQUE] INDEX index_name ON table_name (column_name);
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY (column_name)])
+3  DROP INDEX index_name ON table_name
+1  DROP TABLE table_name
+
+4  SELECT * INTO new_table_name FROM existing_table_name
+
+Note:
+Data Replication replicates TRUNCATE operations from sources to MySQL targets as DELETE FROM
+operations.
+
+*** Netezza
+-- only 2 test
+-- error in compare in first test
+    
+The Applier task can apply the following DDL operations to Netezza targets:
+2  ALTER TABLE table_name ADD column_name datatype [NULL|NOT NULL]
+  ALTER TABLE table_name ADD CONSTRAINT constraint_name UNIQUE (column_name)
+2  ALTER TABLE table_name DROP COLUMN column_name CASCADE
+  ALTER TABLE table_name DROP CONSTRAINT constraint_name CASCADE
+  ALTER TABLE table_name MODIFY COLUMN column_name datatype
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY (column_name)]) DISTRIBUTE ON {(column_name)|RANDOM}
+1  DROP TABLE table_name
+
+Notes:
+  Data Replication does not replicate indexes that were created on a source database to Netezza targets because
+Netezza does not use indexes.
+  Data Replication does not replicate ALTER COLUMN operations that add NULL and NOT NULL constraints to a
+source column to Netezza targets because Netezza does not support these types of DDL operations.
+  Data Replication does not replicate ALTER COLUMN operations that modify a column datatype to Netezza targets
+because Netezza does not support these types of DDL operations.
+  Data Replication does not replicate ALTER COLUMN operations that modify the length of columns that have a
+datatype other than VARCHAR to Netezza targets because Netezza does not support these types of DDL
+operations.
+  Data Replication does not replicate ADD COLUMN operations that add a column that has a NOT NULL constraint
+but no default value from Oracle sources to Netezza targets. Netezza does not support these types of DDL
+operations.
+  Data Replication replicates TRUNCATE operations from sources to Netezza targets as DELETE FROM
+operations.
+  To replicate CREATE TABLE operation to Netezza targets, Data Replication creates a table on the target and
+distributes data on the columns that are mapped to the primary key columns on the source. If the source table does
+not have a primary key definition, Data Replication uses the DISTRIBUTE ON RANDOM clause.    
+
+*** Oracle
+The Applier task can apply the following DDL operations to Oracle targets:
+2  ALTER TABLE table_name ADD (column_name datatype [CONSTRAINT constraint_name {NOT NULL|UNIQUE}]
+3  ALTER TABLE table_name ADD CONSTRAINT constraint_name
+2  ALTER TABLE table_name DROP (column_name)
+3  ALTER TABLE table_name DROP CONSTRAINT constraint_name
+3  ALTER TABLE table_name DROP {UNIQUE (column_name)|PRIMARY KEY}
+5  ALTER TABLE table_name MODIFY (column_name datatype
+4  ALTER TABLE table_name RENAME COLUMN column_name TO new_column_name
+3  CREATE INDEX index_name ON table_name
+1  CREATE TABLE table_name (column_name datatype [CONSTRAINT constraint_name {NOT NULL|UNIQUE}]
+4  CREATE TABLE table_name AS SELECT statement
+3  DROP INDEX index_name
+1  DROP TABLE table_name
+4  TRUNCATE TABLE table_name
+
+Notes:
+  When replicating DDL changes from Microsoft SQL Server sources to Oracle targets, Data Replication does not
+replicate ALTER COLUMN operations that change a column datatype from VARCHAR(n) to VARCHAR(MAX).
+Data Replication maps the SQL Server VARCHAR(MAX) datatype to the Oracle CLOB datatype, but Oracle does
+not support an ALTER COLUMN operation that changes a VARCHAR column to a CLOB column.
+  To replicate CREATE TABLE and ADD COLUMN operations to Oracle targets in Audit Apply and Merge Apply
+modes, you must specify table and column names in all uppercase on the source. If you use lowercase, the Applier
+cannot replicate subsequent DML operations for the new table or column.    
+
+*** PostgreSQL
+The Applier task can apply the following DDL operations to PostgreSQL targets:
+2  ALTER TABLE table_name ADD column_name datatype
+3  ALTER TABLE table_name ADD CONSTRAINT constraint_name [PRIMARY KEY|UNIQUE] (column_name)
+5  ALTER TABLE table_name ALTER COLUMN column_name SET DATA TYPE datatype
+?  ALTER TABLE table_name ALTER COLUMN column_name SET NOT NULL
+2  ALTER TABLE table_name DROP COLUMN column_name CASCADE
+3  ALTER TABLE table_name DROP CONSTRAINT constraint_name CASCADE
+3  CREATE INDEX index_name ON table_name (column_name)
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY (column_name))
+3  DROP INDEX index_name CASCADE
+1  DROP TABLE table_name
+4  TRUNCATE table_name
+
+4  create as select
+4  rename
+
+Note:
+Data Replication does not enclose table names in quotes when replicating the TRUNCATE TABLE
+operations. Consequently, the Applier ends abnormally when replicating the TRUNCATE TABLE statements for
+the target tables that have case-sensitive names.    
+
+*** SybaseASE
+-- only 3 test
+    
+The Applier task can apply the following DDL operations to Sybase ASE targets:
+2  ALTER TABLE table_name ADD column_name datatype [NULL|NOT NULL]
+2  ALTER TABLE table_name DROP column_name
+  ALTER TABLE table_name MODIFY column_name datatype [NULL|NOT NULL]
+  CREATE INDEX index_name ON table_name (column_name)
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL]) LOCK DATAROWS
+  DROP INDEX table_name.index_name
+1  DROP TABLE table_name
+  TRUNCATE TABLE table_name
+
+3  Add primary key
+3  Drop primary key
+
+Note:
+Data Replication does not replicate DDL operations that add a nullable BIT column from Microsoft SQL Server
+sources to Sybase ASE targets because Sybase ASE does not support nullable BIT columns.    
+
+*** Teradata
+The Applier task can apply the following DDL operations to Teradata targets:
+2  ALTER TABLE table_name ADD column_name datatype [NULL|NOT NULL]
+b  ALTER TABLE table_name ADD CONSTRAINT constraint_name UNIQUE (column_name)
+3  ALTER TABLE table_name DROP CONSTRAINT constraint_name
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL]) PRIMARY INDEX (column_name)
+  CREATE UNIQUE INDEX index_name (column_name) ON table_name
+  DROP INDEX index_name ON table_name
+1  DROP TABLE table_name
+
+4  create as select
+
+
+Notes:
+  Data Replication does not replicate ALTER TABLE operations that modify a source column datatype to Teradata
+targets because Teradata does not support these types of DDL operations.
+  Data Replication does not replicate DROP COLUMN operations for the source columns that are part of the primary
+key. For source tables that do not have a primary key, Data Replication does not replicate DROP COLUMN
+operations for the first column.
+  Data Replication replicates TRUNCATE operations from sources to Teradata targets as DELETE ALL
+operations.    
+
+*** Vertica
+-- only 1 test
+
+The Applier task can apply the following DDL operations to Vertica targets:
+  ALTER TABLE table_name ADD CONSTRAINT constraint_name {UNIQUE|PRIMARY KEY} (column_name)
+  ALTER TABLE table_name DROP CONSTRAINT constraint_name CASCADE
+  ALTER TABLE table_name ADD column_name datatype
+  ALTER TABLE table_name DROP COLUMN column_name CASCADE
+  ALTER TABLE table_name ALTER COLUMN column_name SET DEFAULT default_value
+  ALTER TABLE table_name ALTER COLUMN column_name SET NOT NULL
+  ALTER TABLE table_name ALTER COLUMN column_name SET DATA TYPE datatype
+  ALTER TABLE table_name RENAME COLUMN column_name TO new_column_name
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY (column_name)])
+[SEGMENTED BY HASH (column_name) ALL NODES]
+1  DROP TABLE table_name
+  TRUNCATE TABLE table_name
+
+Notes:
+  The Applier ends abnormally when applying a source ADD column_name operation that has the NULL, NOT
+NULL, or DEFAULT clause.
+  Data Replication replicates ALTER COLUMN operations that change column datatypes only for target BINARY,
+VARBINARY, CHAR, and VARCHAR columns that have no default values.    
+
+** s2X
+*** DB2
+The Applier task can apply the following DDL operations to DB2 for Linux, UNIX, and Windows targets:
+2  ALTER TABLE table_name ADD column datatype [NULL|NOT NULL]
+n  ALTER TABLE table_name ADD CONSTRAINT constraint_name {PRIMARY KEY|UNIQUE} (column_name)
+4  ALTER TABLE table_name ALTER COLUMN column_name SET DATA TYPE datatype
+  ALTER TABLE table_name ALTER COLUMN column_name SET NOT NULL
+n  ALTER TABLE table_name ALTER column_name DROP NOT NULL
+  ALTER TABLE table_name DROP column_name
+n  ALTER TABLE table_name DROP CONSTRAINT constraint_name
+n  ALTER TABLE table_name RENAME COLUMN column_name TO new_column_name
+3  CREATE [UNIQUE] INDEX index_name ON table_name
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY] [UNIQUE])
+3  DROP INDEX index_name
+1  DROP TABLE table_name
+4  TRUNCATE TABLE table_name
+
+Notes:
+  The Applier processes the CREATE INDEX statement only if this statement creates an index in the same schema
+as the parent table.
+
+*** Greenplum
+!! no tests at all
+
+The Applier task can apply the following DDL operations to Greenplum targets:
+  ALTER TABLE table_name ADD column_name datatype [NULL]
+  ALTER TABLE table_name ADD CONSTRAINT constraint_name PRIMARY KEY (column_name)
+  ALTER TABLE table_name ALTER COLUMN column_name SET NOT NULL
+  ALTER TABLE table_name ALTER COLUMN column_name TYPE datatype
+  ALTER TABLE table_name DROP COLUMN column_name CASCADE
+  ALTER TABLE table_name DROP CONSTRAINT constraint_name CASCADE
+  CREATE INDEX index_name ON table_name (column_name)
+  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL]) DISTRIBUTED RANDOMLY
+  DROP INDEX index_name CASCADE
+  DROP TABLE table_name
+  TRUNCATE TABLE table_name
+
+Notes:
+  For Oracle sources, Data Replication, by default, cannot replicate DROP CONSTRAINT operations that drop a
+primary key. When extracting these DDL operations, the Extractor sets the NULL option on the primary key
+columns. However, Greenplum does not support altering primary key columns. If you execute DROP
+CONSTRAINT operations that drop a primary key on the source, set the apply.skip_alter_column_failed_ddl
+runtime parameter to 0. This setting causes the Applier to not set the NULL option for the primary key columns on
+the target. You can then set the NULL option for these columns manually.
+  To replicate CREATE TABLE and ADD COLUMN operations to Greenplum targets in Audit Apply and Merge Apply
+modes, you must specify table and column names in all lowercase on the source. If you use uppercase, the Applier
+cannot replicate subsequent DML operations for the new table or column.    
+
+*** MSSQL
+The Applier task can apply the following DDL operations to Microsoft SQL Server targets:
+2  ALTER TABLE table_name ADD column_name datatype [IDENTITY] [NULL|NOT NULL] [UNIQUE]
+n  ALTER TABLE table_name ADD CONSTRAINT constraint_name PRIMARY KEY {CLUSTERED|NONCLUSTERED}
+4  ALTER TABLE table_name ALTER COLUMN column_name datatype [NULL|NOT NULL]
+  ALTER TABLE table_name DROP COLUMN column_name
+n  ALTER TABLE table_name DROP CONSTRAINT constraint_name
+3  CREATE [UNIQUE] [CLUSTERED] INDEX index_name ON table_name (column_name)
+1  CREATE TABLE table_name (column_name datatype [IDENTITY] [NULL|NOT NULL] [UNIQUE])
+3  DROP INDEX index_name ON table_name
+1  DROP TABLE table_name
+n  SELECT * INTO new_table_name FROM existing_table_name
+4  TRUNCATE TABLE table_name
+
+Note:
+Data Replication replicates RENAME COLUMN operations from Oracle sources to Microsoft SQL Server
+targets as the following operation:
+EXEC sp_rename 'table_name.[old_column_name]', 'new_column_name', 'COLUMN'
+
+*** MySQL
+-- no 4-th test
+
+The Applier task can apply the following DDL operations to MySQL targets:
+2  ALTER TABLE table_name ADD column_name datatype [NULL|NOT NULL]
+n  ALTER TABLE table_name ADD CONSTRAINT constraint_name PRIMARY KEY (column_name)
+5  ALTER TABLE table_name ALTER column_name datatype [NULL|NOT NULL]
+2  ALTER TABLE table_name DROP COLUMN column_name
+n  ALTER TABLE table_name DROP PRIMARY KEY
+  ALTER TABLE table_name MODIFY column_name datatype [NULL|NOT NULL]
+3  CREATE [UNIQUE] INDEX index_name ON table_name (column_name);
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY (column_name)])
+3  DROP INDEX index_name ON table_name
+1  DROP TABLE table_name
+
+Note:
+Data Replication replicates TRUNCATE operations from sources to MySQL targets as DELETE FROM
+operations.
+
+*** Netezza
+The Applier task can apply the following DDL operations to Netezza targets:
+2  ALTER TABLE table_name ADD column_name datatype [NULL|NOT NULL]
+n  ALTER TABLE table_name ADD CONSTRAINT constraint_name UNIQUE (column_name)
+2  ALTER TABLE table_name DROP COLUMN column_name CASCADE
+n  ALTER TABLE table_name DROP CONSTRAINT constraint_name CASCADE
+5  ALTER TABLE table_name MODIFY COLUMN column_name datatype
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY (column_name)]) DISTRIBUTE ON {(column_name)|RANDOM}
+1  DROP TABLE table_name
+
+Notes:
+  Data Replication does not replicate indexes that were created on a source database to Netezza targets because
+Netezza does not use indexes.
+  Data Replication does not replicate ALTER COLUMN operations that add NULL and NOT NULL constraints to a
+source column to Netezza targets because Netezza does not support these types of DDL operations.
+  Data Replication does not replicate ALTER COLUMN operations that modify a column datatype to Netezza targets
+because Netezza does not support these types of DDL operations.
+  Data Replication does not replicate ALTER COLUMN operations that modify the length of columns that have a
+datatype other than VARCHAR to Netezza targets because Netezza does not support these types of DDL
+operations.
+  Data Replication does not replicate ADD COLUMN operations that add a column that has a NOT NULL constraint
+but no default value from Oracle sources to Netezza targets. Netezza does not support these types of DDL
+operations.
+  Data Replication replicates TRUNCATE operations from sources to Netezza targets as DELETE FROM
+operations.
+  To replicate CREATE TABLE operation to Netezza targets, Data Replication creates a table on the target and
+distributes data on the columns that are mapped to the primary key columns on the source. If the source table does
+not have a primary key definition, Data Replication uses the DISTRIBUTE ON RANDOM clause.    
+
+*** Oracle
+-- only 3 test
+
+The Applier task can apply the following DDL operations to Oracle targets:
+2  ALTER TABLE table_name ADD (column_name datatype [CONSTRAINT constraint_name {NOT NULL|UNIQUE}]
+n  ALTER TABLE table_name ADD CONSTRAINT constraint_name
+2  ALTER TABLE table_name DROP (column_name)
+n  ALTER TABLE table_name DROP CONSTRAINT constraint_name
+  ALTER TABLE table_name DROP {UNIQUE (column_name)|PRIMARY KEY}
+  ALTER TABLE table_name MODIFY (column_name datatype
+n  ALTER TABLE table_name RENAME COLUMN column_name TO new_column_name
+3  CREATE INDEX index_name ON table_name
+1  CREATE TABLE table_name (column_name datatype [CONSTRAINT constraint_name {NOT NULL|UNIQUE}]
+n  CREATE TABLE table_name AS SELECT statement
+3  DROP INDEX index_name
+1  DROP TABLE table_name
+  TRUNCATE TABLE table_name
+
+Notes:
+  When replicating DDL changes from Microsoft SQL Server sources to Oracle targets, Data Replication does not
+replicate ALTER COLUMN operations that change a column datatype from VARCHAR(n) to VARCHAR(MAX).
+Data Replication maps the SQL Server VARCHAR(MAX) datatype to the Oracle CLOB datatype, but Oracle does
+not support an ALTER COLUMN operation that changes a VARCHAR column to a CLOB column.
+  To replicate CREATE TABLE and ADD COLUMN operations to Oracle targets in Audit Apply and Merge Apply
+modes, you must specify table and column names in all uppercase on the source. If you use lowercase, the Applier
+cannot replicate subsequent DML operations for the new table or column.    
+
+*** PostgreSQL
+-- no 4-th test
+    
+The Applier task can apply the following DDL operations to PostgreSQL targets:
+2  ALTER TABLE table_name ADD column_name datatype
+n  ALTER TABLE table_name ADD CONSTRAINT constraint_name [PRIMARY KEY|UNIQUE] (column_name)
+5  ALTER TABLE table_name ALTER COLUMN column_name SET DATA TYPE datatype
+  ALTER TABLE table_name ALTER COLUMN column_name SET NOT NULL
+2  ALTER TABLE table_name DROP COLUMN column_name CASCADE
+n  ALTER TABLE table_name DROP CONSTRAINT constraint_name CASCADE
+3  CREATE INDEX index_name ON table_name (column_name)
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY (column_name))
+3  DROP INDEX index_name CASCADE
+1  DROP TABLE table_name
+  TRUNCATE table_name
+
+4 create as select
+
+
+Note:
+Data Replication does not enclose table names in quotes when replicating the TRUNCATE TABLE
+operations. Consequently, the Applier ends abnormally when replicating the TRUNCATE TABLE statements for
+the target tables that have case-sensitive names.    
+
+*** SybaseASE
+-- only 1 test
+
+The Applier task can apply the following DDL operations to Sybase ASE targets:
+  ALTER TABLE table_name ADD column_name datatype [NULL|NOT NULL]
+  ALTER TABLE table_name DROP column_name
+  ALTER TABLE table_name MODIFY column_name datatype [NULL|NOT NULL]
+  CREATE INDEX index_name ON table_name (column_name)
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL]) LOCK DATAROWS
+  DROP INDEX table_name.index_name
+1  DROP TABLE table_name
+  TRUNCATE TABLE table_name
+
+Note:
+Data Replication does not replicate DDL operations that add a nullable BIT column from Microsoft SQL Server
+sources to Sybase ASE targets because Sybase ASE does not support nullable BIT columns.    
+
+*** Teradata
+The Applier task can apply the following DDL operations to Teradata targets:
+  ALTER TABLE table_name ADD column_name datatype [NULL|NOT NULL]
+n  ALTER TABLE table_name ADD CONSTRAINT constraint_name UNIQUE (column_name)
+n  ALTER TABLE table_name DROP CONSTRAINT constraint_name
+d  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL]) PRIMARY INDEX (column_name)
+3  CREATE UNIQUE INDEX index_name (column_name) ON table_name
+3  DROP INDEX index_name ON table_name
+d  DROP TABLE table_name
+
+Notes:
+  Data Replication does not replicate ALTER TABLE operations that modify a source column datatype to Teradata
+targets because Teradata does not support these types of DDL operations.
+  Data Replication does not replicate DROP COLUMN operations for the source columns that are part of the primary
+key. For source tables that do not have a primary key, Data Replication does not replicate DROP COLUMN
+operations for the first column.
+  Data Replication replicates TRUNCATE operations from sources to Teradata targets as DELETE ALL
+operations.    
+
+*** Vertica
+The Applier task can apply the following DDL operations to Vertica targets:
+n  ALTER TABLE table_name ADD CONSTRAINT constraint_name {UNIQUE|PRIMARY KEY} (column_name)
+n  ALTER TABLE table_name DROP CONSTRAINT constraint_name CASCADE
+2  ALTER TABLE table_name ADD column_name datatype
+2  ALTER TABLE table_name DROP COLUMN column_name CASCADE
+n  ALTER TABLE table_name ALTER COLUMN column_name SET DEFAULT default_value
+  ALTER TABLE table_name ALTER COLUMN column_name SET NOT NULL
+  ALTER TABLE table_name ALTER COLUMN column_name SET DATA TYPE datatype
+n  ALTER TABLE table_name RENAME COLUMN column_name TO new_column_name
+1  CREATE TABLE table_name (column_name datatype [NULL|NOT NULL] [PRIMARY KEY (column_name)])
+[SEGMENTED BY HASH (column_name) ALL NODES]
+1  DROP TABLE table_name
+5  TRUNCATE TABLE table_name
+
+Notes:
+  The Applier ends abnormally when applying a source ADD column_name operation that has the NULL, NOT
+NULL, or DEFAULT clause.
+  Data Replication replicates ALTER COLUMN operations that change column datatypes only for target BINARY,
+VARBINARY, CHAR, and VARCHAR columns that have no default values.    
+
+* Fanout
+** Test case:
+  с мсскл в качестве сорса, на сане и линуксе, используя расшаренные папки с бекапами,
+  нужно собрать фанаутные конфигурации и попробовать отреплицироваться.
+  поддерживаемые ДДЛ, для гринплама и постгреса.
+  
+  for SM: source on main, targets on main and another subserver.
+  All datatypes, DDL.
+  
+  SM1, Extractor, Applier on SUN (10.51.40.50:18030)
+  SM2, Applier, on SUN (10.51.40.47:18030)
+  Source: MS SQL Server 2008 EE - offline logs (10.51.4.112)
+  Target1: GREENPLUM (10.51.40.116 qa_gp01 dest\test public)
+  Target2: GREENPLUM (10.51.40.116 qa_gp01 dest\test target)
+** DevTrack
+  INFA349702 - MSSQL Extract crashed on sun with SIGBUS error (unalligned access)
+  MSSQL Extractor ends with failure when reads offline backup log files on SUN.
+  Cause of the error - an incorrect alignment in the statement
+  endOfLastRof  = reinterpret_cast(this->VarDataPtr) + sizeof(rof_descriptor) + (rofDscr->level == 0x0100 ? 12 : 0);
+  Tested revision 28337.
 * Other
+Timur Shalafaev - GUI
+Alexey Chadaev - SM
+
+  
 ;; Change the file name under which the current buffer will be saved.  
 (set-visited-file-name)
 

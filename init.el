@@ -85,8 +85,8 @@
 (setq default-input-method 'russian-computer)
 
 ;; Fulscreen
-(defun toggle-full-screen () (interactive) (shell-command "emacs_fullscreen.exe"))
-(global-set-key [f11] 'toggle-full-screen)
+;(defun toggle-full-screen () (interactive) (shell-command "emacs_fullscreen.exe"))
+;(global-set-key [f11] 'toggle-full-screen)
 
 ;; default directory
 (setq command-line-default-directory "d:/home/")
