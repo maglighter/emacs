@@ -1,4 +1,5 @@
 ;                      * Emacs CORE configuration file *
+
 ;; load common lisp (loop)
 (require 'cl)
 
