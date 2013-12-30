@@ -1,6 +1,14 @@
-Commentary:
-
  This enhances the functionality of library `dired-details.el'.
+
+
+   NOTE: If you use Emacs 24.4 or later then you DO NOT NEED this
+   library or library `dired-details.el'.  Instead, use
+   `dired-hide-details-mode'.  Library `dired+.el' enhances
+   `dired-hide-details-mode' to give it the save features as
+   `dired-details+.el' provides.  Just use `(require 'dired+.el)'.
+
+
+ `dired-details+.el' enhances `dired-details.el' in these ways:
 
  1. It shrink-wraps Dired's frame whenever you show or hide
     details.  For this enhancement, you will need library
@@ -27,12 +35,6 @@ Commentary:
                             non-nil, then use the last state.
 
 
- I have submitted these enhancements to Rob Giardina, the author of
- `dired-details.el', for inclusion in that library.  If they (or
- similar) are added to that library, then I'll remove this library.
- In any case, this feature has been added to Emacs, starting with
- Emacs 22.2, I think.
-
  Put this in your initialization file (~/.emacs):
 
   (require 'dired-details+)
@@ -40,5 +42,5 @@ Commentary:
  I also recommend customizing `dired-details-hidden-string' to use
  the value "" instead of the default "[...]" - less wasted space.
 
- Note: This library also calls `dired-details-install', activating
- show/hide and binding keys `(' and `)'.
+ Note: This library also calls `dired-details-install', activates
+ show/hide and binds key `)'.

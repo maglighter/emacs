@@ -15,6 +15,19 @@
    (define-key ctl-x-4-map "d" 'diredp-dired-files-other-window)
 
 
+ Hide/Show Details
+ -----------------
+
+ Starting with Emacs 24.4, listing details are hidden by default.
+ Use `(' anytime to toggle this hiding.  You can use option
+ `diredp-hide-details-initially-flag' to change the default/initial
+ state.  See also option `diredp-hide-details-propagate-flag'.
+
+ If you have an Emacs version older than 24.4, you can use library
+ `dired-details+.el' (plus `dired-details.el') to get similar
+ behavior.
+
+
  Fontification Level
  -------------------
 
@@ -106,6 +119,25 @@
  to retrieve them, and `C-M-<' (in Dired) to open Dired on them.
 
 
+ Wraparound Navigation
+ ---------------------
+
+ In vanilla Dired, `dired-next-marked-file' (`M-}' or `* C-n') and
+ `dired-previous-marked-file' (`M-{' or `* C-p') wrap around when
+ you get to the end or the beginning of the Dired buffer.  Handy.
+
+ But the other navigation commands do not wrap around.  In Dired+
+ they do, provided option `diredp-wrap-around-flag' is non-nil,
+ which it is by default.  This means the following commands:
+
+   `diredp-next-line'     - `n', `C-n', `down', `SPC'
+   `diredp-previous-line' - `p', `C-p', `up'
+   `diredp-next-dirline'  - `>'
+   `diredp-prev-dirline'  - `<'
+   `diredp-next-subdir'   - `C-M-n'
+   `diredp-prev-subdir'   - `C-M-p'
+
+
  Inserted Subdirs, Multiple Dired Buffers, Files from Anywhere,...
  -----------------------------------------------------------------
 
@@ -141,7 +173,7 @@
 
  This is one motivation for the Dired+ `diredp-*-recursive'
  commands, which act on the marked files in marked subdirectories,
- recursively.  In one sense these commands are an alternative to
+ recursively.  In one sense, these commands are an alternative to
  using a single Dired buffer with inserted subdirectories.  They
  let you use the same operations on the files in a set of Dired
  directories, without inserting those directories into an ancestor
@@ -183,6 +215,7 @@
 
  Commands defined here:
 
+   `diredp-async-shell-command-this-file',
    `diredp-bookmark-this-file', `diredp-byte-compile-this-file',
    `diredp-capitalize', `diredp-capitalize-recursive',
    `diredp-capitalize-this-file', `diredp-chgrp-this-file',
@@ -190,18 +223,20 @@
    `diredp-compress-this-file',
    `diredp-copy-filename-as-kill-recursive',
    `diredp-copy-tags-this-file', `diredp-copy-this-file',
-   `diredp-delete-this-file', `diredp-describe-file',
-   `diredp-describe-mode', `diredp-dired-files',
-   `diredp-dired-files-other-window', `diredp-dired-for-files',
-   `diredp-dired-for-files-other-window',
+   `diredp-decrypt-this-file', `diredp-delete-this-file',
+   `diredp-describe-file', `diredp-describe-mode',
+   `diredp-dired-files', `diredp-dired-files-other-window',
+   `diredp-dired-for-files', `diredp-dired-for-files-other-window',
    `diredp-dired-inserted-subdirs', `diredp-dired-plus-help',
    `diredp-dired-this-subdir', `diredp-dired-union',
-   `diredp-dired-union-other-window', `diredp-do-bookmark',
+   `diredp-dired-union-other-window',
+   `diredp-do-async-shell-command-recursive', `diredp-do-bookmark',
    `diredp-do-bookmark-in-bookmark-file',
    `diredp-do-bookmark-in-bookmark-file-recursive',
    `diredp-do-bookmark-recursive', `diredp-do-chmod-recursive',
    `diredp-do-chgrp-recursive', `diredp-do-chown-recursive',
    `diredp-do-copy-recursive', `diredp-do-decrypt-recursive',
+   `diredp-do-display-images' (Emacs 22+),
    `diredp-do-encrypt-recursive',
    `diredp-do-find-marked-files-recursive', `diredp-do-grep',
    `diredp-do-grep-recursive', `diredp-do-hardlink-recursive',
@@ -217,16 +252,24 @@
    `diredp-do-symlink-recursive', `diredp-do-tag',
    `diredp-do-touch-recursive', `diredp-do-untag',
    `diredp-do-verify-recursive', `diredp-downcase-recursive',
-   `diredp-downcase-this-file', `diredp-ediff', `diredp-fileset',
+   `diredp-downcase-this-file', `diredp-ediff',
+   `diredp-encrypt-this-file', `diredp-fileset',
    `diredp-find-a-file', `diredp-find-a-file-other-frame',
    `diredp-find-a-file-other-window',
    `diredp-find-file-other-frame',
    `diredp-find-file-reuse-dir-buffer',
    `diredp-flag-region-files-for-deletion',
    `diredp-grep-this-file', `diredp-hardlink-this-file',
+   `diredp-image-dired-comment-file',
    `diredp-image-dired-comment-files-recursive',
+   `diredp-image-dired-copy-with-exif-name',
+   `diredp-image-dired-create-thumb',
+   `diredp-image-dired-delete-tag',
    `diredp-image-dired-delete-tag-recursive',
+   `diredp-image-dired-display-thumb',
    `diredp-image-dired-display-thumbs-recursive',
+   `diredp-image-dired-edit-comment-and-tags',
+   `diredp-image-dired-tag-file',
    `diredp-image-dired-tag-files-recursive',
    `diredp-insert-as-subdir', `diredp-insert-subdirs',
    `diredp-insert-subdirs-recursive',
@@ -259,30 +302,38 @@
    `diredp-mouse-unmark', `diredp-mouse-upcase',
    `diredp-mouse-view-file',
    `diredp-multiple-w32-browser-recursive',
-   `diredp-nb-marked-in-mode-name', `diredp-omit-marked',
+   `diredp-nb-marked-in-mode-name', `diredp-next-dirline',
+   `diredp-next-line', `diredp-next-subdir', `diredp-omit-marked',
    `diredp-omit-unmarked', `diredp-paste-add-tags-this-file',
-   `diredp-paste-replace-tags-this-file', `diredp-print-this-file',
-   `diredp-relsymlink-this-file',
+   `diredp-paste-replace-tags-this-file', `diredp-prev-dirline',
+   `diredp-previous-line', `diredp-prev-subdir',
+   `diredp-print-this-file', `diredp-relsymlink-this-file',
    `diredp-remove-all-tags-this-file', `diredp-rename-this-file',
    `diredp-send-bug-report',
    `diredp-set-bookmark-file-bookmark-for-marked',
    `diredp-set-bookmark-file-bookmark-for-marked-recursive',
    `diredp-set-tag-value-this-file',
-   `diredp-shell-command-this-file', `diredp-symlink-this-file',
-   `diredp-tag-this-file', `diredp-toggle-find-file-reuse-dir',
-   `diredp-touch-this-file', `diredp-toggle-marks-in-region',
+   `diredp-shell-command-this-file', `diredp-sign-this-file',
+   `diredp-symlink-this-file', `diredp-tag-this-file',
+   `diredp-toggle-find-file-reuse-dir', `diredp-touch-this-file',
+   `diredp-toggle-marks-in-region',
    `diredp-unmark-files-tagged-all',
    `diredp-unmark-files-tagged-none',
    `diredp-unmark-files-tagged-not-all',
    `diredp-unmark-files-tagged-some', `diredp-unmark-region-files',
    `diredp-untag-this-file', `diredp-upcase-recursive',
-   `diredp-upcase-this-file', `diredp-w32-drives',
-   `diredp-w32-drives-mode', `toggle-diredp-find-file-reuse-dir'.
+   `diredp-up-directory', `diredp-up-directory-reuse-dir-buffer',
+   `diredp-upcase-this-file', `diredp-verify-this-file',
+   `diredp-w32-drives', `diredp-w32-drives-mode',
+   `global-dired-hide-details-mode' (Emacs 24.4+),
+   `toggle-diredp-find-file-reuse-dir'.
 
  User options defined here:
 
-   `diff-switches', `diredp-prompt-for-bookmark-prefix-flag',
-   `diredp-w32-local-drives'.
+   `diff-switches', `diredp-hide-details-initially-flag' (Emacs
+   24.4+), `diredp-hide-details-propagate-flag' (Emacs 24.4+),
+   `diredp-prompt-for-bookmark-prefix-flag',
+   `diredp-w32-local-drives', `diredp-wrap-around-flag'.
 
  Non-interactive functions defined here:
 
@@ -294,29 +345,39 @@
    `diredp-dired-plus-description',
    `diredp-dired-plus-description+links',
    `diredp-dired-plus-help-link', `diredp-dired-union-1',
-   `diredp-dired-union-interactive-spec',
-   `diredp-do-chxxx-recursive', `diredp-do-create-files-recursive',
-   `diredp-do-grep-1', `diredp-ensure-mode',
-   `diredp-fewer-than-2-files-p', `diredp-find-a-file-read-args',
-   `diredp-files-within', `diredp-files-within-1',
+   `diredp-dired-union-interactive-spec', `diredp-display-image'
+   (Emacs 22+), `diredp-do-chxxx-recursive',
+   `diredp-do-create-files-recursive', `diredp-do-grep-1',
+   `diredp-ensure-mode', `diredp-fewer-than-2-files-p',
+   `diredp-find-a-file-read-args', `diredp-files-within',
+   `diredp-files-within-1',
+   `diredp-fit-frame-unless-buffer-narrowed' (Emacs 24.4+),
    `diredp-get-confirmation-recursive', `diredp-get-files',
-   `diredp-get-files-for-dir', `diredp-internal-do-deletions',
-   `diredp-list-files', `diredp-make-find-file-keys-reuse-dirs',
+   `diredp-get-files-for-dir', `diredp-get-subdirs',
+   `diredp-hide-details-if-dired' (Emacs 24.4+),
+   `diredp-hide/show-details' (Emacs 24.4+),
+   `diredp-internal-do-deletions', `diredp-list-files',
+   `diredp-make-find-file-keys-reuse-dirs',
    `diredp-make-find-file-keys-not-reuse-dirs', `diredp-maplist',
    `diredp-marked-here', `diredp-mark-files-tagged-all/none',
    `diredp-mark-files-tagged-some/not-all',
-   `diredp-paste-add-tags', `diredp-paste-replace-tags',
-   `diredp-read-bookmark-file-args', `diredp-remove-if-not',
-   `diredp-set-tag-value', `diredp-tag',
+   `diredp-nonempty-region-p', `diredp-paste-add-tags',
+   `diredp-paste-replace-tags', `diredp-read-bookmark-file-args',
+   `diredp-remove-if-not', `diredp-set-tag-value',
+   `diredp-string-match-p', `diredp-tag',
    `diredp-this-file-marked-p', `diredp-this-file-unmarked-p',
    `diredp-this-subdir', `diredp-untag', `diredp-y-or-n-files-p'.
 
  Variables defined here:
 
    `diredp-file-line-overlay', `diredp-files-within-dirs-done',
-   `diredp-font-lock-keywords-1', `diredp-loaded-p',
+   `diredp-font-lock-keywords-1', `diredp-hide-details-last-state'
+   (Emacs 24.4+), `diredp-hide-details-toggled' (Emacs 24.4+),
+   `diredp-loaded-p', `diredp-menu-bar-encryption-menu',
+   `diredp-menu-bar-images-menu.',
    `diredp-menu-bar-immediate-menu',
    `diredp-menu-bar-immediate-bookmarks-menu',
+   `diredp-menu-bar-immediate-encryption-menu',
    `diredp-menu-bar-mark-menu', `diredp-menu-bar-operate-menu',
    `diredp-menu-bar-operate-bookmarks-menu',
    `diredp-menu-bar-recursive-marked-menu',
@@ -341,6 +402,10 @@
  `dired-get-filename'      - Test `./' and `../' (like `.', `..').
  `dired-goto-file'         - Fix Emacs bug #7126.
                              Remove `/' from dir before compare.
+ `dired-hide-details-mode' - Respect new user options:
+                             * `diredp-hide-details-initially-flag'
+                             * `diredp-hide-details-propagate-flag'
+                             (Emacs 24.4+)
  `dired-insert-directory'  - Compute WILDCARD arg for
                              `insert-directory' for individual file
                              (don't just use nil). (Emacs 23+, and

