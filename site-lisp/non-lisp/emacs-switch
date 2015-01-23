@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Save the current winid so we know what to switch back to from emacs.
+#client_winid=$(emacs-current-winid)
+
+# Switch to emacs and wait for editing to be completed.
+#emacsclient -c -a fe "$@";
+#emacsclient -c -a -e '(message ("$@");
+emacsclient -c --eval "(progn (set-cursor-color \"#656565\")(find-file \"$1\")(select-frame-set-input-focus (selected-frame)))";
+wmctrl -xa emacs;
+
+#emacsclient -c "$@"
+
+# Switch back to window from which emacsclient was invoked.
+#wmctrl -ia $client_winid

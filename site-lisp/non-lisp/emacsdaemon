@@ -1,0 +1,7 @@
+#!/bin/bash
+#sudo systemctl start emacs@max;
+#emacsclient -c -e "(set-cursor-color \"#656565\")";
+wmctrl -R emacs@
+if [ $? -ne 0 ]; then
+	emacsclient -c -e "(set-cursor-color \"#656565\") (select-frame-set-input-focus (selected-frame))"
+fi
