@@ -2,13 +2,13 @@
 
 ;; ----- ido-last-directory-list -----
 (
- ("/data/" . "Downloads/")
- ("/" . "data/")
+ ("/home/max/src/eclipse_projects/training.battleship.ui/src/test/" . "resources/")
+ ("/home/max/src/eclipse_projects/training.battleship.ui/src/" . "test/")
 )
 
 ;; ----- ido-work-directory-list -----
 (
- 
+ "/home/max/src/eclipse_projects/training.battleship.ui/src/test/resources/"
 )
 
 ;; ----- ido-work-file-list -----
@@ -18,11 +18,15 @@
 
 ;; ----- ido-dir-file-cache -----
 (
- ("/data/Downloads/" (21693 11475 876466 164000) ".torrents/" "ZADANIE_3.doc" "wifi-stud.pdf" "Untitled" "Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides - Design Patterns Elements of Reusable Object-Oriented Software - 1994/" "books/" "Prilozhenia_k_zadaniyu__2.doc" "1000000pass yandex-ru.txt" "ZADANIE_1.doc" "ZADANIE_2-2.doc" "Сourse_work.zip" "Zadanie_1.xls" "Voprosy_k_ekzamenu_po_MLiTA_gr_4205_06_15_16.docx" "music/" "RF54avoNN5M.jpg" "Raspisanie_KS_28_08_14.xls" "ZADANIE_5.doc" "ZADANIE_2.doc" "ZADANIE_4.doc" "programs/" ".directory" "4Y47wyVQzKY.jpg" "learning/" "to/" "85hUwtwCLcE.jpg" "../" "./")
+ ("/home/max/src/eclipse_projects/training.battleship.ui/src/test/resources/" (21696 1373 635390 159000) "input.txt" "input_wrong_xml_file_structure.xml" "input_empty_field.txt" "input_100000.xml" "old_input.xml" "input_10k.xml" "input_diagonal_field.xml" "input_1000.txt" "../" "input_coord_higher_then_size.xml" "input_full_field.xml" "input.xml" "./" "input_empty_field.xml")
 
- ("/data/" (21693 2664 305439 509000) "virtualbox_vms/" ".emacs_backup/" "Dropbox/" ".if_something_wrong" "sandbox/" "Downloads/" ".Trash-1000/" "elements/" "lost+found/" "maxdir/" "../" "./" ".cpan/" "wineprefixes/")
+ ("/home/max/src/eclipse_projects/training.battleship.ui/src/test/" (21674 47736 752630 248000) "java/" "../" "resources/" "./")
 
- ("/home/max/" (21693 19927 376419 54000) ".emacs.d/" ".slime/" "Documents/" ".covers/" ".dia/" ".openvpn/" ".xinitrc" ".directory" ".gtkrc-2.0" ".zenmap/" ".swt/" ".git-credential-cache/" ".macromedia/" ".goldendict/" ".audacity-data/" ".argouml/" ".mplayer/" ".dropbox/" ".config/" ".dropbox-dist/" ".gconf/" ".gnupg/" ".w3m/" ".dbus/" ".Mathematica/" ".designer/" ".kde4/" ".cxoffice/" ".m2/" "Downloads/" ".pip/" ".kde/" ".java/" "src/" ".httpie/" ".eeschema" ".face.icon" ".mime.types" ".local/" ".subversion/" ".virtualenvs/" ".mozilla/" ".yEd/" "My Games/" ".FBReader/" ".kderc" ".brainworkshop/" ".zshrc" ".wireshark/" ".themes/" ".FontForge/" ".gnome/" ".dosbox/" ".qt/" ".android/" ".celestiarc" ".gtkrc-2.0-kde4" ".python_history" ".gtk-bookmarks" ".thumbnails/" ".icons/" ".ssh/" ".gimp-2.8/" ".p7zip" ".parallel/" ".wcm/" ".packettracer" ".gstreamer-0.10/" ".steampid" ".ipython/" ".npm/" "../" ".bashrc" "pt/" "Anki/" ".distlib/" ".gksu.lock" ".adobe/" "powder.pref" ".idlwave/" ".gitconfig" ".dmrc" ".bash_profile" ".Xauthority" ".histfile" ".compose-cache/" ".xsession-errors" ".esd_auth" ".recently-used" ".pulse-cookie" ".magick/" "books/" ".git/" ".cache/" "Desktop/" ".bash_history" ".steam/" ".kchmviewer/" ".VirtualBox/" ".Skype/" "./" ".steampath" ".zcompdump" ".eclipse/" ".pki/" ".Osmos/")
+ ("/home/max/src/eclipse_projects/training.battleship.ui/src/" (21674 47594 417023 10000) "../" "main/" "./" "test/")
+
+ ("/home/max/src/eclipse_projects/training.battleship.ui/src/main/" (21674 47726 955806 853000) "java/" "../" "resources/" "./")
+
+ ("/home/max/src/eclipse_projects/training.battleship.ui/src/main/resources/" (21696 1373 635390 159000) "../" "./")
 )
 
 ;; ----- ido-unc-hosts-cache -----

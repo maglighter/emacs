@@ -1,13 +1,13 @@
 
 ;; ----- smex-history -----
 (
+ cc
+ ee
  hexl-mode
  ag
  revert-buffer
- cc
  grep-find
  locate
- image-dired-show-all-from-dir
 )
 
 ;; ----- smex-data -----
@@ -17,7 +17,7 @@
  (time-stamp . 2)
  (timeclock-in . 2)
  (calendar . 1)
- (cc . 99)
+ (cc . 100)
  (compile . 282)
  (browse-url-w3 . 6)
  (tramp-version . 1)
@@ -26,7 +26,7 @@
  (gud-gdb . 17)
  (fundamental-mode . 33)
  (calc . 3)
- (ee . 159)
+ (ee . 160)
  (message-reply . 1)
  (grep . 1)
  (grep-find . 95)

@@ -616,6 +616,16 @@ of windows in the frame simply by calling this command again."
         (kill-buffer buffer)
         (message "File '%s' successfully removed" filename)))))
 
+;; dissable some stuff on files with big size
+(defun max/large-file-hook ()
+  "If a file is over a given size, make the buffer read only."
+  (when (> (buffer-size) (* 1024 1024))
+    (font-lock-mode -1)
+    (fundamental-mode)))
+
+(add-hook 'find-file-hooks 'max/large-file-hook)
+
+;; swap windows
 (defun max/swap-windows ()
   "Rotate your windows"
   (interactive)
