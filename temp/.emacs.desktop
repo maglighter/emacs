@@ -1,0 +1,172 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Wed Apr 23 22:47:00 2014
+;; Desktop file format version 206
+;; Emacs version 24.3.1
+
+;; Global section:
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring '("desktop" "session" "view" "tree" "setSec" "header" "head" "setSec" "frame" "qtre" "mode" "http" "d" "qtdoc-ht" "s" "/"))
+(setq regexp-search-ring '("^  ein" "  " "e0[\\n ]*" "b9 *80 *02 *00 *00" "b9 *e0 *01" "b9 *80 *02 *00 *00" "b9 *e0 *01" "b9 *80 *02 *00 *00" "00 *8b *45 *0c *c1 *e0" "00 *8b *45 *0c" "10 *8b *45 *0c" "10 *8b *45 *0c *c1 *e0 *" "10 \\*8b \\*45 \\*0c \\*c1 \\*e0 \\*03 \\*8b \\*4d \\*ec \\*83 \\*c1 \\*07 \\*3b \\*c1 \\*76" "10 *8b *45 *0c *c1 *e0 *03 *8b *4d *ec *83 *c1 *07 *3b *c1 *76" "10 \\*8b \\*45 \\*0c \\*c1 \\*e0 \\*03 \\*8b \\*4d \\*ec \\*83 \\*c1 \\*07 \\*3b \\*c1 \\*76" "b9 *80 *02 *00 *00 *f7"))
+(setq register-alist (list (list 313465889 "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk 2180 (get-buffer "simpletreemodel.py")))) mk)) (list '_ "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk nil (get-buffer " *temp*")))) mk)) '(122 file . "/home/max/.zshrc") '(102 file . "/home/max/.emacs.d/org/foo.org") '(105 file . "/home/max/.emacs.d/init.el")))
+(setq file-name-history '("/home/max/.emacs.d/temp" "/data/sandbox/PyQt5/examples/itemviews/simpletreemodel/default.txt" "/data/sandbox/PyQt5/examples/itemviews/simpletreemodel/simpletreemodel_rc.py" "/data/sandbox/PyQt5/examples/" "~/.emacs.d/site-lisp/qtdoc.el" "~/.emacs.d/init.el" "/home/max/.emacs.d/site-lisp/qtdoc.el" "/home/max/.histfile" "/data/sandbox/PyQt5/examples/tutorials/addressbook/part2.py" "~/src/python/music_tools/qt_music_tools/" "/home/max/src/python/music_tools/core.py" "/home/max/src/python/music_tools/music_tools.py" "/home/max/src/python/music_tools/qt_music_tools/ui_main_window.py" "/home/max/src/python/music_tools/qt_music_tools/qt_music_tools.py" "~/src/python/music_tools/qt_music_tools" "/tmp/yaourt-tmp-max/aur-profile-sync-daemon/PKGBUILD" "~/src/python/computer_vision/opencv_vebcam.py" "/home/max/src/python/computer_vision/opencv_vebcam.py" "/home/max/src/python/music_tools/capture.jpg" "/usr/lib/python3.4/site-packages/IPython/html/base/zmqhandlers.py" "/home/max/.emacs.d/site-lisp/emacs-ipython-notebook/lisp/zeroein.el" "/home/max/src/python/music_tools/gi_cover_downloader_lib.py" "/home/max/src/python/music_tools/music_tools_config" "/home/max/src/python/music_tools/gi_cover_downloader_lib.py" "~/.emacs.d/org/foo.org" "~/.emacs.d/org" "/home/max/.emacs.d/elpa/org-plus-contrib-20140414/org-learn.el" "/usr/share/emacs/24.3/lisp/org/org-learn.el" "/usr/share/emacs/24.3/lisp/org/org-drill.el" "/etc/yaourtrc" "/data/sandbox/FTL/ftl_save_backup_and_run.sh" "/run/media/max/D2/" "/run/media/max/B377-20A9/.rockbox/" "/var/log/journal/da9f798a297c4aa1b81657ece1025048/system.journal" "/var/log/journal" "/etc/systemd/journald.conf" "/data/virtualbox_vms/folder/ra/" "/data/virtualbox_vms/folder/ra/my/" "/data/virtualbox_vms/folder/ra/my" "/data/virtualbox_vms/folder/ra/Œ´ŒØŒáŒÚŒàŒÕŒâŒÝŒÐŒï ŒÜŒÐŒâŒÕŒÜŒÐŒâŒØŒÚŒÐ: ŒÐŒÛŒÓŒÞŒàŒØŒâŒÜŒë. ŒÂŒÕŒàŒÜŒØŒÝŒÞŒÛŒÞŒÓŒØŒï ŒØ ŒáŒâŒÐŒÝŒÔŒÐŒàŒâŒÝŒëŒÕ ŒáŒßŒÞŒáŒÞŒÑŒë ŒßŒàŒÕŒÔŒáŒâŒÐŒÒŒÛŒÕŒÝŒØŒï ŒÓŒàŒÐŒäŒÞŒÒ.htm" "/usr/bin/shutdown-and-umount-max" "/etc/X11/xorg.conf.d/10-trackpoint.conf " "/etc/thinkfan.conf" "/etc/systemd/system/kill-share-before-shutdown-max.service" "/usr/lib/systemd/system/systemd-modules-load.service" "/usr/lib/systemd/systemd-modules-load" "/data/.emacs_backup/!etc!fstab.~40~" "/usr/share/apps/kdm/sessions/awesome.desktop" "/data/sandbox/konsole/" "/home/max/.kde4/share/config/yakuakerc" "/home/max/src/cpp/OAIP/graph_path.cpp" "~/src/cpp/" "/etc/psd.conf.pacnew" "/etc/psd.conf" "/tmp/yaourt-tmp-max/sysuplist" "/data/virtualbox_vms/folder/q/uu_files/ru/ifmo/ips/visualizers/" "/data/virtualbox_vms/folder/q/uu_files/ru/ifmo/ips/visualizers/base/" "/data/virtualbox_vms/folder/q/uu" "~/src/cpp/" "/data/maxdir/books/Games/bg2_ee_walkthough" "/data/maxdir/books/Games/bg2_spells" "/data/maxdir/books/Games/bg2_faq_walkthrough" "~/src/cpp/" "/home/max/src/cpp/tvims.cpp" "/data/maxdir/books/Games/Planescape Torment Materials/Œ³ŒÐŒÙŒÔŒë ŒØ ŒßŒàŒÞŒçŒÐŒï ŒßŒÞŒÛŒÕŒ×ŒÝŒÐŒï ŒØŒÝŒäŒÞŒàŒÜŒÐŒæŒØŒï/Œ¿ŒàŒÞŒåŒÞŒÖŒÔŒÕŒÝŒØŒï/Items Listing v1.11 by Dan Simpson.txt" "/data/sandbox/spritz-cmd-master/bin/spritz.py" "/data/wineprefixes/morrowind/drive_c/Planescape/Torment_before_another.exe" "/data/wineprefixes/morrowind/drive_c/Torment_nonmod.exe" "/data/wineprefixes/morrowind/drive_c/Planescape/AR0100.cbf" "/data/wineprefixes/morrowind/drive_c/Planescape/Torment.exe" "/data/virtualbox_vms/folder/automato/input.txt" "/home/max/src/python/automato/input" "/data/wineprefixes/morrowind/drive_c/Planescape/Torment.err" "/data/wineprefixes/morrowind/drive_c/Planescape/Torment.log" "/data/wineprefixes/morrowind/drive_c/Planescape/Torment.exe" "/data/wineprefixes/default64/drive_c/Program Files (x86)/Planescape/Torment.log" "/data/wineprefixes/default64/drive_c/Program Files (x86)/Planescape/torment.exe" "/home/max/src/cpp/struct_calendar.cpp" "/home/max/src/cpp/enum_class.cpp" "/home/max/src/cpp/datatype_size.cpp" "/home/max/src/cpp/count_same_strings.cpp" "/home/max/src/cpp/mdim_array_to_f.cpp" "/home/max/src/cpp/datatype_size.cpp" "/home/max/src/cpp/fibonachi_sequence.cpp" "/home/max/src/cpp/straustrup/test_code.cpp" "~/src/cpp/point_refs2.cpp" "~/src/cpp/OAIP/" "~/src/cpp/point_refs.cpp" "~/src/cpp/VM" "~/src/cpp/OSIS" "~/src/cpp/osis" "~/src/cpp/OAIP" "~/src/cpp/oaip_2013/old" "~/src/cpp/oaip_2013" "~/src/cpp/cipher/" "~/src/cpp/cipher" "~/src/cpp/oaip2/" "/home/max/src/python/automato/input" "/home/max/src/python/automato/input2" "/home/max/src/python/automato/1input"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/usr/share/emacs/24.3/lisp/desktop.el.gz"
+  "desktop.el.gz"
+  'emacs-lisp-mode
+  '(undo-tree-mode auto-complete-mode global-auto-revert-mode guide-key-mode eldoc-mode)
+  2200
+  '(6305 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/data/sandbox/PyQt5/examples/itemviews/simpletreemodel/default.txt"
+  "default.txt"
+  'text-mode
+  '(undo-tree-mode global-auto-revert-mode guide-key-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/data/sandbox/PyQt5/examples/itemviews/simpletreemodel/simpletreemodel.py"
+  "simpletreemodel.py"
+  'python-mode
+  '(undo-tree-mode auto-complete-mode global-auto-revert-mode guide-key-mode flymake-mode outline-minor-mode)
+  6253
+  '(2219 nil)
+  nil
+  nil
+  '((tab-width . 4) (indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/max/src/python/music_tools/qt_music_tools/qt_music_tools.py"
+  "qt_music_tools.py"
+  'python-mode
+  '(undo-tree-mode auto-complete-mode global-auto-revert-mode guide-key-mode flymake-mode outline-minor-mode)
+  5423
+  '(1111 nil)
+  nil
+  nil
+  '((tab-width . 4) (indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/max/src/python/music_tools/music_tools.py"
+  "music_tools.py"
+  'python-mode
+  '(undo-tree-mode auto-complete-mode global-auto-revert-mode guide-key-mode flymake-mode outline-minor-mode)
+  6525
+  '(6384 nil)
+  nil
+  nil
+  '((tab-width . 4) (indent-tabs-mode) (buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  "/home/max/src/python/music_tools/qt_music_tools/ui_main_window.py"
+  "ui_main_window.py"
+  'python-mode
+  '(undo-tree-mode auto-complete-mode global-auto-revert-mode guide-key-mode flymake-mode outline-minor-mode)
+  1724
+  '(114 nil)
+  nil
+  nil
+  '((tab-width . 4) (indent-tabs-mode) (buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  "/data/sandbox/PyQt5/examples/webkit/domtraversal/domtraversal.py"
+  "domtraversal.py"
+  'python-mode
+  '(undo-tree-mode auto-complete-mode global-auto-revert-mode guide-key-mode flymake-mode outline-minor-mode)
+  3139
+  '(2885 nil)
+  nil
+  nil
+  '((tab-width . 4) (indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/data/sandbox/PyQt5/examples/graphicsview/padnavigator/padnavigator.py"
+  "padnavigator.py"
+  'python-mode
+  '(undo-tree-mode auto-complete-mode global-auto-revert-mode guide-key-mode flymake-mode outline-minor-mode)
+  12535
+  '(nil nil)
+  nil
+  nil
+  '((tab-width . 4) (indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  nil
+  "padnavigator"
+  'dired-mode
+  '(global-auto-revert-mode guide-key-mode)
+  344
+  '(nil nil)
+  t
+  '("/data/sandbox/PyQt5/examples/graphicsview/padnavigator/")
+  nil)
+
+(desktop-create-buffer 206
+  nil
+  "examples"
+  'dired-mode
+  '(global-auto-revert-mode guide-key-mode)
+  220
+  '(nil nil)
+  t
+  '("/data/sandbox/PyQt5/examples/")
+  nil)
+
+(desktop-create-buffer 206
+  "/home/max/src/python/music_tools/qt_music_tools/core.py"
+  "core.py"
+  'python-mode
+  '(undo-tree-mode auto-complete-mode global-auto-revert-mode guide-key-mode flymake-mode outline-minor-mode)
+  1
+  '(3197 nil)
+  nil
+  nil
+  '((tab-width . 4) (indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/data/sandbox/PyQt5/examples/tutorials/addressbook/part2.py"
+  "part2.py"
+  'python-mode
+  '(undo-tree-mode auto-complete-mode global-auto-revert-mode guide-key-mode flymake-mode outline-minor-mode)
+  3617
+  '(3150 nil)
+  nil
+  nil
+  '((tab-width . 4) (indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  nil
+  "qt_music_tools"
+  'dired-mode
+  '(global-auto-revert-mode guide-key-mode)
+  524
+  '(nil nil)
+  t
+  '("/home/max/src/python/music_tools/qt_music_tools/")
+  nil)
+
+(desktop-create-buffer 206
+  "/data/sandbox/PyQt5/examples/tutorials/addressbook/part1.py"
+  "part1.py"
+  'python-mode
+  '(undo-tree-mode auto-complete-mode global-auto-revert-mode guide-key-mode flymake-mode outline-minor-mode)
+  2896
+  '(1 nil)
+  nil
+  nil
+  '((tab-width . 4) (indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+

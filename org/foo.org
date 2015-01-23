@@ -1,0 +1,1203 @@
+* Git
+  file status can be: untracked -> unmodified -> modified -> staged (index)
+  : .gitignore - file that contain names of files, globs which wouldn't be included in repository
+  create repository:
+  : git init
+  add file to version control & add file to index for next commit (add to staged | update):
+  : git add <file>
+  status of each file in rep. (changed/unchanged/untracked), branch:
+  : git status
+  compare changed files
+  : git diff [--staged - diff indexed files]
+  make snapshot of indexed files 
+  : git commit [-a - without 'git add' for changed files] [-m ' ' - info]
+  :            [--amend - replace last commit]
+  delete file from index and from working dir:
+  : git rm [--cached - delete only from index]
+  move file
+  : git mv <source> <target>
+  view commites log:
+  : git log [-p - show diff] [-2 - last 2 commit] [--stat - statistics]
+  :         [--pretty=oneline - one line for each commit]
+  :         [--pretty=format:"%h - %an, %ar : %s"]
+  display remote-name for current rep. (default: origin)
+  : git remote [-v - list of all remote-names and URL's]
+  get all missing files from remote-name (update)
+  : git pull [server-name] | git fetch [remote-name]
+  push branch -  master on server - origin
+  : git push [server-name] [branch]
+  show information about remote rep. ()
+  : git remote show [remote-server]
+  associate a name to a remote server, for the git project of current dir:
+  : git remote add github https://github.com/xahlee/xah_emacs_init.git
+* Emacs
+** Remember
+  C-M-SPC - select next word
+  align-regexp - align by regexp
+** Unbinded keys
+*** UNBINDED
+    : M-[
+    : M-]
+
+*** UNUSEFUL:
+    : M-m back-to-indentation
+    : M-j comment-indent-new-line:c++
+
+*** REBINDED:
+    : M-z old: zap-to-char; now: ace-jump
+    : C-x p - proced
+    
+    M-x describe-bindings
+
+** Macroses
+   Запись макроса:
+   : С-x (, F3
+   Конец записи макроса:
+   : C-x ), F4
+   Выполнение:
+   : C-x e (повтрорно е), F4
+   Редактирование макроса:
+   : edit-kbd-macro (C-x C-k e)
+   Применение макроса только для части текста:
+   : C-x C-k r
+   
+** Calc
+*** Matrix commands
+    Pack/unpack:
+    v-p / v-u without argument packs/unpacks nums = head stack value
+    M-NUM v-p - how many numbers to pack from stack
+    M-NUM v-u - how many numbers to pack from stack
+    arg examples: 2, 3, [3,3], [1,2]
+
+    `| - concat two vectors
+    v-d - build diagonal matrix from vector
+    M-NUM v-d - constant diagonal matrix (1,0,...)
+    v-i - E
+    v-x - builds vector from 1 to N
+    v-b - bulds vector of N copies from head (number or vector)
+    v-h - return first element from vector
+    I-v-h - returns vector with removed first element
+    v-r - extract row from matrix (negative - delete) (zero -extract diagonal vector)
+    v-c - extract column
+    v-a - rearrange vector to have a certain numver of columns
+    v-t - transpose matrix
+    v-v - reverse matrix
+    & - compute inversed matrix A^-1
+    
+    C-x * c | C-x * * - запуск в обычном режиме
+    C-x * q - quick mode
+    C-x * k - запуск в режиме keypad
+    C-x * 0 - reset
+    h k <com> - справка по команде
+    h f <fun> - справка по функции
+    h s - все клавиатурные привязки
+    C-x * g - grab, копирует матрицу из буффера, и пересылает в одну строку
+    C-x * r - копирует матрицу
+    C-x * y - вставляет значение из вершины стека в буфер
+    C-x * : - grab the rectangular region and compute the sums of its columns
+    C-x * _ - grab the rectangular region and compute the sums of its rows
+    m a - algebraic mode
+    d B - big screen mode
+    s s - сохраняет значение вершины стека в веденную переменную
+    s k - сохраняет значение вершины стека в веденную переменную и удаляет её
+    M-0-9 d f - округляет до заданного числа знаков
+    d g - разделяет число запятыми
+    = - разворачивает переменные в вершине стека
+    U - undo
+    D - redo
+    d 1 - 10, d 6 - 16, d 8 - 8; 2#101011, 16#0xA2B
+    
+* Regexp's
+  Special characters: `$', `^', `.', `*', `+', `?', `[', `]', `\'
+  `.' - one single character except a newline.
+  Ex: a.b = aqb
+  `*' - postfix operator, matches preceding expression any number of times even
+  no one.
+  Ex: bq* = b = bqq = bqqq = ... | null or all
+  `+' - postfix operator, must match preceding expression at least once.
+  Ex: bq+ = bq = bqq = bqqq = ... | one or all
+  `?' - postfix operator, must match the preceding expression either once
+  or not at all.
+  Ex: bq?r = br = bqr | null or one
+  `*?' - match the shortest valid match
+  Ex: bq* first match bqqq; bq*? first match b
+  `+?' - match the shortest valid match
+  Ex: bq+ first match bqqq; bq+? first match bq
+  `??' - match the shortest valid match
+  Ex: bq? first match bq; bq*? first match b
+  
+* Grep
+  Ищет все слова, начинающиеся с use, в текущей папке, среди всех файлов:
+  grep 'use.*' *
+  grep '^#.*\.$' /etc/fstab
+
+* Perl
+  Каждая строка файла links передается в команду wget; $_ - дефолтный счетчик:
+  perl -ne 'system("wget --content-disposition -p -k $_")' buf
+  -p - загрузка css, js, изображений, -k - оффлайн доступ, --content-disposition
+  perl -e 'chomp(@file = <STDIN>); foreach (@file) { system("wget -p -k $_") }' < links
+  Здесь тоже самое, в wget передается сразу весь массив @file в одну строку:
+  perl -e 'chomp(@file = <STDIN>); system("wget -p -k @file")' < links
+  Опции командной строки:
+  -n - сгенирировать код: while (<>) { ... }
+  -p - сгенирировать код: while (<>) { ... print; }
+  -i~ - создание бекапа и обновление файла, без бекапа - -i
+  -w - выводить предупреждения
+  -e - далее следует исполняемый код ''
+  
+* Wine
+  Create new win32 prefix (don't create folder before):
+  WINEARCH=win32 WINEPREFIX=~/.wineprefixes/prefix winecfg
+  win64 prefix:
+  WINEPREFIX=~/.wineprefixes/prefix winecfg
+  
+  Run program from prefix x3:
+  WINEARCH=win32 WINEPREFIX=~/.wineprefixes/x3 wine /home/max/.wineprefixes/x3/drive_c/Program\ Files/X3.Albion\ Prelude.v\ 1.1/X3TC.exe -language 7
+  
+  Run program with russian language:
+  LANG=ru_RU.UTF-8 WINEARCH=win32 WINEPREFIX=~/.wineprefixes/morr wine setup.exe
+  
+  Install libs:
+  WINEARCH=win32 WINEPREFIX=$HOME/.wineprefixes/prifix winetricks corefonts directx9 vcrun2005 vcrun2008 vcrun6
+  
+* Compilation and Debuging
+** GDB
+   Точка останова:
+     (b)reak [точка | функция]
+   Установка точки наблюдения (программа остановится, когда переменная изменится):
+     watch [перем]
+   Удаление точк(и/eк) останова:
+     delete [точк(а/и)]
+   Информация о точке останова:
+     info breakpoints
+   Запуск программы (выполнение программы с самого начала):
+     (r)un
+   Информация о выполненных командах и функциях:
+     (b)ack(t)race
+   Вывод переменной один раз:
+     (p)rint [перем]
+   Вывод переменной на каждом шаге:
+     display [перем]
+   Выполнение одного шага и возврат управления отладчику:
+     (s)tep [число шагов]
+   Выполнение одного шага без перехода к какой-либо ф-ии:
+     (n)ext [число шагов]
+   Пропускает функцию и выводит ее возвращаемое значение:
+     finish
+   Продолжить выполнение программы (можно предварительно добавить еще
+   одну точку останова в другое место программы):
+     (c)ontinue
+   Устанавливает значение для какой-либо переменной:
+     set j=5
+   Прерывание любой выполняющейся команды и возвращение в gdb:
+     C-c
+    
+** WIN API compile and link
+     i586-mingw32msvc-gcc start.c -o start.exe
+   For run in windows: 
+     i586-mingw32msvc-gcc -mwindows api.cpp -o api.exe
+   The project compilation: 
+     i586-mingw32msvc-gcc rctm.cpp resource.h
+   If there is a *.rc file (resource script):
+     i586-mingw32msvc-windres rctm.rc rctmrc.o
+     i586-mingw32msvc-gcc -mwindows resource.h rctm.o rctmrc.o -o timer.exe
+  
+** MONO
+   gmcs hello.cs
+   gmcs hello.cs -pkg:dotnet
+   mono hello.exe
+
+* Basic shell commands
+** File/Directory Manipulation
+   List files in current directory:
+   > ls 
+   List all files in current dir, including dot files:
+   > ls -al
+   Show file name matching <string>:
+   > ls -al | grep <string>
+   Change directory:
+   > cd <dirpath>
+   Go to $HOME dir:
+   > cd
+   Show the current dir:
+   > pwd
+
+   Create a new file (or updating timestamp of a existing file):
+   > touch <filename>
+   Delete a file:
+   > rm <filename>
+   Delete a dir:
+   > rm -r <dirname>
+   Copy a file:
+   > cp <filename> <new filename>
+   Copy a dir:
+   > cp -r <dirname> <new name>
+   Create a new dir:
+   > mkdir <new dir name>
+   Delete a dir only if it is empty:
+   > rmdir <dirname>
+   Rename file, or move to a diff dir:
+   > mv <filename> <new name>
+   Show dir size. (Linux: Directory Size: du Command):
+   > du -sh <dirname>
+
+** Viewing Files
+   View a file:
+   > cat <filename>
+   View a file by page. Type [q] to exit. Type [h] for other keys. more can also be less; the latter is better:
+   > cat <filename> | more
+   View a file. Type [Esc : q] to exit:
+   > vi <filename>
+   View the first few lines of a (big) file. (to get a idea what the heck the file contains):
+   > head <filename>
+   View the last few lines of a file:
+   > tail <filename>
+   View the last few lines of a growing file, updated continuously. Typically used on log files:
+   > tail -f <filename>
+   Report what type of file it is:
+   > file <filename>
+
+** Locating Commands
+Show if <cmd name> is a shell built-in or standalone program. e.g. type kill. “type” is a bash built-in:
+> type <cmd name>
+Show full path of a command, useful for checking if a program is installed, or if it's in the search path in $PATH environment variable:
+> which <cmd name>
+View documentation of a command. [q] to exit. [h] for help:
+> man <cmd name>
+Search man pages:
+> apropos <string>
+Find a file by name (using the database see man updatedb). This is similar to find <many dir paths> -name "*<search string>*" but much faster:
+> locate <search string>
+Update the database used by locate:
+> updatedb
+
+** Archive, Compression {tar, gzip}
+Archive a folder:
+> tar cvf <new name.tar> <dirpath>
+Unarchive:
+> tar xvf <filename.tar>
+To compress a file:
+> gzip <filename>
+Decompress a file:
+> gzip -d <filename>
+
+** Managing Process
+View running processes:
+> ps -ef
+Find a particular process:
+> ps -ef | grep <name>
+Quit a program that has process id <pid>:
+> kill <pid>
+Force quit a process:
+> kill -s 9 <pid>
+Monitor processes with continuous update. q to quit:
+> top
+Show the process parent-child relationship:
+> pstree
+
+** Job Control
+Start a program in background. e.g. emacs &:
+> <cmd> &
+Stop a command. (sending SIGINT to it) e.g. you did emacs and forgot the &, press [Ctrl+c] to start over:
+> [Ctrl+c]
+Suspend a command. (sending SIGTSTP to it):
+> [Ctrl+z]
+Run the suspended command in background:
+> bg %<number>
+Resume a background process to foreground:
+> fg %<number>
+Seperate a job process id 1 from jobs:
+> disown %1
+List background processes:
+> jobs
+
+** Sys Admin
+Create a new user account. (On Debian based linuxes, there's higher-level “adduser” written in perl.):
+> useradd <user name>
+Change password for user:
+> passwd <user name>
+Show the id number of a user, and all groups he belongs to:
+> id <user name>
+List all users:
+> cat /ect/passwd
+List all groups. See getent --help:
+> getent group
+
+Change the perm bits. (664 = rw-rw-r--; typical text file perm bits):
+> chmod 664 <filename>
+Change owner of a file:
+> chown <user name> <filename>
+Change the group of a file:
+> chgrp <group name> <filename>
+Make a symbolic link of a file. (symbolic is file that contains the path of another file.):
+> ln -s <new name> <filename>
+Create hard link of a file. (Hard link makes 2 files pointing to the same index in the file system (hard disk).):
+> ln <new name> <filename>
+Restart machine now. (power off is -P):
+> shutdown -r 0
+
+Show current date and time:
+> date
+Show time stamp in this format: “yyyy-mm-dd hh:mm:ss-07:00” the last are time offset to UTC:
+> date --rfc-3339=seconds
+Show who is logged in:
+> w
+List all users that have logged in recently:
+> who -a
+Show how long the system's been running:
+> uptime
+Count the number of chars, words, lines. useful with cat, grep:
+> wc
+
+Execute a shell file <shell file>. source <shell file> is equivalent to . <shell file>:
+> source <shell file>
+Start a new bash. [Ctrl+d] to exit when done:
+> bash
+View value of a environment variable:
+> echo $PATH
+Show all environment variables:
+> env
+Make <str> as shortcut for <cmd>. e.g. alias l="ls -al --color":
+> alias <str>="<cmd>";
+
+** Generic Useful Bash Syntax
+A asterisk “*” means any character. *.txt means all files ending in “.txt”. Can be used for any command that takes list of files or dir. See man 7 glob:
+> <cmd> *.txt
+Pass the output of <cmd1> to the input of <cmd2>:
+> <cmd1> | <cmd2>
+Feed the content of <filename> to the input of <cmd>:
+> cat <filename> | <cmd>
+Write the output to fill:
+> <cmd> > <filename>
+Append output to fill:
+> <cmd> >> <filename>
+Join contents of <filename1> <filename2> to <new filename:
+> cat <filename1> <filename2> > <new filename>
+Run several commands:
+> <cmd1>; <cmd2>; …
+Run <cmd1>, if success, then run <cmd2> (otherwise stop.) (the && is a logical “and” operator. Unix commands returns 0 if success, else a integer error code:
+> <cmd1> && <cmd2>
+Fenerate the output of <cmd> and use it in your whole command. e.g. ls -l `which more:
+> … `<cmd>` …
+Run a command in background:
+> … &
+
+* Other
+** Home Network
+   Hostname: maglight.dlinkddns.com
+
+   win7home     192.168.0.100 00:1E:90:B8:1C:F5
+   tparch	192.168.0.101 60:67:20:D7:05:88
+   win7work     192.168.0.102 00:C0:A8:FF:94:72
+   eeepc	192.168.0.103 1C:4B:D6:85:1C:6A
+   androidphone 192.168.0.104 68:9C:5E:BB:56:C7
+   
+** Add efi record
+   efibootmgr -c -g -d /dev/sdb -p 1 -L "rEFInd" -l '\EFI\opensuse\grubx64.efi'
+
+** Recursive download  
+   wget -r -l 2 http://vsokovikov.narod.ru/New_MSDN_API/Process_thread/ogl_process.htm
+
+** Создание zip архива
+   zip -r -9 name.zip dir1 file1 dir2 file2
+
+** File convert from WINDOWS-1251(ANSI) to UTF-8
+   iconv -f WINDOWS-1251 -t UTF-8 X3.txt > X3_new.txt
+   Emacs:
+   C-x <RET> f utf-8-unix  
+
+** Remember
+Карта № 2938494461    
+
+240:4068950045185011:01:15
+
+** Ankii
+disere - желание
+sequence
+ubiquitous
+various
+involved
+beyond
+thereby
+retrieve
+route
+negotiate
+reside
+privacy
+statement
+enterprise
+allocate
+scarce
+beneficial
+election
+crews
+scheduling
+exhibit
+challenge
+facilitate
+encounter
+certain
+overall
+bounded
+wisely,
+roughly
+impact
+approach
+permutation
+employ
+essence
+held
+composedunits
+dereferencing - разыменование = indirection - косвенное обращение
+
+** XCOM Steam
+   Он пытается грузить новости об игре, и вроде проверяет исполняемый
+   файл на предмет изменений (так в мануалах к модам было
+   написано). Решение добавить в /etc/hosts 127.0.0.1
+   prod.xcom.firaxis.com 127.0.0.1 prod.xcom-ew.firaxis.com и
+   запретить доступ к айпишникам 65.118.245.165 и 65.118.245.139
+* PKGBUILD example
+  # Maintainer: Lubosz Sarnecki <lubosz at gmail>
+
+  pkgname=aria-robot
+  pkgver=2.7.5.2
+  distname=Aria-${pkgver}
+  pkgrel=1
+  pkgdesc='MobileRobots Advanced Robot Interface for Applications. A C++ library for MobileRobots/ActivMedia platforms.'
+  arch=('i686' 'x86_64')
+  url='http://robots.mobilerobots.com/wiki/ARIA'
+  license=('GPL2')
+  depends=()
+  makedepends=()
+  source=(ARIA-2.7.5.2+x86_64+gcc4.3.tgz)
+  md5sums=('3af30a8783b127a9773e708175ecf066')
+
+  build() {
+    cd ${srcdir}/${distname}
+    make
+  }
+
+  package() {
+    cd ${srcdir}/${distname}
+    make DESTDIR=$pkgdir install
+  }
+
+* aircrack-ng
+  sudo airodump-ng -w handshaketest -c 13 1C:BD:B9:27:95:02 mon4
+  sudo aireplay-ng -0 3 -a 1C:BD:B9:27:95:02 -c 60:67:20:d7:05:88 mon4 --ignore-negative-one
+
+  airodump-ng -c 13 -w wep --bssid 1C:BD:B9:27:95:02 mon0
+  aireplay-ng -1 0 -a 1C:BD:B9:27:95:02 -h 00:C0:CA:30:85:7A mon0
+
+  sudo airmon-ng
+  sudo airmon-ng start wlp3s0
+  sudo airodump-ng mon5
+  sudo airodump-ng -c 13 -w wep --bssid 1C:BD:B9:27:95:02 mon5 --ignore-negative-one
+  sudo aireplay-ng -1 0 -a 1C:BD:B9:27:95:02 -h 60:67:20:d7:05:88 mon5 --ignore-negative-one
+
+  sudo reaver -i mon0 -b 20:4E:7F:33:CF:3D -vv
+  sudo reaver -i mon0 -b C8:6C:87:77:CC:38 -vv
+
+  sudo reaver -i mon0 -b C8:6C:87:77:CC:38 -vv -o reaver-log -s C86C8777CC38.wpc -a -x 200
+  sudo reaver -i mon0 -b 00:21:91:F6:10:E5 -vv /data/sandbox/reaver-tr -a -x 200
+
+  1C:BD:B9:27:95:02	Light
+  60:67:20:d7:05:88	tparch
+  00:07:88:95:D3:C5
+  20:4E:7F:33:CF:3D	WiFi.Dom.ru-6023
+  C8:6C:87:77:CC:38	Zyxel_Pyxel
+  00:21:91:F6:10:E5	Trojan
+
+* ktorrent download CLI
+  qdbus-qt4 org.ktorrent.ktorrent /core org.ktorrent.core.load "/data/Downloads/.torrents/Black Mirror (Сезон 2).torrent" "Music"
+
+* debug running program
+  gdb program
+  strace program (display opened/changed files)
+
+* Mathematica
+  Plot 3d figures:
+  
+  ContourPlot3D[{x^2 + y^2 + z^2 == 1, 2 z == 4, x^2 + y^2 == 1},
+  {x, 0, 2}, {y, 0, 2}, {z, 0, 2}, MeshStyle -> {{Thick, Blue}},
+  Mesh -> {{0}}, ContourStyle -> Directive[Orange, Opacity[0.5],
+  Specularity[White, 30]]]
+
+  7zadA:
+  ContourPlot3D[{x + y == 8, y - Sqrt[4 x] == 0, z == 0, 
+  3 y - z == 0}, {x, 0, 12}, {y, 0, 12}, {z, 0, 12}, 
+  MeshStyle -> {{Thick, Blue}}, Mesh -> {{0}}, 
+  ContourStyle -> 
+  Directive[Orange, Opacity[0.5], Specularity[White, 30]]]
+  7zadB:
+  ContourPlot3D[{x^2 + y^2 + z^2 == 4, ((x^2 + y^2)/255) - z^2 == 
+   0}, {x, -2, 2}, {y, -2, 2}, {z, -2, 2}, 
+ MeshStyle -> {{Thick, Blue}}, Mesh -> {{0}}, 
+ ContourStyle -> 
+  Directive[Orange, Opacity[0.5], Specularity[White, 30]]]
+  
+* Reference:
+** Basics:
+*** Getting help:
+
+# View the manual for target command
+man command
+
+# Get help with a target command (probably the same as above, but not always):
+command -h
+
+# In case you forget the name of a command, print possible commands relating to any given word:
+apropos word
+
+# View index of help pages:
+info
+
+*** Command Line Utilities:
+**** Basic File and Directory Operations:
+# Print current working directory:
+pwd
+
+# Show files in current directory:
+ls
+
+# Show maximum information about all files, including hidden:
+ls -a
+
+# Recurse into subdirectories and list those as well:
+ls -R
+
+# List files by modification time, most recent first.
+ls -lt
+
+# Move/rename a file or directory (be careful that you don't move the source over a destination with the same name):
+mv source destination
+
+# Delete target forever (be very careful), use -r recursive flag for directories:
+rm target
+
+# Copy file or directory:
+cp source destination
+
+# Mount filesytem:
+mount /dev/device_name /media/device_name
+
+# Unmount:
+umount /media/device_name
+
+# Forensically clone filesystems and do other low-level operations on files. Be careful with this one. Can be destructive:
+dd
+
+# Work with disk partitions:
+parted
+
+# Filesystem creation tool:
+mkfs
+
+**** System Administration:
+
+# Execute command as an administrator (can be destructive/insecure. Use only for system administration tasks):
+sudo command
+
+# Become system administrator:
+sudo -s
+
+# Quit system administration:
+exit
+
+# Forgot to type sudo in front of a command and already hit enter? Repeat the last command using sudo:
+sudo !!
+
+***** Installing software from a .tgz (also known as a tarball):
+
+# First, unzip the tarball (see section on tar, below)
+# Next, move into unzipped directory:
+cd software_directory
+
+# Always read README first if it is provided, in case there are any modifications to the procedure outlined below:
+cat README
+
+# Automatically check for appropriate configurations and generate a MAKE file in the directory:
+./configure
+
+# Compile software. May require sudo:
+make
+
+# Move files into their appropriate locations. May also require sudo:
+make install
+
+# Clean up files in directory, in case make command fails, or just to remove unnecessary cruft:
+make clean
+
+***** Ubuntu/Debian Software repositories:
+
+# Check distro repositories for software updates:
+sudo apt-get update
+
+# Download and install updates (update first):
+sudo apt-get upgrade
+
+# Search for package in the repositories:
+apt-cache search keyword
+
+# Get more detail on one specific package:
+apt-cache show package_name
+
+# Download and install a package:
+sudo apt-get install package_name
+
+# View the output of a command in a more convenient format:
+command | less
+
+**** Working With Files:
+
+# Print a file in terminal:
+cat file
+
+# Find files matching filename:
+locate filename
+
+# See the version of a program or the location of the program
+which appname
+
+# Search through filename for matches to phrase:
+grep phrase filename
+
+# Search through output of a command for phrase:
+command | grep phrase
+
+**** Working With Processes:
+
+# List all running processes:
+ps -e
+
+# Standard system monitor showing a more extensive view of all processes and system resources:
+top
+
+# Like top, but with a better, cleaner interface:
+htop
+
+# Stop a process from using all system resources and lagging computer:
+renice process_name
+
+# Kill misbehaving process (use sparingly, last resort, try 'renice' command first):
+pkill process name
+
+# Start a process in the background
+command &
+
+# Start a process in the background and have it keep running after you log off
+nohup command &
+
+**** Compression and Encryption:
+
+# Make a simple compressed backup of files or directories:
+tar -cvzf backup_output.tgz target_files_or_directories
+
+# Open a compressed .tgz or .tar.gz file:
+tar -xvf target.tgz
+
+# Encrypt a file:
+gpg -o outputfilename.gpg -c target_file
+
+# Decrypt a file:
+gpg -o outputfilename -d target.gpg
+
+# Zip and encrypt a directory simultaneously:
+gpg-zip -o encrypted_filename.tgz.gpg -c -s file_to_be_encrypted
+
+*** The Bash shell:
+**** File Name expansions:
+# Current user's home directory:
+~/
+
+# Current directory:
+./
+
+# Parent directory:
+../
+
+# Or even (Two parent directories down):
+../../
+
+# All files in target directory. (Be very careful.):
+/*
+
+**** Output Redirects:
+
+# Redirect output of one command into the input of another with a pipe:
+command_1 | command_2
+
+# Or even:
+
+command_1 | command_2 | command_3
+
+# Redirect output to a file:
+command > file
+
+# Or:
+
+file > file
+
+# Or even, to redirect in a different direction:
+file < file
+
+# Append output rather than writing over the target file:
+
+file_or_command >> file
+
+# Works like |, but it writes output to both target and terminal:
+tee target
+
+# Redirect standard output and error to /dev/null, where it is deleted.
+command > /dev/null 2>&1
+
+**** Controlling Execution:
+# Wait until command 1 is finished to execute command 2
+command_1 ; command_2
+
+# Or even:
+command_1 ; command_2 ; command_3
+
+# && acts like ; but only executes command_2 if command_1 indicates that it succeeded without error by returning 0.
+command_1 && command_2
+
+# || acts like && but only executes command_2 if command_1 indicates an error by returning 1.
+command_1 || command_2
+
+**** Bash Wildcards:
+# Zero or more characters:
+*
+
+# Matches "phrase" and any number of trailing characters:
+phrase*
+
+# Matches any incidences of "phrase" with any trailing or leading chars:
+*phrase*
+
+# Matches any one char:
+?
+
+# Matches any of the characters listed inside brackets:
+[chars]
+
+# Matches a range of chars between a-z:
+[a-z]
+
+** Advanced:
+*** Command Line Utilities, Continued:
+**** Networking:
+
+# Configure network interfaces:
+ifconfig
+
+# Configure wireless network interfaces:
+iwconfig
+
+# Connect to a remote server.
+ssh username@ip_address
+
+# Forward X from target to current machine (Get a remote desktop. Somewhat obscure, but very useful):
+ssh -X username@ip_address
+
+# Copy files/directory over the network from one machine to another recursively:
+scp -r source_filename:username@ip_address target_filename:target_username@target_ip_address
+
+# Copy only changes between files or directories (super efficient way to sync directories, works either locally or with remote servers using username@ip_address:optionalport, just like ssh):
+rsync source target
+
+# Check to see if target is online and responding
+ping ip_address
+
+# View network route to target:
+traceroute6 ip_address
+
+# Network Monitor
+netstat
+
+# View firewall rules
+iptables -L
+
+# Scan this machine(localhost) to check for open ports:
+nmap localhost
+
+***** wget:
+
+# download a file over http:
+wget http://example.com/folder/file 
+
+# complete a partially downloaded file:
+wget -c http://example.com/folder/file
+
+# start download in background:
+wget -b wget -c http://example.com/folder/file
+
+# download a file from ftp server:
+wget --ftp-user=USER --ftp-password=PASS ftp://example.com/folder/file
+
+***** netcat:
+
+# Listen for input from network on recieving_port, dump it to a file (insecure, but handy):
+netcat -l recieving_port > file_copied
+
+# Pipe the output of a command to a target ip and port over the network:
+command | netcat -w number_of_seconds_before_timeout target_ip target_port
+
+# Use tar to compress and output a file as a stream, pipe it to a target ip and port over the network:
+sudo tar -czf - filename | netcat -w number_of_seconds_before_timeout target_ip target_port
+
+**** Users and Groups:
+# Change owner of a file or directory:
+chown user_name:group_name directory_name
+
+# Change privileges over file or directory (see man page for details.)
+chmod
+
+# Create a new user:
+adduser
+
+# Change user privileges (be very careful with this one):
+usermod
+
+# Delete user
+deluser
+
+# Print groups:
+groups
+
+# Create a new group:
+groupadd
+
+# Change group privileges:
+groupmod
+
+# Delete group:
+delgroup
+
+# Temporarily become a different user:
+su username
+
+# Print usernames of logged in users:
+users
+
+# Write one line to another user from your terminal:
+talk
+
+# Interactive talk program to talk to other users from terminal (must be installed from repositories.):
+ytalk
+
+**** Working With Files, Continued:
+# View what processes are using what files:
+lsof
+
+# View the differences between two files:
+diff file_1 file_2
+
+# Output the top number_of_lines of file:
+head -n number_of_lines file
+
+# Like head, but it outputs the last -n lines:
+tail -n number_of_lines file
+
+# Checksum a file:
+md5sum file
+
+# Checksum every file in a directory (install this one from repositories.):
+md5deep directory
+
+# Checksum a file (better algorithm with no hash collisions):
+sha1sum
+
+# Same operation as md5deep, but using sha1:
+sha1deep
+
+# Call command every few number_of_seconds, and highlight difference in output:
+watch -d -n number_of_seconds command
+
+# Execute command, print how long it took:
+time command
+
+# View files in directory from largest to smallest:
+du -a directory | sort -n -r | less
+
+# remove spaces from filenames in current directory:
+rename -n 's/[\s]/''/g' *
+
+# change capitals to lowercase in filenames in current directory:
+rename 'y/A-Z/a-z/' *
+
+***** Environment and Hardware:
+# print motherboard information
+dmidecode
+
+# Print full date and time:
+date
+
+# Print the hostname of this machine:
+echo $HOSTNAME
+
+# Print information about current linux distro:
+lsb_release -a
+
+# Or even:
+
+more /etc/issue
+
+# Print linux kernel version:
+uname -a
+
+# Print information about kernel modules:
+lsmod
+
+# Configure kernel modules (never do this ;p ):
+modprobe
+
+# View Installed packages:
+dpkg --get-selections
+
+# Print environment variables:
+printenv 
+
+# List hardware connected via PCI ports:
+lspci
+
+# List hardware connected via USB ports:
+lsusb
+
+# Print hardware info stored in BIOS:
+sudo dmidecode
+
+# Dump captured data off of wireless card:
+dumpcap
+
+# Dump info about keyboard drivers:
+dumpkeys
+
+***** Ubuntu System Administration, Advanced (Continued):
+
+# Add a Personal Package Archive from Ubuntu Launchpad:
+add-apt-repository
+
+# Install a .deb file from command line:
+sudo dpkg -i package.deb
+
+**** Python:
+
+# Update pip (Python package manager):
+pip install -U pip
+
+# search pip repos for a library:
+pip search library_name
+
+# create a virtual python environment to allow install of many different versions of the same Python modules:
+virtualenv dirname --no-site-packages
+
+# connect to a virtual python environment
+source dirname/bin/activate
+
+# disconnect from a virtual python environment:
+deactivate
+
+# install package into virtual python environment from outside:
+pip install packagename==version_number -E dirname
+
+# export python virtual environment into a shareable format:
+pip freeze -E dirname > requirements.txt
+
+# import python virtual environment from a requirements.txt file:
+pip install -E dirname -r requirements.txt
+
+**** git (all commands must be performed in the same directory as .git folder):
+
+# Start a new git project:
+git init
+
+git config user.name "user_name"
+
+git config user.email "email"
+
+# Make a copy of a git (target can be specified either locally or remotely, via any number of protocols):
+git clone target
+
+# Commit changes to a git:
+git commit -m "message"
+
+# Get info on current repository:
+git status
+
+# Show change log for current repository:
+git log
+
+# Update git directory from another repository:
+git pull [target]
+
+# Push branch to other repository:
+git push [target]
+
+# Create a new branch:
+git branch [branchname]
+
+# Switch to target branch:
+git checkout [branchname]
+
+# Delete a branch:
+git branch -d [branchname]
+
+# Merge two branches:
+git merge [branchname] [branchname]
+
+# Show all branches of a project:
+git branch
+
+*** Virtualization:
+
+#clone a virtual machine (this works, it's been tested):
+vboxmanage clonehd virtual_machine_name.vdi --format VDI ~/target_virtual_machine_name.vdi
+
+#mount a shared virtual folder:
+#you need to make sure you have the right kernel modules. You can do this with modprobe, but this package works instead in a ubuntu-specific way.
+
+sudo apt-get install virtualbox-ose-guest-utils
+
+sudo mount -t vboxsf name_of_shared_folder_specified_in_Virtualbox path_of_mountpoint
+
+*** mysql:
+
+# Get help:
+help
+
+# Show databases:
+show databases;
+
+# Choose a database to use:
+use database_name_here;
+
+# Show database schema:
+show tables;
+
+# Delete database:
+DROP DATABASE databasename;
+
+# New database:
+CREATE DATABASE databasename;
+
+# Create a new user:
+CREATE USER username@localhost IDENTIFIED BY 'password';
+
+# Show users:
+select * from mysql.user;
+
+# Delete a user:
+delete from mysql.user WHERE User='user_name';
+
+# Give user access to all tables (make them root). the "%" means that they can sign in remotely, from any machine, not just localhost.:
+grant all privileges on *.* to someusr@"%" identified by 'password';
+
+# give certain privileges to a user on a certain database:
+grant select,insert,update,delete,create,drop on somedb.* to someusr@"%" identified by 'password';
+
+# Tell mysql to use new user priv policies:
+flush privileges;
+
+# change user password:
+use mysql;
+
+update user set password='password'('newpassword') where User='user_name';
+
+# mysql command line args:
+# export text file with commands to rebuild all mysql tables:
+mysqldump databasename > dumpfilename.txt
+
+# restore from a dump:
+mysql -u username -p < dumpfilename.txt
+
+# dump entire database:
+mysqldump -u username -p --opt databasename > dumpfile.sql
+
+# restore from entire database dump:
+mysql -u username -p --database=databasename < dumpfile.sql
+* Python
+** Keys
+   Jump to definition
+   : C-c C-j
+   Show all function's names
+   : M-[
+** Timer
+  start = time.time()
+  ...
+  print(time.time() - start)
+** Download images from site
+  url = "http://lenta.ru/"
+  content = requests.get(url).text
+  imgUrls = re.findall('img .*?src="(.*?)"', content)
+
+  start = time.time()
+
+  for i, img in enumerate(imgUrls):
+      if img.endswith(".jpg"):
+          h = httplib2.Http('.cache')
+          response, content = h.request(img)
+          out = open('./test/img'+str(i+1)+'.jpg', 'wb')
+          out.write(content)
+          out.close()
+  print(time.time()-start)
+
+  or
+
+  p = requests.get(img)
+  out = open("...\img.jpg", "wb")
+  out.write(p.content)
+  out.close()
+** Ein support
+   sudo pip uninstall ipython tornado
+   sudo pip install -Iv ipython==1.2.1 tornado==3.0
+   comment: /usr/lib/python3.4/site-packages/IPython/html/base/zmqhandlers.py:114
+   
+dddbhjgffsdkkkdffgdhgdfhfhjfghkfgjk
+ecaeecdabacbbacbbddcbbaccbbdbdadaae
+
+* ICL
+Потапов Алексей
+madcent@gmail.com
+Jira
+
+qiki256@gmail.com
+
+1) Изменен формат xsd/xml, 
+2) создана фабрика, создающая объекты - парсеры, writer'ы
+3) добавлен класс ArgsParser
+4) Класс Result для представления результата выполнения программы
+5) Counter - попытка реализации transaction script
+
+** SVN
+   http://109.74.194.34/training2014/st1/training.battleship.core/trunk
+   http://109.74.194.34/training2014
+   st1
+   i4c8c9GGLf
+
+   project name training.example.test
+   team show properties target ignore binaries
+   team share project advanced
+   ;use single project layout
+
+** Eclipse
+   http://192.168.6.142/check-styles
+   
+   package ru..training.calendar.core
+   dom4j
+   log4j
+   
+** Internet settings
+   DNS server 192.168.5.254
+   
+   or
+   
+   ip 192.168.241.1
+   subnet mask 255.255.255.0
+   
+   or
+   
+   192.168.112.1
+   255.255.255.0
+   
+   P@ssw0rd
+   \\192.168.6.109\Users\Public\ICL_java_cources
