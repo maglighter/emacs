@@ -3,15 +3,19 @@
 
 (setq mc/cmds-to-run-for-all
       '(
-	back-to-indentation-or-beginning
-	backward-kill-word-or-kill-region
-	mark-sexp
-	skeleton-pair-insert-maybe
-	))
+        back-to-indentation-or-beginning
+        backward-kill-word-or-kill-region
+        c-electric-slash
+        indent-for-tab-command
+        mark-sexp
+        skeleton-pair-insert-maybe
+        toggle-input-method
+        ))
 
 (setq mc/cmds-to-run-once
       '(
-	ace-jump-mode
-	beginning-of-buffer
-	smex
-	))
+        ace-jump-mode
+        beginning-of-buffer
+        end-of-buffer
+        smex
+        ))

@@ -1,87 +1,48 @@
-;                      * Emacs CORE configuration file *
-
 ;; load common lisp (loop)
 (require 'cl)
 
-;; default font
-(add-to-list 'default-frame-alist
-	     '(font . "Liberation Mono-12"))
-(package-initialize)
+;; Turn off tool bar, menu bar, scroll bar
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
-;; add directory with elisp files to the load-path
-(add-to-list 'load-path "/home/max/.emacs.d/site-lisp/")
+;; Default font [old: Liberation Mono-12]
+(set-fontset-font "fontset-default" 'windows-1251 "Inconsolata LGC")
+(set-face-attribute 'default nil
+                    :family "Inconsolata LGC"
+                    :height 120
+                    :weight 'normal
+                    :width 'normal)
 
-;; packages repository
-(require 'package)
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                         ("marmalade" . "http://marmalade-repo.org/packages/")
-                         ("melpa" . "http://melpa.milkbox.net/packages/")))
+;; Add folders with elisp files to the load-path
+(setq default-directory "~/")
+(setq elpa-directory (expand-file-name "elpa" user-emacs-directory))
+(add-to-list 'load-path
+             (expand-file-name "site-lisp" user-emacs-directory))
+; check
+;(add-to-list 'load-path
+;             (concat elpa-directory "org-plus-contrib-20140414/"))
 
-;; turn off: hide tool bar & menu bar & scroll bar
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
+;; Keep emacs custom-settings in separate file
+(setq custom-file (expand-file-name "site-lisp/custom.el" user-emacs-directory))
+(load custom-file)
 
-;; color theme loading
-;(load-theme 'wombat)
+;; Load core appearence and behavior settings
+(require 'appearence)
 
-;; don't show startup screen
-(setq inhibit-startup-screen t)
+;; Package system settings
+(require 'setup-packages)
+(require 'use-package)
 
-;; set history length
-(setq history-length 100)
-
-;; max size of messages log
-(setq message-log-max 2000)
-
-;; yes -> y, no -> n, C-j -> return -> yes
-(fset 'yes-or-no-p 'y-or-n-p)
-(define-key query-replace-map [return] 'act)
-(define-key query-replace-map (kbd "C-j") 'act)
-
-;; registers point to files
-(set-register ?i '(file . "/home/max/.emacs.d/init.el"))
-(set-register ?f '(file . "/home/max/.emacs.d/foo.org"))
+;; Registers point to files
+(set-register ?i (cons 'file (expand-file-name "init.el" user-emacs-directory)))
+(set-register ?f (cons 'file (concat user-emacs-directory "/org/foo.org")))
 (set-register ?z '(file . "/home/max/.zshrc"))
 
-;; replacement of selected region
-(delete-selection-mode t)
-
-;; scrolling settings
-(setq scroll-conservatively 10000
-      scroll-margin 2
-      scroll-step 1
-      mouse-wheel-follow-mouse 't
-      mouse-wheel-scroll-amount '(1 ((shift) . 1)))
-
-;; on't defer screen updates when performing operations
-(setq redisplay-dont-pause t)
-
-;; brackets highlight
-(show-paren-mode 1)
-
-;; brackets settings
-(setq skeleton-pair t)
-(global-set-key "(" 'skeleton-pair-insert-maybe)
-(global-set-key "[" 'skeleton-pair-insert-maybe)
-(global-set-key "{" 'skeleton-pair-insert-maybe)
-(global-set-key "\"" 'skeleton-pair-insert-maybe)
-
-;; enable all disabled commands
-(setq disabled-command-function nil)
-
-;; set sentence end ". "
-(setq sentence-end "[.?!][]\"’)]*\\($\\|\t\\| \\)[ \t\n]*")
-
-;; ignore case-sensitive with search
-(setq case-replace nil)
-
-;; minimal left, right fringe width size
-(fringe-mode 4)
-
-;; encoding, default to utf-8
+;; Encoding, default to utf-8
+(set-language-environment "UTF-8")
+(prefer-coding-system 'windows-1251)
 (prefer-coding-system 'utf-8)
-(set-language-environment 'utf-8)
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
@@ -89,28 +50,25 @@
 (define-coding-system-alias 'windows-1251 'cp1251)
 (setq default-input-method 'russian-computer)
 
-;; clipboard
-(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
-(setq x-select-enable-clipboard t)
-(setq save-interprogram-paste-before-kill t)
-
-;; show function name
-;(which-func-mode t)
+;; Clipboard
+(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)
+      x-select-enable-clipboard t
+      save-interprogram-paste-before-kill t)
 ;;; ===================================================================
 
 
 ;;; Backup and history
-(setq
- backup-by-copying t
- backup-directory-alist
- '(("." . "/data/.emacs_backup/"))
- auto-save-file-name-transforms
- '((".*" "/data/.emacs_backup/" t))
- vc-make-backup-files t
- delete-old-versions t
- kept-new-versions 8
- kept-old-versions 2
- version-control t)
+(setq max/backup-directory "/data/.emacs_backup/")
+(setq backup-by-copying t
+      backup-directory-alist
+      (cons (cons "." (expand-file-name max/backup-directory)) backup-directory-alist)
+      auto-save-file-name-transforms
+      `((".*", (expand-file-name max/backup-directory) t))
+      vc-make-backup-files t
+      delete-old-versions t
+      kept-new-versions 8
+      kept-old-versions 2
+      version-control t)
 
 (defun force-backup-of-buffer ()
   (let ((buffer-backed-up nil))
@@ -118,28 +76,34 @@
 
 (add-hook 'before-save-hook 'force-backup-of-buffer)
 
-(setq savehist-file "/data/.emacs_backup/savehist")
+;; Savehist: save some history
 (setq savehist-additional-variables
-      '(kill-ring search-ring regexp-search-ring))
+      '(kill-ring search ring regexp-search-ring)
+      savehist-autosave-interval 60
+      savehist-file (concat max/backup-directory "savehist"))
 (savehist-mode 1)
 
 ;;; ===================================================================
 
 
 ;;; Keys
-;; kill emacs process [v]
-(global-set-key (kbd "C-x c") 'max/kill-emacs)
+;; Kill emacs process [v]
+(global-set-key (kbd "C-x C-c") 'max/kill-emacs)
 
-;; switch to next/previous window
-(global-set-key (kbd "<C-tab>") 'other-window)
+;; Switch to next/previous window
+(global-set-key (kbd "<C-tab>") '(lambda ()
+                                   (interactive)
+                                   (if (= (count-windows) 2) (other-window 1)
+                                     (ace-window 1))))
+(setq aw-keys '(?a ?h ?d ?s ?f ?h ?j ?k ?l))
 
-;; use shell-like backspace C-h, rebind help to F1
+;; Use shell-like backspace C-h, rebind help to F1
 (define-key key-translation-map [?\C-h] [?\C-?])
 (global-set-key (kbd "<f1>") 'help-command)
 
 ;; windows manipulations
 (global-set-key (kbd "C-'") 'toggle-windows-split) ; [v]
-(global-set-key (kbd "M-'") 
+(global-set-key (kbd "M-'")
 		'(lambda ()
 		   (interactive)
 		   (if (= (count-windows) 1) (next-buffer) (delete-window))))
@@ -161,7 +125,7 @@
 (global-set-key (kbd "M-t l") 'transpose-lines)
 (global-set-key (kbd "M-t w") 'transpose-words)
 (global-set-key (kbd "M-t s") 'transpose-sexps)
-(global-set-key (kbd "M-t p") 'transpose-params)
+;(global-set-key (kbd "M-t p") 'transpose-params)
 
 ;; joins the following line onto this one
 (global-set-key (kbd "M-j") (lambda() (interactive)(join-line -1)))
@@ -198,8 +162,8 @@
 (define-key global-map (kbd "C-c q") 'vr/replace)
 
 ;; quick move cursor [v][E]
-(define-key global-map (kbd "M-z") 'ace-jump-mode)
-(define-key global-map (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
+;[v](define-key global-map (kbd "M-z") 'ace-jump-mode)
+;(define-key global-map (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
 
 ;; if region - copy region, end of line - copy line, else copy to the end [v]
 (global-set-key (kbd "M-w") 'max/kill-ring-save)
@@ -211,9 +175,6 @@
 
 ;; translate current word or region [v]
 (global-set-key (kbd "C-x t") 'max/translate-word-or-region)
-
-;; join current line with above
-;(global-set-key (kbd "C-c q") 'join-line)
 
 ;; menu with pointers to functions definitions
 (global-set-key (kbd "M-[") 'ido-imenu)
@@ -234,15 +195,11 @@
 ;; interactive lisp interpretor
 (global-set-key [f6] 'ielm)
 
-;; connect to slime [v SLIME]
-(global-set-key [f5] 'slime)
-(global-set-key [(control f5)] 'slime-selector)
-
 ;; speedbar in same frame
 (global-set-key (kbd "s-s") 'sr-speedbar-toggle)
 
 ;; enable god-mode
-(global-set-key (kbd "<print>") 'god-local-mode)
+;(global-set-key (kbd "<print>") 'god-local-mode)
 
 ;; magnar's multiple cursors
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
@@ -250,9 +207,20 @@
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 (global-set-key (kbd "C-c C->") 'set-rectangular-region-anchor)
- 
+
+;; expand region
+(global-set-key (kbd "C-=") 'er/expand-region)
+
+;; zap-to-char rebind
+(global-set-key (kbd "M-C-z") 'zap-to-char)
+
 ;; key-chord mode keys
-(key-chord-define-global "q]" 'ace-jump-buffer)
+;(key-chord-define-global "q]" 'ace-jump-buffer)
+
+;; increment/decrement number at point
+(global-set-key (kbd "C-c +") 'max/increment-number-decimal)
+(global-set-key (kbd "C-c -") 'max/decrement-number-decimal)
+
 ;;; ===================================================================
 
 
@@ -284,101 +252,119 @@
 
 ;;; Modes
 ;; enable ido mode
-(setq
- ido-enable-flex-matching t
- ido-enable-last-directory-history t
- ido-enable-work-directory-history t
- ido-max-work-directory-list 10
- ido-max-work-file-list 0
- ido-save-directory-list-file "~/.emacs.d/temp/.ido.last")
-(ido-mode t)
-(setq default-ido-decorations ido-decorations)
-(add-hook 'ido-setup-hook
-          (lambda ()
-	    (setq ido-decorations default-ido-decorations)
-	    (define-key ido-completion-map (kbd "M-d")
-	      'smex-describe-function)
-            (define-key ido-completion-map "\C-n"
-              'ido-select-text)
-	    (define-key ido-completion-map "\C-j"
-              'ido-exit-minibuffer)
-	    (define-key ido-completion-map "\C-t"
-              '(lambda ()
-		(interactive)
-		 (if (equal default-ido-decorations ido-decorations)
-		     (setq ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]")))
-		  (setq ido-decorations default-ido-decorations)
-		  )))))
+(use-package ido
+  :init
+  (progn
+    (setq ido-enable-flex-matching t
+          ido-everywhere t)
+    (add-hook 'ido-setup-hook 'ido-vertical)
+    (add-hook 'ido-setup-hook 'ido-go-home))
+  :config
+  (progn (ido-mode t)
+         (setq ido-enable-last-directory-history t
+               ido-enable-work-directory-history t
+               ido-max-work-directory-list 10
+               ido-max-work-file-list 0
+               ; ido-auto-merge-work-directories-length -1
+               ido-save-directory-list-file
+               (expand-file-name "temp/.ido.last" user-emacs-directory)
+               default-ido-decorations ido-decorations)
+         ;; Buffer names completion
+         (add-to-list 'ido-ignore-buffers "*GNU Emacs*")
+         (add-to-list 'ido-ignore-buffers "*Messages*")
+         (add-to-list 'ido-ignore-buffers "*Backtrace")
+         (add-to-list 'ido-ignore-buffers "*Quail Com")
+         (add-to-list 'ido-ignore-buffers "*Buffer")
+         (add-to-list 'ido-ignore-buffers "*fsm-debug")
+         (add-to-list 'ido-ignore-buffers "*Completions")
+         (add-to-list 'ido-ignore-buffers "^[tT][aA][gG][sS]$")
+         (use-package ido-ubiquitous
+           :ensure t
+           :init
+           ;; Fix ido-ubiquitous for newer packages
+           (defmacro ido-ubiquitous-use-new-completing-read (cmd package)
+             `(eval-after-load ,package
+                '(defadvice ,cmd (around ido-ubiquitous-new activate)
+                   (let ((ido-ubiquitous-enable-compatibility nil))
+                     ad-do-it))))
+           :config
+           (ido-ubiquitous-use-new-completing-read webjump 'webjump)
+           (ido-ubiquitous-use-new-completing-read yas/expand 'yasnippet)
+           (ido-ubiquitous-use-new-completing-read yas/visit-snippet-file 'yasnippet)
+           (ido-ubiquitous-mode))))
+
+(defun ido-vertical ()
+  (setq ido-decorations default-ido-decorations)
+  (define-key ido-completion-map (kbd "M-d")
+    'smex-describe-function)
+  (define-key ido-completion-map "\C-n"
+    'ido-select-text)
+  (define-key ido-completion-map "\C-j"
+    'ido-exit-minibuffer)
+  (define-key ido-completion-map "\C-t"
+    '(lambda ()
+       (interactive)
+       (if (equal default-ido-decorations ido-decorations)
+           (setq ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]")))
+         (setq ido-decorations default-ido-decorations)
+         ))))
 
 ;; when pressed ~ go to home folder
-(add-hook 'ido-setup-hook
- (lambda ()
-   ;; Go straight home
-   (define-key ido-file-completion-map
-     (kbd "~")
-     (lambda ()
-       (interactive)
-       (if (looking-back "/")
-           (insert "~/")
-         (call-interactively 'self-insert-command))))))
-
-;; Use ido everywhere
-(require 'ido-ubiquitous)
-(ido-ubiquitous-mode 1)
-
-;; Fix ido-ubiquitous for newer packages
-(defmacro ido-ubiquitous-use-new-completing-read (cmd package)
-  `(eval-after-load ,package
-     '(defadvice ,cmd (around ido-ubiquitous-new activate)
-        (let ((ido-ubiquitous-enable-compatibility nil))
-          ad-do-it))))
-(ido-ubiquitous-use-new-completing-read webjump 'webjump)
-(ido-ubiquitous-use-new-completing-read yas/expand 'yasnippet)
-(ido-ubiquitous-use-new-completing-read yas/visit-snippet-file 'yasnippet)
+(defun ido-go-home()
+  ;; Go straight home
+  (define-key ido-file-completion-map
+    (kbd "~")
+    (lambda ()
+      (interactive)
+      (if (looking-back "/")
+          (insert "~/")
+        (call-interactively 'self-insert-command)))))
 
 ;; replace default M-x behavior with some stuff of ido
-(setq smex-save-file "/home/max/.emacs.d/temp/.smex-items")
+(setq smex-save-file (expand-file-name "temp/.smex-items" user-emacs-directory))
 
 ;; mode for listing of recent opened files
-(require 'recentf)
-(setq recentf-auto-cleanup 'never
-      recentf-max-menu-items 50
-      recentf-max-saved-items 400)
-(setq recentf-save-file "/home/max/.emacs.d/temp/.recentf")
-(recentf-mode t)
+(use-package recentf
+  :init (setq recentf-auto-cleanup 'never
+              recentf-max-menu-items 50
+              recentf-max-saved-items 400
+              recentf-save-file
+              (expand-file-name "temp/.recentf" user-emacs-directory))
+  :config (recentf-mode t))
 
 ;; change default mode line [configure]
-(require 'smart-mode-line)
-(sml/setup)
+(use-package smart-mode-line
+  :config (sml/setup))
+;(setq sml/theme 'respectful)
 
 ;; additional features to undo/redo system
-(require 'undo-tree)
-(global-undo-tree-mode 1)
+(use-package undo-tree
+  :config (global-undo-tree-mode 1))
 
 ;; mode for auto complete words [read more][E]
-(setq ac-comphist-file "/home/max/.emacs.d/temp/.ac-comphist.dat")
-(require 'auto-complete-config)
-(ac-config-default)
-(global-auto-complete-mode t)
-(setq ac-expand-on-auto-complete nil)
-(setq ac-delay 0.125
-      ac-auto-show-menu 0.25
-      ac-auto-start 2
-      ac-quick-help-delay 2.0
-      ac-ignore-case nil
-      ac-candidate-menu-min 2
-      ac-use-quick-help t
-      ac-limit 10
-      ac-disable-faces nil
-      ac-dwim nil)
-(setq-default ac-sources '(ac-source-imenu
-                           ac-source-words-in-buffer
-                           ac-source-words-in-same-mode-buffers
-                           ac-source-dictionary
-                           ac-source-filename))
 
-;(define-key ac-completing-map (kbd "C-n") 'ac-next)
-;(define-key ac-completing-map (kbd "C-p") 'ac-previous)
+(use-package auto-complete
+  :init (setq ac-comphist-file
+              (expand-file-name "temp/.ac-comphist.dat" user-emacs-directory))
+  :config (progn (ac-config-default)
+                 (global-auto-complete-mode t)
+                 (use-package popup-pos-tip)
+                 (setq ac-expand-on-auto-complete nil)
+                 (setq ac-delay 0.125
+                       ac-auto-show-menu 0.25
+                       ac-auto-start 2
+                       ac-quick-help-delay 1.5
+                       ac-ignore-case nil
+                       ac-candidate-menu-min 2
+                       ac-use-quick-help t
+                       ac-limit 10
+                       ac-disable-faces nil
+                       ac-dwim nil)
+                 (setq-default ac-sources '(ac-source-imenu
+                                            ac-source-words-in-buffer
+                                            ac-source-words-in-same-mode-buffers
+                                            ac-source-dictionary
+                                            ac-source-filename))))
 
 ;; activate occur inside isearch
 (define-key isearch-mode-map (kbd "C-o")
@@ -387,71 +373,76 @@
       (occur (if isearch-regexp isearch-string (regexp-quote isearch-string))))))
 
 ;; mode for opening and editing files with sudo privileges
-(require 'sudo-save)
+(use-package sudo-save)
 
 ;; auto revert buffer if file changed
 (global-auto-revert-mode t)
 
 ;; restore window position
-(winner-mode t)
+(use-package winner
+  :config (winner-mode 1))
 
 ;; enables mode for execute commands by pressing two buttons simultaneously
-(key-chord-mode t)
-
+(use-package key-chord
+  :config (progn (key-chord-mode 1)))
+  
 ;; quick move cursor [E]
-(setq ace-jump-mode-case-fold t)
-(autoload 'ace-jump-mode "ace-jump-mode" "Emacs quick move minor mode" t)
-(autoload 'ace-jump-mode-pop-mark "ace-jump-mode" "Ace jump back:-)" t)
-(eval-after-load "ace-jump-mode" '(ace-jump-mode-enable-mark-sync))
-(setq ace-jump-mode-move-keys
-      (loop for i from ?a to ?z collect i))
+(use-package ace-jump-mode
+  :bind ("M-z" . ace-jump-mode)
+  :init
+  (progn
+    (setq ace-jump-mode-case-fold t)
+    (autoload 'ace-jump-mode "ace-jump-mode" "Emacs quick move minor mode" t)
+    (autoload 'ace-jump-mode-pop-mark "ace-jump-mode" "Ace jump back:-)" t)
+    (eval-after-load "ace-jump-mode" '(ace-jump-mode-enable-mark-sync))
+    (setq ace-jump-mode-move-keys
+          (loop for i from ?a to ?z collect i))))
 
-;; maggit - git interface
-(autoload 'magit-status "magit" nil t)
+;; Maggit - git interface
+(use-package magit
+:commands (magit-status magit-push))
 
-;; w3m - browser
-;(require 'w3m-load)
-(setq w3m-init-file "/home/max/.emacs.d/.emacs-w3m")
-(setq w3m-home-page "http://www.google.com")
-(setq w3m-use-cookies t)
-(setq w3m-command-arguments '("-cookie" "-F"))
-(setq w3m-show-graphic-icons-in-header-line t)
-(setq w3m-show-graphic-icons-in-mode-line t)
+;; W3M - browser
+(use-package w3m
+  :commands (w3m w3m-find-file w3m-goto-url-new-session)
+  :init
+  (progn (setq w3m-init-file
+               (expand-file-name ".emacs-w3m" user-emacs-directory)
+               w3m-home-page "http://www.google.com"
+               w3m-use-cookies t
+               w3m-command-arguments '("-cookie" "-F")
+               w3m-show-graphic-icons-in-header-line t
+               w3m-show-graphic-icons-in-mode-line t
+               w3m-default-display-inline-images t)))
 
 ;; AUCTeX
-(load "auctex.el" nil t t)
-(load "preview-latex.el" nil t t)
-;(setq TeX-auto-save t)
-;(setq TeX-parse-self t)
-
-;; Buffer names completion
-(icomplete-mode t)
-(add-to-list 'ido-ignore-buffers "*GNU Emacs*")
-(add-to-list 'ido-ignore-buffers "*Messages*")
-(add-to-list 'ido-ignore-buffers "*Backtrace")
-(add-to-list 'ido-ignore-buffers "*Quail Com")
-(add-to-list 'ido-ignore-buffers "*Buffer")
-(add-to-list 'ido-ignore-buffers "*fsm-debug")
-(add-to-list 'ido-ignore-buffers "*Completions")
-(add-to-list 'ido-ignore-buffers "^[tT][aA][gG][sS]$")
+;(load "auctex.el" nil t t)
+;(load "preview-latex.el" nil t t)
+;;(setq TeX-auto-save t)
+;;(setq TeX-parse-self t)
 
 ;; EMMS configuration
-(require 'emms-setup)
-(emms-standard)
-(emms-default-players)
+(use-package emms-setup
+  :commands (emmss emms-play-url emms-play-file emms-play-dired)
+  :config (progn (emms-standard)
+                 (emms-default-players)))
 
 ;; guide-key
-(require 'guide-key)
-(setq guide-key/guide-key-sequence
-      '("C-x r" "C-x 4" "C-x v" "C-x 8" "M-t" "M-g" "<f1>"))
-(guide-key-mode 1)
-(setq guide-key/recursive-key-sequence-flag t)
-(setq guide-key/popup-window-position 'right)
+(use-package guide-key
+  :init (setq guide-key/guide-key-sequence
+              '("C-x r" "C-x 4" "C-x v" "C-x 8" "M-t" "M-g" "<f1>"))
+  :config (progn (guide-key-mode 1)
+                 (setq guide-key/recursive-key-sequence-flag t
+                       guide-key/popup-window-position 'right)))
 
-(require 'god-mode)
-(define-key god-local-mode-map (kbd "h") 'backward-delete-char)
+;; god mode
+(use-package god-mode
+  :bind ("<print>" . god-local-mode)
+  :config (define-key god-local-mode-map (kbd "h") 'backward-delete-char))
 
 ;; Dired-x - extra dired mode
+; show directory first
+(setq dired-listing-switches "-aBhl  --group-directories-first")
 (add-hook 'dired-load-hook
 	  (lambda ()
 	    (load "dired-x")
@@ -467,22 +458,36 @@
 (global-set-key (kbd "C-x C-j") 'dired-jump)
 
 ;; support for CMake
-(autoload 'cmake-mode "cmake-mode" t)
-(add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-mode))
-(add-to-list 'auto-mode-alist '("\\.cmake\\'" . cmake-mode))
+(use-package cmake-mode
+  :init
+  (progn
+    (add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-mode))
+    (add-to-list 'auto-mode-alist '("\\.cmake\\'" . cmake-mode))))
 
-;; syntax checking on the fly [! read more]
-(require 'flymake)
-;; temporary copies in the system temp dir.
-(setq flymake-run-in-place nil)
-(setq temporary-file-directory "/data/.emacs_backup/")
+;; Org-mode
+(use-package org-agenda
+  :init (setq org-agenda-files (quote ("~/.emacs.d/org/foo.org")))
+  :config
+  (add-hook 'org-mode-hook (lambda ()
+                             ;(define-key org-mode-map (kbd "<C-tab>") nil)))
+                             (local-set-key (kbd "<C-tab>") nil)
+                             (local-set-key (kbd "C-,") nil))))
 
 ;; Yasnippets
-;(add-to-list 'load-path "/home/max/.emacs.d/site-lisp/yasnippet")
-;(require 'yasnippet)
-;(yas/global-mode 1)
-;(yas/initialize)
-;(yas/load-directory "/home/max/.emacs.d/site-lisp/yasnippet/snippets")
+(use-package yasnippet
+  :init (add-hook 'prog-mode-hook 'yas/minor-mode))
+
+;; Rainbow Delimiters
+(use-package rainbow-delimiters
+  :init (add-hook 'prog-mode-hook
+                  (lambda ()
+                    (rainbow-delimiters-mode)
+                    (setq rainbow-delimiters-outermost-only-face-count 1)
+                    (set-face-attribute 'rainbow-delimiters-depth-1-face nil
+                                        :foreground 'unspecified
+                                        :inherit 'my-outermost-paren-face))))
+
+(use-package helm-config)
 
 ;;; ===================================================================
 
@@ -543,9 +548,11 @@ of windows in the frame simply by calling this command again."
               (window-configuration-to-register '_)
               (delete-other-windows))
 	  (progn
-	    (let ((current-point (point))) 
+	    (let ((current-point (point))
+                  (current-buff-name (current-buffer)))
 	    (jump-to-register '_)
-	    (goto-char current-point)))))))
+	    (goto-char current-point)
+            (switch-to-buffer current-buff-name)))))))
 
 ;; find a recent file using ido
 (defun recentf-ido-find-file ()
@@ -680,6 +687,57 @@ of windows in the frame simply by calling this command again."
       (concat "/home/max/.emacs.d/site-lisp/translate_arg " "\"" myStr "\"")))
     (message "%s" (substring translate 0 (- (length translate) 1)))))
 
+;; looking for Qt class documentation
+(setq max/qt-url-or-path "http://qt-project.org/doc/qt-4.8/")
+(setq max/java-url-or-path "/usr/share/doc/java8-openjdk/api/")
+;(setq max/qt-url-or-path "/usr/share/doc/qt/qtcore/")
+
+(defun max/read-lines (file)
+  "Return a list of lines in FILE."
+  (with-temp-buffer
+    (insert-file-contents file)
+    (split-string
+     (buffer-string) "\n" t)
+    ))
+
+(defun max/show-qt-class-doc (arg)
+  "Show documentation of Qt class in w3m or with C-u in browser"
+  (interactive "p")
+  (let ((class-name) (class-list))
+    (setq class-list (max/read-lines "~/.emacs.d/temp/class-names-list-file"))
+    (let ((url (concat max/qt-url-or-path
+                         (downcase (ido-completing-read
+                                    "Select class: " class-list)) ".html")))
+         (if (= arg 4)
+             (browse-url url)
+           (w3m-goto-url-new-session url)))))
+
+(defun  max/show-java-class-doc (arg)
+  "Show documentation of Qt class in w3m or with C-u in browser"
+  (interactive "p")
+  (with-temp-buffer
+    (insert-file-contents "~/.emacs.d/temp/class-names-list-file-java")
+    (let (Hash) (list)
+         (setq list (split-string (buffer-string) "\n" t))
+         (setq Hash (make-hash-table :test 'equal))
+         (mapc (lambda (x)
+                 (puthash
+                  (car (split-string x " ")) 
+                  (nth 1 (split-string x " ")) Hash)) list)
+         (let (url)
+           (setq url
+                 (concat max/java-url-or-path
+                         (gethash
+                          (ido-completing-read "Select class: "
+                                               (let (allkeys)
+                                                 (maphash
+                                                  (lambda (kk vv)
+                                                    (setq allkeys (cons kk allkeys)))
+                                                  Hash) allkeys)) Hash)))
+           (if (= arg 4)
+               (browse-url url)
+             (w3m-goto-url-new-session url))))))
+
 ;; convert buffer: dos -> unix (utf-8)
 (defun max/dos2unix ()
   (interactive)
@@ -739,16 +797,62 @@ Symbols matching the text at point are put first in the completion list."
            (position (cdr (assoc selected-symbol name-and-pos))))
       (push-mark (point))
       (goto-char position))))
+
+(defun max/increment-number-decimal (&optional arg)
+  "Increment the number forward from point by 'arg'."
+  (interactive "p*")
+  (save-excursion
+    (save-match-data
+      (let (inc-by field-width answer)
+        (setq inc-by (if arg arg 1))
+        (skip-chars-backward "0123456789")
+        (when (re-search-forward "[0-9]+" nil t)
+          (setq field-width (- (match-end 0) (match-beginning 0)))
+          (setq answer (+ (string-to-number (match-string 0) 10) inc-by))
+          (when (< answer 0)
+            (setq answer (+ (expt 10 field-width) answer)))
+          (replace-match (format (concat "%0" (int-to-string field-width) "d")
+                                 answer)))))))
+
+(defun max/decrement-number-decimal (&optional arg)
+  (interactive "p*")
+  (max/increment-number-decimal (if arg (- arg) -1)))
+
+;; Open the current file or dired marked files in external app
+(defun max/open-in-external-app (&optional file)
+  "Open the current file or dired marked files in external app."
+  (interactive)
+  (let ( doIt
+         (myFileList
+          (cond
+           ((string-equal major-mode "dired-mode") (dired-get-marked-files))
+           ((not file) (list (buffer-file-name)))
+           (file (list file)))))
+    (setq doIt (if (<= (length myFileList) 5) t
+                 (y-or-n-p "Open more than 5 files? ") ) )
+    
+    (when doIt
+      (cond
+       ((string-equal system-type "windows-nt")
+        (mapc (lambda (fPath) (w32-shell-execute "open" (replace-regexp-in-string "/" "\\" fPath t t)) ) myFileList))
+       ((string-equal system-type "darwin")
+        (mapc (lambda (fPath) (shell-command (format "open \"%s\"" fPath)) )  myFileList) )
+       ((string-equal system-type "gnu/linux")
+        (mapc (lambda (fPath) (let ((process-connection-type nil)) (start-process "" nil "xdg-open" fPath)) ) myFileList))))))
+
 ;;; ===================================================================
 
 
 ;;; Eshell
-(setq eshell-history-size 99999)
-(setq eshell-history-file-name "/home/max/.histfile")
-(global-set-key (kbd "C-x m") 'eshell)
-(setq eshell-cmpl-cycle-completions nil
-      ehsell-save-history-on-exit t
-      eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'")
+(use-package eshell
+  :commands (eshell max/eshell)
+  :bind ("C-x m" . max/eshell)
+  :init (setq eshell-history-size 99999
+              eshell-history-file-name "/home/max/.histfile"
+              eshell-cmpl-cycle-completions nil
+              ehsell-save-history-on-exit t
+              eshell-cmpl-dir-ignore
+              "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'"))
 
 (eval-after-load 'esh-opt
   '(progn
@@ -778,136 +882,62 @@ Symbols matching the text at point are put first in the completion list."
 
 (defun eshell/find (dir &rest opts)
   (find-dired dir (mapconcat 'identity opts " ")))
+
+
+(defun max/eshell ()
+  (interactive)
+  (let ((buffer (file-name-directory (buffer-file-name))))
+    (eshell)
+    (if (not (equal (concat (eshell/pwd) "/") buffer))
+        (progn
+          (insert (concat "pwd; cd " buffer))
+          (eshell-send-input)))))
+
 ;;; ===================================================================
 
 
-;;; Slime
-(setq auto-mode-alist
-      (append '(("\\.lisp$"   . lisp-mode)
-		("\\.lsp$"    . lisp-mode)
-		("\\.cl$"     . lisp-mode)
-		("\\.asd$"    . lisp-mode)
-		("\\.system$" . lisp-mode))
-	      auto-mode-alist))
-(add-hook 'lisp-mode-hook
-	  (lambda ()
-	    (setq lisp-indent-function 'common-lisp-indent-function)
-	    (setq show-trailing-whitespace t)))
+;;; Lisp
+(autoload 'turn-on-eldoc-mode "eldoc" nil t)
+(add-hook 'lisp-interaction-mode-hook
+          (lambda ()
+            (turn-on-eldoc-mode)
+            (define-key lisp-interaction-mode-map  (kbd "C-j") 'newline)
+            (define-key lisp-interaction-mode-map
+                (kbd "C-m") 'eval-print-last-sexp)))
+(add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'emacs-lisp-mode-hook 'max/lisp-settings)
+(add-hook 'emacs-lisp-mode-hook 'max/lisp-settings)
 
-(load (expand-file-name "/home/max/quicklisp/slime-helper.el"))
-(require 'slime)
-(slime-setup
- '(slime-fancy slime-indentation slime-tramp slime-asdf slime-sprof))
-(setq slime-net-coding-system 'utf-8-unix)
-(setq slime-default-lisp 'sbcl)
-(setq slime-lisp-implementations
-      `((sbcl ("/usr/bin/sbcl") :coding-system utf-8-unix)))
-(eval-after-load 'slime
-  '(progn
-     (setq slime-scratch-file "/home/max/.emacs.d/tmp/scratch.lisp")
-     (setq slime-edit-definition-fallback-function 'find-tag)
-     (setq slime-complete-symbol*-fancy t)
-     (setq slime-complete-symbol-function 'slime-fuzzy-complete-symbol)
-     (setq slime-when-complete-filename-expand t)
-     (setq slime-truncate-lines nil)
-     (setq slime-autodoc-use-multiline-p t)
-     (slime-autodoc-mode)))
-(add-hook 'lisp-mode-hook
-	  (lambda ()
-	    (setq slime-use-autodoc-mode t)))
-(defun max/customized-lisp-keyboard ()
-  (define-key slime-repl-mode-map (kbd "C-c ;") 'slime-insert-balanced-comments)
-  (local-set-key [C-c tab] 'slime-fuzzy-complete-symbol)
-  (local-set-key [return] 'newline-and-indent))
-(add-hook 'lisp-mode-hook 'max/customized-lisp-keyboard)
+(defun max/lisp-settings()
+  (add-hook 'after-save-hook 'check-parens nil t)
+  (turn-on-eldoc-mode)
+  (setq lisp-indent-function 'common-lisp-indent-function))
 ;;; ===================================================================
 
 
-;;; Cpp [! rewrite]
-;(setq max/gdb-process ""
-;      max/buffer-name "")
-;(add-hook 'gdb-mode-hook '(lambda ()
-;			    (setq max/gdb-process
-;				  (substring (buffer-name) 1 (- (length (buffer-name)) 1)))))
-;; При включении c++-mode -> стиль "BSD", C-c C-c - авто-компиляция
-(add-hook 'c++-mode-hook '(lambda ()
-			    (c-set-style "bsd")
-			    (setq c-basic-offset 4)))
-;			    (setq compile-command "g++ ")
-			    ;;включает режим авто вставки переносов строк (после ;), С-с С-а
-					;(c-toggle-auto-state t)
-;			    (local-set-key (kbd "C-c C-r") 'gud-run)
-;			    ;;будет выполняться после завершения компиляции
-;			    (defun max/cpp-notify-compilation-result(buffer msg)
-;			      (interactive)
-;			      (other-window -1)
-;			      (if (string-match "^finished" msg)
-;				  (progn
-;				    ;(gdb (concat "gdb -i=mi -silent --annotate=3 " max/buffer-name))
-;				    (gdb (concat "gdb -i=mi -silent " max/buffer-name))
-;				    (insert "r")
-;				    (comint-send-input))))
+;;; Cpp/C
+(add-hook 'c++-mode-hook (lambda ()
+                           (setq-default c-default-style "bsd"
+                                         c-basic-offset 4)
+                           (use-package setup-flymake)
+                           (push '("\\.cpp$" flymake-cpp-init)
+                                 flymake-allowed-file-name-masks)
+                           (push '("\\.h$" flymake-cpp-init)
+                                 flymake-allowed-file-name-masks)
+                           ;(flymake-cpp-init)
+                           ;(flymake-activate)
+                           (flymake-show-warerr-in-fringe)))
+(add-hook 'c-mode-hook (lambda ()
+                         (setq-default c-default-style "bsd"
+                                       c-basic-offset 4)
+                           (use-package setup-flymake)
+                           (push '("\\.c$" flymake-cc-init)
+                                 flymake-allowed-file-name-masks)
+                           ;(flymake-cc-init)
+                           ;(flymake-activate)
+                           (flymake-show-warerr-in-fringe)))
 
 
-;			    (add-to-list 'compilation-finish-functions
-;					 'max/cpp-notify-compilation-result)
-
-;			    (defun max/cpp-compile-and-run ()
-;			      (interactive)
-;			      (save-buffer)
-;			      (setq max/buffer-name
-;				    (substring (buffer-name) 0 (- (length (buffer-name)) 4)))
-;			      (if (not (eql max/gdb-process ""))
-;				  (progn
-;				    (if (get-buffer (concat "*" max/gdb-process "*"))
-;					(if (shell-command "killall gdb")
-;					    (kill-buffer (concat "*" max/gdb-process "*"))))
-;				    (setq max/gdb-process "")))
-;			      (delete-other-windows)
-;			      (split-window-horizontally)
-;			      (enlarge-window-horizontally 12)
-;			      (compile (concat "g++ -g " max/buffer-name ".cpp -o " max/buffer-name)))
-;			    (local-set-key (kbd "C-c r") 'gdb)
-			    (local-set-key (kbd "C-c c") 'comment-region)
-;			    (local-set-key (kbd "C-c C-c") 'max/cpp-compile-and-run)))
-;;; ===================================================================
-
-
-;;; Csharp [! rewrite]
-;(setq max/csharp-add-to-command "")
-;(defun max/csharp-mode-fn ()
-;  "function that runs when csharp-mode is initialized for a buffer."
-;  (c-set-style "bsd")
-;  (setq c-basic-offset 4)
-;  (setq compile-command "gmcs ")
-;  ;;будет выполняться после завершения компиляции
-;  (defun max/csharp-notify-compilation-result(buffer msg)
-;    (interactive)
-;    (other-window -1)
-;    (if (string-match "^finished" msg)
-;	(progn
-;	  (eshell)
-;	  (insert (concat "mono " max/buffer-name ".exe"))
-;	  (eshell-send-input))))
-
-;  (add-to-list 'compilation-finish-functions
-;	       'max/csharp-notify-compilation-result)
-
-;  (defun max/csharp-compile-and-run ()
-;    (interactive)
-;    (save-buffer)
-;    (setq max/buffer-name
-;	  (substring (buffer-name) 0 (- (length (buffer-name)) 3)))
-;    (delete-other-windows)
-;    (split-window-horizontally)
-;    (enlarge-window-horizontally 12)
-;    (compile
-;     (concat "gmcs " max/buffer-name ".cs " max/csharp-add-to-command)))
-
-;  (local-set-key (kbd "C-c c") 'comment-region)
-;  (local-set-key (kbd "C-c C-c") 'max/csharp-compile-and-run))
-
-;(add-hook  'csharp-mode-hook 'max/csharp-mode-fn t)
 ;;; ===================================================================
 
 
@@ -922,7 +952,6 @@ Symbols matching the text at point are put first in the completion list."
 (defun max/perl-mode-hook ()
   ;; (setq tab-width 2)
   (local-set-key [return] 'newline-and-indent)
-  (setq indent-tabs-mode nil)
   (abbrev-mode 1)
   (turn-on-eldoc-mode)
   (cperl-set-style "CPerl")
@@ -946,120 +975,82 @@ Symbols matching the text at point are put first in the completion list."
 ;;; ===================================================================
 
 ;;; Python
-(add-to-list 'load-path "/usr/share/emacs/site-lisp/")
-(setq py-install-directory "/usr/share/emacs/site-lisp/")
-(require 'python-mode)
-(setq auto-mode-alist (append '(("/*.\.py$" . python-mode)) auto-mode-alist))
-(require 'info-look)
-(eval-after-load "jedi"
-  '(define-key jedi-mode-map (kbd "<C-tab>") nil))
-(add-hook 'python-mode-hook 
+(use-package python
+  :mode ("\\.py\\'" . python-mode)
+  :interpreter ("python" . python-mode)
+  :config
+  (progn
+    (use-package info-look)
+    (use-package setup-flymake)
+    (use-package elpy
+      :init
+      (progn (define-key elpy-mode-map  (kbd "M-.") 'nil)
+             (define-key elpy-mode-map  (kbd "C-c C-j") 'elpy-goto-definition))
+      (add-hook 'ein:multilang-mode-hook (lambda () (configure-ein)))
+      :config
+      (progn (elpy-enable)
+             (elpy-use-ipython)
+      ))
+    (setq ipython-completion-command-string
+          "print(';'.join(get_ipython().Completer.complete('%s')[1])) #PYTHON-MODE SILENT\n"
+          ; py-electric-colon-newline-and-indent-p t
+	  ; switch to the interpreter after executing code
+          py-shell-switch-buffers-on-execute-p t
+          py-switch-buffers-on-execute-p t
+	  ; don't split windows
+          py-split-windows-on-execute-p nil)
+    
+    ;; F1-S - look in info documentation
+    (info-lookup-add-help
+     :mode 'python-mode
+     :regexp "[[:alnum:]_]+"
+     :doc-spec
+     '(("(python)Index" nil "")))
+  ))
+
+;            (define-key company-mode-map (kbd "M-h") 'company-show-doc-buffer)
+;            (define-key company-mode-map (kbd "C-w") nil)))
+
+(add-hook 'python-mode-hook (lambda ()
+                               (add-to-list 'flymake-allowed-file-name-masks
+                                            '("\\.py\\'" flymake-python-init flymake-simple-cleanup
+                   flymake-get-real-file-name))
+                               (flymake-activate)
+                               (flymake-show-warerr-in-fringe)
+                               (flymake-mode)))
+
+(defun max/music-tools-save-and-run ()
+  (interactive)
+  (save-buffer)
+  (eshell)
+  (insert "(async-shell-command \"wmctrl -Fc 'Music Tools' ; pyuic4 qt_mt.ui -o ui_main_window.py && ./qt_music_tools.py \")")
+  (eshell-send-input)
+  (lambda nil (interactive) (switch-to-buffer
+                             (other-buffer))))
+
+;;; ===================================================================
+
+
+;;; PHP
+(add-hook 'php-mode-hook 
 	  (lambda ()
-	    (setq py-electric-colon-newline-and-indent-p t)
-	    ; switch to the interpreter after executing code
-	    (setq py-shell-switch-buffers-on-execute-p t)
-	    (setq py-switch-buffers-on-execute-p t)
-	    ; don't split windows
-	    (setq py-split-windows-on-execute-p nil)
-	    ; try to automagically figure out indentation
-	    (setq py-smart-indentation t)
+            ;; Toggle between PHP & HTML Helper mode.  Useful when working on
+            ;; php files, that can been intertwined with HTML code
+            (c-set-style "bsd")
+            (setq c-basic-offset 4)
+            
+            (defun toggle-php-html-mode ()
+              (interactive)
+              "Toggle mode between PHP & HTML Helper modes"
+              (cond ((string= mode-name "HTML helper")
+                     (php-mode))
+                    ((string= mode-name "PHP")
+                     (html-helper-mode))))
 
-	    ; jedi autocomplete
-	    (jedi:setup)
-	    (jedi:ac-setup)
-	    (setq jedi:complete-on-dot t)
-	    (setq jedi:complete [C-c tab])))
+            (global-set-key [f5] 'toggle-php-html-mode)
+            (local-set-key (kbd "C-.") nil)
+            ))
 
-;; pymacs settings
-;; (require 'pymacs)
-;; (setq pymacs-python-command py-python-command)
-;; (autoload 'pymacs-load "pymacs" nil t)
-;; (autoload 'pymacs-eval "pymacs" nil t)
-;; (autoload 'pymacs-apply "pymacs")
-;; (autoload 'pymacs-call "pymacs")
-
-;; F1-S - look in info documentation
-(info-lookup-add-help
- :mode 'python-mode
- :regexp "[[:alnum:]_]+"
- :doc-spec
- '(("(python)Index" nil "")))
-
-;; show errors on the fly
-(defun flymake-python-init ()
-  (let* ((temp-file (flymake-init-create-temp-buffer-copy
-		     'flymake-create-temp-inplace))
-	 (local-file (file-relative-name
-		      temp-file
-		      (file-name-directory buffer-file-name))))
-    (list "epylint" (list local-file))))
-
-(defun flymake-activate ()
-  "Activates flymake when real buffer and you have write access"
-  (if (and
-       (buffer-file-name)
-       (file-writable-p buffer-file-name))
-      (progn
-        (flymake-mode t)
-        ;; this is necessary since there is no flymake-mode-hook...
-        (local-set-key (kbd "C-c n") 'flymake-goto-next-error)
-        (local-set-key (kbd "C-c p") 'flymake-goto-prev-error))))
-
-(defun ca-flymake-show-help ()
-  (when (get-char-property (point) 'flymake-overlay)
-    (let ((help (get-char-property (point) 'help-echo)))
-      (if help (message "%s" help)))))
-
-(add-hook 'post-command-hook 'ca-flymake-show-help)
-(add-to-list 'flymake-allowed-file-name-masks
-             '("\\.py\\'" flymake-python-init))
-(add-hook 'python-mode-hook 'flymake-activate)
-;;; ===================================================================
-
-;;; Lisp
-(autoload 'turn-on-eldoc-mode "eldoc" nil t)
-(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
-;;; ===================================================================
-
-;;; Java [! rewrite]
-;(setq max/java-add-to-command "")
-;(defun max/java-mode-fn ()
-;  "function that runs when java-mode is initialized for a buffer."
-;  (c-set-style "bsd")
-;  (setq c-basic-offset 4)
-;  (setq compile-command "javac ")
-;  ;;будет выполняться после завершения компиляции
-;  (defun max/java-notify-compilation-result(buffer msg)
-;    (interactive)
-;    (other-window -1)
-;    (if (string-match "^finished" msg)
-;	(progn
-;	  (eshell)
-;	  (eshell-send-input)
-;	  (insert (concat "java " max/buffer-name))
-;	  (eshell-send-input))))
-
-;  (add-to-list 'compilation-finish-functions
-;	       'max/java-notify-compilation-result)
-
-;  (defun max/java-compile-and-run ()
-;    (interactive)
-;    (save-buffer)
-;    (setq max/buffer-name
-;	  (substring (buffer-name) 0 (- (length (buffer-name)) 5)))
-;    (delete-other-windows)
-;    (split-window-horizontally)
-;    (enlarge-window-horizontally 12)
-;    (compile
-;     (concat "javac " max/buffer-name ".java " max/java-add-to-command)))
-
-(local-set-key (kbd "C-c c") 'comment-region)
-;  (local-set-key (kbd "C-c C-c") 'max/java-compile-and-run))
-
-;(add-hook  'java-mode-hook 'max/java-mode-fn t)
-;;; ===================================================================
 
 
 ;;; Test code
@@ -1094,49 +1085,18 @@ Symbols matching the text at point are put first in the completion list."
 ;; end of line for gnuplot-mode
 ;;--------------------------------------------------------------------
 
-;;; Customize-group generated
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-enabled-themes (quote (wombat)))
- '(custom-safe-themes (quote ("31d3463ee893541ad572c590eb46dcf87103117504099d362eeed1f3347ab18f" default)))
- '(fci-rule-color "#383838")
- '(jedi:key-complete [C-c Tab])
- '(py-tab-shifts-region-p t)
- '(py-underscore-word-syntax-p nil)
- '(python-eldoc-string-code "__PYDOC_get_help('''%s''')")
- '(sml/active-background-color "gray12")
- '(sml/hidden-modes (quote (" hl-p" " Guide" " Undo-Tree")))
- '(sml/inactive-background-color "gray24")
- '(sml/mode-width (quote full))
- '(sml/modified-char "+")
- '(sml/modified-time-string "Mod: %T %Y-%m-%d.")
- '(sml/name-width 40)
- '(sml/replacer-regexp-list (quote (("^~/org/" ":Org:") ("^~/\\.emacs\\.d/" ":ED:") ("^/sudo:.*:" ":SU:") ("^~/Documents/" ":Doc:") ("^~/Dropbox/" ":DB:") ("^:\\([^:]*\\):Documento?s/" ":\\1/Doc:") ("^~/[Gg]it/" ":Git:") ("^~/[Gg]it[Hh]ub/" ":Git:") ("^~/[Gg]it\\([Hh]ub\\|\\)-?[Pp]rojects/" ":Git:") ("^/data/Downloads/" ":Dls:") ("^/data/sandbox/" ":Sbx:") ("^~/src/" ":Src:"))))
- '(sml/show-eol t)
- '(sml/theme nil)
- '(vc-annotate-background "#2B2B2B")
- '(vc-annotate-color-map (quote ((20 . "#BC8383") (40 . "#CC9393") (60 . "#DFAF8F") (80 . "#D0BF8F") (100 . "#E0CF9F") (120 . "#F0DFAF") (140 . "#5F7F5F") (160 . "#7F9F7F") (180 . "#8FB28F") (200 . "#9FC59F") (220 . "#AFD8AF") (240 . "#BFEBBF") (260 . "#93E0E3") (280 . "#6CA0A3") (300 . "#7CB8BB") (320 . "#8CD0D3") (340 . "#94BFF3") (360 . "#DC8CC3"))))
- '(vc-annotate-very-old-color "#DC8CC3")
- '(which-func-modes (quote (c++-mode c-mode python-mode perl-mode java-mode))))
-
-;; faces
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ace-jump-face-foreground ((t (:foreground "gold"))))
- '(flymake-errline ((((class color)) (:underline "red"))))
- '(flymake-warnline ((((class color)) (:underline "yellow"))))
- '(sml/modified ((t (:inherit sml/global :background "green4" :foreground "white" :weight bold))))
- '(which-func ((t (:foreground "gold"))) t))
-;;; ===================================================================
 
 ;; E - elpa
 ; paredit
 (autoload 'enable-paredit-mode "paredit"
   "Turn on pseudo-structural editing of Lisp code."
   t)
+
+(use-package erc
+  :config
+  (setq erc-autojoin-channels-alist '(("freenode.net"
+         "#org-mode"
+         "#hacklabto"
+         "#emacs"))
+  erc-server "irc.freenode.net"
+  erc-nick "maglight"))
