@@ -940,7 +940,8 @@ Symbols matching the text at point are put first in the completion list."
                                  flymake-allowed-file-name-masks)
                            ;(flymake-cpp-init)
                            ;(flymake-activate)
-                           (flymake-show-warerr-in-fringe)))
+                           (flymake-show-warerr-in-fringe)
+                           (flymake-mode)))
 (add-hook 'c-mode-hook (lambda ()
                          (setq-default c-default-style "bsd"
                                        c-basic-offset 4)
@@ -949,7 +950,8 @@ Symbols matching the text at point are put first in the completion list."
                                  flymake-allowed-file-name-masks)
                            ;(flymake-cc-init)
                            ;(flymake-activate)
-                           (flymake-show-warerr-in-fringe)))
+                           (flymake-show-warerr-in-fringe)
+                           (flymake-mode)))
 
 
 ;;; ===================================================================
