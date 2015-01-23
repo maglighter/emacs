@@ -1,13 +1,13 @@
 
 ;; ----- smex-history -----
 (
+ bookmark-jump
+ bs-show
+ ag
+ grep-find
+ magit-status
  cc
  ee
- hexl-mode
- ag
- revert-buffer
- grep-find
- locate
 )
 
 ;; ----- smex-data -----
@@ -29,7 +29,7 @@
  (ee . 160)
  (message-reply . 1)
  (grep . 1)
- (grep-find . 95)
+ (grep-find . 97)
  (follow-mode . 4)
  (hanoi . 2)
  (life . 1)
@@ -93,7 +93,7 @@
  (font-lock-mode . 6)
  (windresize . 9)
  (sokoban . 5)
- (magit-status . 24)
+ (magit-status . 26)
  (magit-log . 1)
  (magit-show . 1)
  (line-number-mode . 12)
@@ -299,7 +299,7 @@
  (winner-redo . 1)
  (wr . 1)
  (wu . 12)
- (bs-show . 8)
+ (bs-show . 13)
  (bs . 1)
  (mo . 1)
  (c-set-offset . 4)
@@ -336,7 +336,7 @@
  (sr-speedbar-toggle . 3)
  (ediff-quit . 1)
  (ag-regexp . 2)
- (ag . 141)
+ (ag . 143)
  (ag-kill-buffers . 5)
  (landmark . 1)
  (mc/sort-regions . 1)
@@ -551,4 +551,5 @@
  (helm-gentoo . 1)
  (helm-mini . 1)
  (helm-show-kill-ring . 3)
+ (bookmark-jump . 1)
 )

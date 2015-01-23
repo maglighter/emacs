@@ -1,4 +1,14 @@
-((("max/large-file-hook" .
+((("./Desktop/dos/imagecreate.sh" .
+                                  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0])
+  ("./Desktop/dos/" .
+                    [0 0 0 0 0 0 0 0 0 0 1 0 0 0])
+  ("./Desktop/" .
+                [0 0 0 1 0 0 0 0 0 0])
+  ("./powder.pref" .
+                   [0 0 0 0 0 0 0 0 0 0 0 0 1])
+  ("src" .
+         [0 0 1])
+  ("max/large-file-hook" .
                          [0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0])
   ("font-lock-mode" .
                     [0 0 0 0 0 0 0 0 0 1 0 0 0 0])

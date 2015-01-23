@@ -360,9 +360,13 @@
                        ac-limit 10
                        ac-disable-faces nil
                        ac-dwim nil)
-                 (setq-default ac-sources '(ac-source-imenu
+                 (setq-default ac-sources '(ac-source-semantic
+                                            ac-source-variables
+                                            ac-source-functions
+                                            ac-source-imenu
                                             ac-source-words-in-buffer
                                             ac-source-words-in-same-mode-buffers
+                                            ac-source-files-in-current-dir
                                             ac-source-dictionary
                                             ac-source-filename))))
 

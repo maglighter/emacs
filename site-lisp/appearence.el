@@ -9,7 +9,7 @@
 
 ;; Scrolling settings
 (setq scroll-conservatively 10000
-      scroll-margin 2
+      scroll-margin 3
       scroll-step 1
       mouse-wheel-follow-mouse 't
       mouse-wheel-scroll-amount '(1 ((shift) . 1)))
@@ -36,6 +36,13 @@
 
 ;; Replace selected region
 (delete-selection-mode t)
+
+;; Indent settings
+(setq-default tab-width          4)
+(setq-default c-basic-offset     4)
+(setq-default standart-indent    4)
+(setq-default lisp-body-indent   4)
+(setq lisp-indent-function  'common-lisp-indent-function)
 
 ;; Stop mix tabs and spaces
 (setq-default indent-tabs-mode nil)
