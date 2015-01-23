@@ -694,7 +694,7 @@ of windows in the frame simply by calling this command again."
       (setq myStr (thing-at-point 'word)))
     (append-to-file (concat myStr "\n") nil "/data/sandbox/words_for_anki")
     (setq translate (shell-command-to-string
-      (concat "/home/max/.emacs.d/site-lisp/translate_arg " "\"" myStr "\"")))
+      (concat (expand-file-name "site-lisp/non-lisp/translate_arg" user-emacs-directory) " \"" myStr "\"")))
     (message "%s" (substring translate 0 (- (length translate) 1)))))
 
 ;; looking for Qt class documentation
