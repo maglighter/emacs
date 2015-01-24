@@ -1,19 +1,19 @@
 
 ;; ----- smex-history -----
 (
- bookmark-jump
- bs-show
- ag
- grep-find
+ customize-themes
+ ido-imenu
+ er
+ package-list-packages
  magit-status
- cc
- ee
+ newline-and-indent
+ electric-indent-mode
 )
 
 ;; ----- smex-data -----
 (
- (er . 112)
- (sudo-edit . 65)
+ (er . 113)
+ (sudo-edit . 67)
  (time-stamp . 2)
  (timeclock-in . 2)
  (calendar . 1)
@@ -26,7 +26,7 @@
  (gud-gdb . 17)
  (fundamental-mode . 33)
  (calc . 3)
- (ee . 160)
+ (ee . 167)
  (message-reply . 1)
  (grep . 1)
  (grep-find . 97)
@@ -71,7 +71,7 @@
  (ascii-table . 1)
  (occur . 23)
  (apropos-value . 3)
- (c-set-style . 17)
+ (c-set-style . 19)
  (man . 8)
  (list-coding-systems . 2)
  (ascii-on . 2)
@@ -93,7 +93,7 @@
  (font-lock-mode . 6)
  (windresize . 9)
  (sokoban . 5)
- (magit-status . 26)
+ (magit-status . 28)
  (magit-log . 1)
  (magit-show . 1)
  (line-number-mode . 12)
@@ -103,7 +103,7 @@
  (Info-tagify . 4)
  (Info-split . 2)
  (irc . 1)
- (erc . 18)
+ (erc . 20)
  (w3m-weather . 2)
  (w3m-reload-this-page . 1)
  (version . 8)
@@ -111,7 +111,7 @@
  (load-file . 5)
  (slime-connect . 1)
  (package-install . 1)
- (customize-themes . 3)
+ (customize-themes . 5)
  (load-library . 7)
  (package-initialize . 2)
  (emacs-init-time . 22)
@@ -143,7 +143,7 @@
  (perldb . 3)
  (vi-mode . 2)
  (gnuplot-mode . 1)
- (package-list-packages . 38)
+ (package-list-packages . 40)
  (python-mode . 14)
  (ipyhton . 27)
  (pdb . 7)
@@ -163,7 +163,7 @@
  (ipython . 159)
  (ipython-to-doctest . 3)
  (pylint . 13)
- (flymake-mode . 63)
+ (flymake-mode . 70)
  (flymake-display-err-menu-for-current-line . 7)
  (py-shell . 8)
  (py-execute-block . 1)
@@ -291,7 +291,7 @@
  (wsm . 4)
  (ace-jump-done . 3)
  (ace-jump-mode-pop-mark . 2)
- (ido-imenu . 6)
+ (ido-imenu . 7)
  (bury-buffer . 2)
  (undo-tree-mode . 1)
  (winner-mode . 5)
@@ -336,7 +336,7 @@
  (sr-speedbar-toggle . 3)
  (ediff-quit . 1)
  (ag-regexp . 2)
- (ag . 143)
+ (ag . 146)
  (ag-kill-buffers . 5)
  (landmark . 1)
  (mc/sort-regions . 1)
@@ -447,7 +447,7 @@
  (electric-pair-mode . 2)
  (package-refresh-contents . 1)
  (elpy-enable . 8)
- (electric-indent-mode . 3)
+ (electric-indent-mode . 9)
  (elpy-use-ipython . 2)
  (mpc-volume-mouse-set . 1)
  (mpc-mode-menu . 2)
@@ -541,8 +541,8 @@
  (info-display-manual . 1)
  (auto-revert-mode . 1)
  (gdb-toggle-breakpoint . 5)
- (c-toggle-auto-state . 1)
- (c-toggle-auto-newline . 2)
+ (c-toggle-auto-state . 4)
+ (c-toggle-auto-newline . 3)
  (helm-M-x . 2)
  (picture-mode . 1)
  (reverse-region . 2)
@@ -552,4 +552,13 @@
  (helm-mini . 1)
  (helm-show-kill-ring . 3)
  (bookmark-jump . 1)
+ (flyc/show-fly-error-at-point-now . 1)
+ (flycheck-mode . 4)
+ (calendar-basic-setup . 1)
+ (flycheck-verify-setup . 4)
+ (wdired-change-to-wdired-mode . 3)
+ (c-electric-brace . 2)
+ (c-toggle-syntactic-indentation . 2)
+ (c-toggle-auto-hungry-state . 1)
+ (newline-and-indent . 4)
 )

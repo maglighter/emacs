@@ -776,7 +776,7 @@ Symbols matching the text at point are put first in the completion list."
   (imenu--make-index-alist)
   (let ((name-and-pos '())
         (symbol-names '()))
-    (flet ((addsymbols (symbol-list)
+    (cl-flet ((addsymbols (symbol-list)
                        (when (listp symbol-list)
                          (dolist (symbol symbol-list)
                            (let ((name nil) (position nil))
@@ -930,29 +930,24 @@ Symbols matching the text at point are put first in the completion list."
 
 
 ;;; Cpp/C
-(add-hook 'c++-mode-hook (lambda ()
-                           (setq-default c-default-style "bsd"
-                                         c-basic-offset 4)
-                           (use-package setup-flymake)
-                           (push '("\\.cpp$" flymake-cpp-init)
-                                 flymake-allowed-file-name-masks)
-                           (push '("\\.h$" flymake-cpp-init)
-                                 flymake-allowed-file-name-masks)
-                           ;(flymake-cpp-init)
-                           ;(flymake-activate)
-                           (flymake-show-warerr-in-fringe)
-                           (flymake-mode)))
-(add-hook 'c-mode-hook (lambda ()
-                         (setq-default c-default-style "bsd"
-                                       c-basic-offset 4)
-                           (use-package setup-flymake)
-                           (push '("\\.c$" flymake-cc-init)
-                                 flymake-allowed-file-name-masks)
-                           ;(flymake-cc-init)
-                           ;(flymake-activate)
-                           (flymake-show-warerr-in-fringe)
-                           (flymake-mode)))
+(c-add-style "max/custom-style" 
+             '("bsd"
+               (indent-tabs-mode . nil)        ; use spaces rather than tabs
+               (c-continued-statement-offset 8)
+               (c-basic-offset . 4)            ; indent by four spaces
+               (c-offsets-alist . ((inline-open . 0)  ; custom indentation rules
+                                   (brace-list-open . 0)
+                                   (statement-case-open . +)))))
 
+(add-hook 'c++-mode-hook (lambda ()
+                             (c-set-style "max/custom-style")
+                             (use-package flycheck)
+                             (flycheck-mode)))
+
+(add-hook 'c-mode-hook (lambda ()
+                           (c-set-style "max/custom-style")
+                           (use-package flycheck)
+                           (flycheck-mode)))
 
 ;;; ===================================================================
 
@@ -997,7 +992,7 @@ Symbols matching the text at point are put first in the completion list."
   :config
   (progn
     (use-package info-look)
-    (use-package setup-flymake)
+    (use-package flycheck)
     (use-package elpy
       :init
       (progn (define-key elpy-mode-map  (kbd "M-.") 'nil)
@@ -1027,13 +1022,7 @@ Symbols matching the text at point are put first in the completion list."
 ;            (define-key company-mode-map (kbd "M-h") 'company-show-doc-buffer)
 ;            (define-key company-mode-map (kbd "C-w") nil)))
 
-(add-hook 'python-mode-hook (lambda ()
-                               (add-to-list 'flymake-allowed-file-name-masks
-                                            '("\\.py\\'" flymake-python-init flymake-simple-cleanup
-                   flymake-get-real-file-name))
-                               (flymake-activate)
-                               (flymake-show-warerr-in-fringe)
-                               (flymake-mode)))
+(add-hook 'python-mode-hook (lambda () (flycheck-mode)))
 
 (defun max/music-tools-save-and-run ()
   (interactive)
