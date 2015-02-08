@@ -59,11 +59,15 @@
 
 ;;; Backup and history
 (setq max/backup-directory "/data/.emacs_backup/")
+
 (setq backup-by-copying t
       backup-directory-alist
-      (cons (cons "." (expand-file-name max/backup-directory)) backup-directory-alist)
+      `((".*" . ,(expand-file-name max/backup-directory)))
       auto-save-file-name-transforms
       `((".*", (expand-file-name max/backup-directory) t))
+      tramp-backup-directory-alist
+      `((".*" . ,(expand-file-name max/backup-directory)))
+      tramp-auto-save-directory (expand-file-name max/backup-directory)
       vc-make-backup-files t
       delete-old-versions t
       kept-new-versions 8
@@ -91,10 +95,14 @@
 (global-set-key (kbd "C-x C-c") 'max/kill-emacs)
 
 ;; Switch to next/previous window
-(global-set-key (kbd "<C-tab>") '(lambda ()
-                                   (interactive)
-                                   (if (= (count-windows) 2) (other-window 1)
-                                     (ace-window 1))))
+(global-set-key (kbd "<C-tab>") '(lambda (prefix)
+                                   (interactive "p")
+                                  (if (= prefix 1)
+                                      (if (= (count-windows) 2) (other-window 1)
+                                          (ace-window prefix))
+                                      (if (= (count-windows) 2) (max/swap-windows)
+                                          (ace-window prefix)))))
+
 (setq aw-keys '(?a ?h ?d ?s ?f ?h ?j ?k ?l))
 
 ;; Use shell-like backspace C-h, rebind help to F1
@@ -130,6 +138,10 @@
 ;; joins the following line onto this one
 (global-set-key (kbd "M-j") (lambda() (interactive)(join-line -1)))
 
+;; when splitting window go to opened window
+(global-set-key (kbd "C-x 2") 'max/split-window-vertically)
+(global-set-key (kbd "C-x 3") 'max/split-window-horizontally)
+
 ;; switching between buffers
 (global-set-key (kbd "C-.") 'ido-switch-buffer)
 
@@ -144,6 +156,8 @@
 
 ;; kill current buffer without request
 (global-set-key (kbd "C-x k")
+		'(lambda () (interactive) (kill-buffer (current-buffer))))
+(global-set-key (kbd "M-k")
 		'(lambda () (interactive) (kill-buffer (current-buffer))))
 
 ;; replace default M-x behavior with some stuff of ido [v]
@@ -160,6 +174,10 @@
 ;; replace by reqexp [E]
 (define-key global-map (kbd "C-c r") 'vr/query-replace)
 (define-key global-map (kbd "C-c q") 'vr/replace)
+
+;; isearch with visual regexp
+(define-key esc-map (kbd "C-r") 'vr/isearch-backward) ;; C-M-r
+(define-key esc-map (kbd "C-s") 'vr/isearch-forward)  ;; C-M-s
 
 ;; quick move cursor [v][E]
 ;[v](define-key global-map (kbd "M-z") 'ace-jump-mode)
@@ -215,7 +233,12 @@
 (global-set-key (kbd "M-C-z") 'zap-to-char)
 
 ;; key-chord mode keys
-;(key-chord-define-global "q]" 'ace-jump-buffer)
+(key-chord-define-global "q]" 'ace-jump-buffer)
+(key-chord-define-global "xx" 'er/expand-region)
+(key-chord-define-global "j1" 'delete-other-windows)
+(key-chord-define-global "j2" 'max/split-window-vertically)
+(key-chord-define-global "j3" 'max/split-window-horizontally)
+(key-chord-define-global "j0" 'delete-window)
 
 ;; increment/decrement number at point
 (global-set-key (kbd "C-c +") 'max/increment-number-decimal)
@@ -342,13 +365,11 @@
   :config (global-undo-tree-mode 1))
 
 ;; mode for auto complete words [read more][E]
-
 (use-package auto-complete
   :init (setq ac-comphist-file
               (expand-file-name "temp/.ac-comphist.dat" user-emacs-directory))
   :config (progn (ac-config-default)
                  (global-auto-complete-mode t)
-                 (use-package popup-pos-tip)
                  (setq ac-expand-on-auto-complete nil)
                  (setq ac-delay 0.125
                        ac-auto-show-menu 0.25
@@ -370,6 +391,9 @@
                                             ac-source-dictionary
                                             ac-source-filename))))
 
+;; draw documentation popups with kde
+(use-package popup-pos-tip)
+
 ;; activate occur inside isearch
 (define-key isearch-mode-map (kbd "C-o")
   (lambda () (interactive)
@@ -388,7 +412,9 @@
 
 ;; enables mode for execute commands by pressing two buttons simultaneously
 (use-package key-chord
-  :config (progn (key-chord-mode 1)))
+  :config (progn
+              (setq key-chord-one-key-delay 0.16)
+              (key-chord-mode 1)))
   
 ;; quick move cursor [E]
 (use-package ace-jump-mode
@@ -490,8 +516,15 @@
                     (set-face-attribute 'rainbow-delimiters-depth-1-face nil
                                         :foreground 'unspecified
                                         :inherit 'my-outermost-paren-face))))
-
+;; helm
 (use-package helm-config)
+
+;; highlights changes: undo, yank, kill line, ...
+(use-package volatile-highlights
+    :init (volatile-highlights-mode t))
+
+;; setting engine for vr
+(use-package visual-regexp-steroids)
 
 ;;; ===================================================================
 
@@ -502,6 +535,22 @@
   (interactive)
   (save-some-buffers)
   (kill-emacs))
+
+;; split window vertically and jump to opened window
+(defun max/split-window-vertically (prefix)
+    (interactive "p")
+    (split-window-vertically)
+    (other-window 1 'nil)
+    (if (= prefix 1)
+        (switch-to-next-buffer)))
+
+;; split window horizontally and jump to opened window
+(defun max/split-window-horizontally (prefix)
+    (interactive "p")
+    (split-window-horizontally)
+    (other-window 1 'nil)
+    (if (= prefix 1)
+        (switch-to-next-buffer)))
 
 ;; edit system files with root privileges
 (defun sudo-edit (&optional arg)
