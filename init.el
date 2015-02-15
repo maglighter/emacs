@@ -426,7 +426,8 @@
     (autoload 'ace-jump-mode-pop-mark "ace-jump-mode" "Ace jump back:-)" t)
     (eval-after-load "ace-jump-mode" '(ace-jump-mode-enable-mark-sync))
     (setq ace-jump-mode-move-keys
-          (loop for i from ?a to ?z collect i))))
+          (nconc (loop for i from ?a to ?z collect i)
+                 (loop for i from ?A to ?Z collect i)))))
 
 ;; Maggit - git interface
 (use-package magit
@@ -479,6 +480,7 @@
 	    ;; Set dired-x global variables here.  For example:
 	    (setq dired-guess-shell-gnutar "gtar")
 	    (setq dired-x-hands-off-my-keys nil)
+        (define-key dired-mode-map (kbd "TAB") 'diredp-up-directory)
 	    ))
 (add-hook 'dired-mode-hook
 	  (lambda ()

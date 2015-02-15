@@ -1,13 +1,13 @@
 
 ;; ----- smex-history -----
 (
- visual-line-mode
- customize-group
- vr/select-replace
- vr/mc-mark
- package-list-packages
- delete-current-buffer-file
- list-packages
+ find-name-dired
+ ag
+ shell
+ sh
+ dired-find-file-other-window
+ dns-lookup-host
+ grep-find
 )
 
 ;; ----- smex-data -----
@@ -26,10 +26,10 @@
  (gud-gdb . 17)
  (fundamental-mode . 33)
  (calc . 3)
- (ee . 168)
+ (ee . 170)
  (message-reply . 1)
  (grep . 1)
- (grep-find . 98)
+ (grep-find . 102)
  (follow-mode . 4)
  (hanoi . 2)
  (life . 1)
@@ -57,12 +57,12 @@
  (dired-diff . 1)
  (ediff . 2)
  (qrr . 3)
- (w3m . 39)
+ (w3m . 41)
  (visual-line-mode . 20)
  (replace-regexp . 3)
  (rgrep . 16)
  (ansi-term . 12)
- (find-grep . 27)
+ (find-grep . 28)
  (grep-mode . 2)
  (goto-address-prog-mode . 1)
  (query-replace-regexp . 5)
@@ -83,7 +83,7 @@
  (load-theme . 28)
  (desktop-clear . 1)
  (bookmark-load . 1)
- (eshell . 9)
+ (eshell . 10)
  (set-cursor-color . 2)
  (apropos-documentation . 5)
  (delete-file . 4)
@@ -93,7 +93,7 @@
  (font-lock-mode . 7)
  (windresize . 9)
  (sokoban . 5)
- (magit-status . 29)
+ (magit-status . 30)
  (magit-log . 1)
  (magit-show . 1)
  (line-number-mode . 12)
@@ -103,7 +103,7 @@
  (Info-tagify . 4)
  (Info-split . 2)
  (irc . 1)
- (erc . 20)
+ (erc . 21)
  (w3m-weather . 2)
  (w3m-reload-this-page . 1)
  (version . 8)
@@ -143,7 +143,7 @@
  (perldb . 3)
  (vi-mode . 2)
  (gnuplot-mode . 1)
- (package-list-packages . 44)
+ (package-list-packages . 45)
  (python-mode . 14)
  (ipyhton . 27)
  (pdb . 7)
@@ -200,8 +200,8 @@
  (c-mode . 16)
  (gdb-breakpoints-mode . 5)
  (gud-break . 7)
- (shell . 25)
- (sh . 3)
+ (shell . 31)
+ (sh . 5)
  (c-macro-expand . 1)
  (edit-kbd-macro . 1)
  (insert-kbd-macro . 1)
@@ -239,7 +239,7 @@
  (set-buffer-file-coding-system . 6)
  (hexl-menu . 2)
  (outline-mode . 1)
- (customize-group . 101)
+ (customize-group . 102)
  (which-func-mode . 7)
  (max/kill-emacs . 3)
  (w3m-cookie-shutdown . 3)
@@ -336,7 +336,7 @@
  (sr-speedbar-toggle . 6)
  (ediff-quit . 1)
  (ag-regexp . 2)
- (ag . 167)
+ (ag . 171)
  (ag-kill-buffers . 5)
  (landmark . 1)
  (mc/sort-regions . 1)
@@ -370,7 +370,7 @@
  (pylint-help . 1)
  (pychecker-flymake-mode . 6)
  (flymake-stop-all-syntax-checks . 1)
- (apropos . 5)
+ (apropos . 6)
  (flymake-restart-syntax-check . 2)
  (edebug-step-in . 4)
  (edebug-stop . 4)
@@ -500,7 +500,7 @@
  (toggle-truncate-lines . 2)
  (kill-emacs . 1)
  (view-emacs-news . 1)
- (eww . 14)
+ (eww . 16)
  (icicle-font . 9)
  (toggle-frame-fullscreen . 1)
  (menu-set-font . 1)
@@ -565,10 +565,17 @@
  (dired-tree-down . 5)
  (neotree . 2)
  (ac-complete-dictionary . 1)
- (find-name-dired . 11)
+ (find-name-dired . 19)
  (python-eldoc-at-point . 1)
  (ediff-documentation . 1)
  (volatile-highlights-mode . 1)
  (vr/mc-mark . 8)
  (vr/select-replace . 3)
+ (eww-browse-with-external-browser . 2)
+ (ace-jump-mode . 1)
+ (pin-window . 2)
+ (max/toggle-window-dedicated . 11)
+ (dedicated-mode . 11)
+ (dns-lookup-host . 1)
+ (dired-find-file-other-window . 2)
 )
