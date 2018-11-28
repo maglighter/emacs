@@ -1,0 +1,33 @@
+* Jboss
+  [[https://summerofcode.withgoogle.com/organizations/5103923972014080/]]
+* Checkstyle
+  https://summerofcode.withgoogle.com/organizations/6255237871435776/
+* Checker Framework
+  https://summerofcode.withgoogle.com/organizations/4906659840262144/
+* Bazel :linux:
+  https://summerofcode.withgoogle.com/organizations/6293241017139200/
+* Sigmah :gwt:
+  https://summerofcode.withgoogle.com/organizations/5999855718629376/
+* The Eclipse Foundation
+  https://summerofcode.withgoogle.com/organizations/5690728308015104/
+* Apache Software Foundation
+  https://summerofcode.withgoogle.com/organizations/5416945173135360/
+* Mifos Initiative :spring:
+  https://summerofcode.withgoogle.com/organizations/5478003032195072/
+* MIT App Inventor :gwt:
+  https://summerofcode.withgoogle.com/organizations/5398275931766784/
+* PMD
+  https://summerofcode.withgoogle.com/organizations/6257980946251776/
+  cross-language static code analyzer
+* The Java Pathfinder Team
+  https://summerofcode.withgoogle.com/organizations/5314871315922944/
+* DBpedia
+  https://summerofcode.withgoogle.com/organizations/6256528802709504/
+* Eclipse Vert.x
+  https://summerofcode.withgoogle.com/organizations/4901344189087744/
+* FOSSASIA
+  https://summerofcode.withgoogle.com/organizations/5640848839540736/
+* INCF
+  https://summerofcode.withgoogle.com/organizations/5963933753016320/
+* BeeWare Project
+  https://summerofcode.withgoogle.com/organizations/6753972695072768/

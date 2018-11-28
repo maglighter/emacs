@@ -1,0 +1,185 @@
+* abstract
+  In our era of Big Data there is a huge amount of spatio-temporal
+  data produced by people, satellites, phones or sensors: while we are
+  using social networks, traveling, ordering a taxi, everyhing can be
+  recorded. Every minute a new portion of spatio-temporal was
+  generated with some interesting features and patterns that could be
+  extracted. Therefore, in order to process this information that is
+  stored in huge databases effectively and as quick as possible even
+  in realtime we need some tools that can help us to build
+  distributed, scalable, and failsafe applications. Apache
+  Spark/Hadoop stack of technologiescan provide us necessary set of
+  instruments to build applications of such type. But there is no "out
+  of box" support for spatio-temporal data mining. Therefore, the
+  focus of this work will be framework development for co-location
+  pattern mining in big spatio-temporal data. And this framework wlll
+  be tested on real database from emergency service GLONASS +112.
+
+* related works
+  The SpatialSpark [20] project achieved accelerating parallel
+  processing of spatial data through a partitioning indexing method
+  based on the Spark broadcast mechanism. GeoSpark [21] implemented the
+  spatial resilient distributed datasets (SRDD) to enable spatial query
+  processing in the Spark. Similar Spark-based spatial query systems
+  also include Spark-GIS [22], Magellan [23], GeoTrellis [24] and
+  LocationSpark [25]. In addition, some scholars studied the issues of
+  high-performance spatial join queries based on Spark [26,27].
+
+  + RDBMS 
+  traditional RDBMS-based spatial database like PostGIS/PostgreSQL is unable to meet
+the needs of both massive spatial data management and query performance
+7  Yu, J.; Wu, J.; Sarwat, M. Geospark: A cluster computing framework for processing large-scale spatial data. In
+  Proceedings of the the 23rd SIGSPATIAL International Conference on
+  Advances in Geographic Information Systems, Bellevue, WA, USA, 3–6
+  November 2015.
+  8. You, S.; Zhang, J.; Gruenwald, L. Large-scale spatial join query processing in cloud. In Proceedings of the 2015
+  31st IEEE International Conference on Data Engineering Workshops
+  (ICDEW), Seoul, Korea, 13–17 April 2015; pp. 34–41.
+  
+  9. Baig, F.; Mehrotra, M.; Vo, H.; Wang, F.; Saltz, J.; Kurc, T. Sparkgis: Efficient comparison and evaluation
+  of algorithm results in tissue image analysis studies. In Proceedings
+  of the Biomedical Data Management and Graph Online Querying: VLDB 2015
+  Workshops, Big-O (Q) and DMAH, Waikoloa, HI, USA, 31 August–4
+  September 2015.
+  10. Gali´c, Z. Spatio-temporal data streams and big data paradigm. In Spatio-Temporal Data Streams; Springer:
+  New York, NY, USA, 2016; pp. 47–69, ISBN 978-1-4939-6575-5.
+  11. Kini, A.; Emanuele, R. Geotrellis: Adding Geospatial Capabilities to Spark, Spark Summit 2014. Available
+  online:
+  https://spark-summit.org/2014/geotrellis-adding-geospatial-capabilities-to-spark/
+  (accessed on 14 July 2017).
+  12. Tang, M.; Yu, Y.; Malluhi, Q.M.; Ouzzani, M.; Aref, W.G. Locationspark: A distributed in-memory data
+  management system for big spatial data. Proc. VLDB Endow. 2016, 9,
+  1565–1568. [CrossRef]
+  26. Zhang, F.; Zhou, J.; Liu, R.; Du, Z.; Ye, X. A New Design of High-Performance Large-Scale GIS Computing at
+  a Finer Spatial Granularity: A Case Study of Spatial Join with Spark
+  for Sustainability. Sustainability 2016, 8, 926. [CrossRef]
+  27. Du, Z.; Zhao, X.; Ye, X.; Zhou, J.; Zhang, F.; Liu, R. An Effective High-Performance Multiway Spatial Join
+  Algorithm with Spark. ISPRS Int. J. Geo-Inf. 2017, 6, 96. [CrossRef]
+
+  file:///data/Downloads/ijgi-06-00285.pdf
+  
+* why spark
+  In most real-world applications, machine learning systems have to
+  deal with millions of users and billions of events. Therefore, a
+  well-engineered data processing pipeline needs to be fast and
+  scalable as more users and events are added to the system. This
+  calls for distributed computing. For our purposes here, Spark, a
+  distributed processing engine, is a good choice, as it provides the
+  framework to perform many location-clustering tasks in parallel on
+  multiple machines.
+
+  https://www.oreilly.com/ideas/clustering-geolocated-data-using-spark-and-dbscan
+
+  Compared with the traditional MapReduce computing framework like Hadoop, Spark has the
+  advantage of memory computing, and is thus considered a new generation of the MapReduce
+  computing framewor
+
+  file:///data/Downloads/ijgi-06-00285.pdf
+
+* clustering
+
+  The average runtime complexity of the DBSCAN algorithm is O(n ∗ log n),
+  where n is the number of objects in the database
+
+  DBSCAN has been proven in its ability of processing very large
+  databases. The paper [6] shows that the runtime of other clustering
+  algorithms such as CLARANS [20], DBCLASD [30] is between 1.5 and 3
+  times the runtime of DBSCAN
+  
+  + ST DBSCAN
+  
+  Clustering is one of the major data mining methods for knowledge
+  discovery in large databases. It is the process of grouping large
+  data sets according to their similarity. Cluster analysis is a major
+  tool in many areas of engineering and scientific applications
+  including data segmentation, discretization of continuous
+  attributes, data reduction, outlier detection, noise filtering,
+  pattern recognition and image processing
+
+  https://www.sciencedirect.com/science/article/pii/S0169023X06000218
+  
+  First, we’ll need to select a clustering algorithm that works well
+  with geographical data and that can determine users’ geographical
+  areas based on the local density of the provided data points. The
+  DBSCAN algorithm is a good choice, as it works bottom-up by picking
+  a point and looking for more points within a given distance. It then
+  expands the cluster by repeating this process for new points until
+  the cluster cannot be further expanded.
+
+  + params - This algorithm can be tuned with two parameters: epsilon, which
+  determines how far to search for points near a given point, and
+  minPoints, which determines how many points should be present in the
+  neighborhood of a given point in order to keep expanding a given
+  cluster. Since the clusters emerge locally by looking for
+  neighboring points, clusters of various shapes can be detected (see
+  a simplified depiction in Figure 1). Points that are isolated and
+  too far from any other point are assigned to a special cluster of
+  outliers. These discerning properties make the DBSCAN algorithm a
+  good candidate for clustering geolocated events.
+
+  https://www.oreilly.com/ideas/clustering-geolocated-data-using-spark-and-dbscan
+  
+  + pros
+  DBSCAN poses some great advantages over other clustering
+  algorithms. Firstly, it does not require a pe-set number of clusters
+  at all. It also identifies outliers as noises unlike mean-shift
+  which simply throws them into a cluster even if the data point is
+  very different. Additionally, it is able to find arbitrarily sized
+  and arbitrarily shaped clusters quite well.
+
+  https://towardsdatascience.com/the-5-clustering-algorithms-data-scientists-need-to-know-a36d136ef68
+  
+  Clustering
+  “Cluster analysis or clustering is the task of grouping a set of
+  objects in such a way that objects in the same group (called a
+  cluster) are more similar (in some sense or another) to each other
+  than to those in other groups (clusters)” [11].  Clustering methods
+  can be broadly classified as – Partitioning Method- It divides the
+  dataset of ‘n’ objects into ‘k’ partitions, called clusters.  Each
+  cluster contains atleast one element and k<=n.  Hierarchical Method-
+  It creates a hierarchical decomposition of the objects present in the
+  dataset. Based on how this decomposition is done, it can be classified
+  as agglomerative or divisive approach.  Density-based Method- It helps
+  create non-linear shaped clusters based on density. The basic idea of
+  this technique is that the cluster keeps growing till the density of
+  the neighbourhood exceeds some threshold value, where neighbourhood is
+  defined by a fixed radius.  Model-based Method- In this model, data is
+  considered as coming from a mixture of two or more components or
+  clusters where each component is described by a density function.
+  Constraint-based Method- It finds clusters that satisfy user-specified
+  preferences or constraints.  We focus on finding the optimal locations
+  for taxi stands by clustering points which are spatially and
+  temporally close, irrespective of the clusters’ shape. Thus, we use
+  density-based clustering method. The two main algorithms for
+  density-based method are DBSCAN and OPTICS.
+
+  https://repository.iiitd.edu.in/jspui/bitstream/handle/123456789/529/MT15012%20-%20Avni%20Malhan.pdf?sequence=1&isAllowed=y
+
+  Scalable Parallel OPTICS Data Clustering
+  Using Graph Algorithmic Techniques
+
+  http://cucis.ece.northwestern.edu/publications/pdf/PatPal13.pdf
+
+* conclusion
+  My initial experiments show that Spark provides a solid
+  infrastructure to parallelize and distribute machine learning
+  algorithms on large volumes of users and events. Moreover, Spark
+  accelerates the development of data-driven systems by combining SQL
+  queries and machine learning in a single data processing framework.
+
+  The DBSCAN algorithm in combination with Spark appears to be a
+  promising method in which to extract accurate geographical patterns
+  when developing data-driven, location-based applications for a variety
+  of use cases, such as personalized marketing, fraud prevention, and
+  content filtering.
+
+  https://www.oreilly.com/ideas/clustering-geolocated-data-using-spark-and-dbscan
+* steps
+  * related works
+  * additional pages
+  * parameters
+  * add as rules vis
+  * add new figures to list
+  * links
+  
+    

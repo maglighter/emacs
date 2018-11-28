@@ -6,8 +6,12 @@
         back-to-indentation-or-beginning
         backward-kill-word-or-kill-region
         c-electric-slash
+        electric-newline-and-maybe-indent
         indent-for-tab-command
         mark-sexp
+        max/eclipse-search-selected-region
+        org-self-insert-command
+        py-electric-colon
         skeleton-pair-insert-maybe
         toggle-input-method
         ))
@@ -17,5 +21,6 @@
         ace-jump-mode
         beginning-of-buffer
         end-of-buffer
+        helm-confirm-and-exit-minibuffer
         smex
         ))

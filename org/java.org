@@ -1,0 +1,65 @@
+* equals, hashCode implementation
+  1) Reflexive : Object must be equal to itself.
+  2) Symmetric : if a.equals(b) is true then b.equals(a) must be true.
+  3) Transitive : if a.equals(b) is true and b.equals(c) is true then
+     c.equals(a) must be true.
+  4) Consistent : multiple invocations of equals() method must return
+     the same value until any of properties are modified. So if two
+     objects are equals in Java they will remain equals until any of
+     their property is modified.
+  5) Null comparison : comparing any object to null must be false and
+     should not result in NullPointerException. For example
+     a.equals(null) must be false, passing unknown object, which could
+     be null, to equals in Java is is actually a Java coding best
+     practice to avoid NullPointerException in Java.
+
+  Implementation steps:
+  1) Do this check -- if yes then return true.
+  2) Do null check -- if yes then return false.
+  3) Do the instanceof check or better class check
+
+  #+BEGIN_SRC java
+  if((obj == null) || (obj.getClass() != this.getClass())) {
+      return false;
+  }
+  #+END_SRC
+
+  4) Type cast the object; note the sequence instanceof check must be
+  prior to casting object.
+  5) Compare individual attribute starting with numeric
+     attribute. It’s also worth to remember doing null check on
+     individual attribute before calling equals() method on them
+     recursively to avoid NullPointerException during equals check in
+     Java.
+
+  Example:
+  #+BEGIN_SRC java
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        Person guest = (Person) obj;
+        return id == guest.id
+                && (firstName == guest.firstName 
+                     || (firstName != null && firstName.equals(guest.getFirstName())))
+                && (lastName == guest.lastName 
+                     || (lastName != null && lastName .equals(guest.getLastName())));
+    }
+    
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((firstName == null) ? 0 : firstName.hashCode());
+        result = prime * result + id;
+        result = prime * result
+                + ((lastName == null) ? 0 : lastName.hashCode());
+        return result;
+    }
+  #+END_SRC     

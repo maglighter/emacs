@@ -1,4 +1,12 @@
 ;; load common lisp (loop)
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+;(package-initialize)
+(setq package-enable-at-startup nil)
+
 (require 'cl)
 
 ;; Turn off tool bar, menu bar, scroll bar
@@ -54,6 +62,9 @@
 (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)
       x-select-enable-clipboard t
       save-interprogram-paste-before-kill t)
+
+;; Browser
+(setq browse-url-browser-function 'browse-url-chrome)
 ;;; ===================================================================
 
 
@@ -92,16 +103,20 @@
 
 ;;; Keys
 ;; Kill emacs process [v]
-(global-set-key (kbd "C-x C-c") 'max/kill-emacs)
+(global-set-key (kbd "C-x c") 'max/kill-emacs)
 
-;; Switch to next/previous window
-(global-set-key (kbd "<C-tab>") '(lambda (prefix)
+(defun max/focus-other-window-ace (prefix)
                                    (interactive "p")
+                                  (if (= (count-windows) 1)
+                                      (toggle-windows-split))
                                   (if (= prefix 1)
                                       (if (= (count-windows) 2) (other-window 1)
                                           (ace-window prefix))
                                       (if (= (count-windows) 2) (max/swap-windows)
-                                          (ace-window prefix)))))
+                                          (ace-window prefix))))
+
+;; Switch to next/previous window
+(global-set-key (kbd "<C-tab>") 'max/focus-other-window-ace)
 
 (setq aw-keys '(?a ?h ?d ?s ?f ?h ?j ?k ?l))
 
@@ -161,7 +176,7 @@
 		'(lambda () (interactive) (kill-buffer (current-buffer))))
 
 ;; replace default M-x behavior with some stuff of ido [v]
-(global-set-key (kbd "M-x") 'smex)
+;(global-set-key (kbd "M-x") 'smex)
 ;(global-set-key (kbd "<print>") 'smex)
 (global-set-key (kbd "<menu>") 'smex)
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
@@ -187,6 +202,9 @@
 (global-set-key (kbd "M-w") 'max/kill-ring-save)
 (define-key minibuffer-local-map
   (kbd "M-w") 'max/kill-ring-save)
+
+;; search selection or kill line [v]
+(global-set-key (kbd "C-k") 'max/eclipse-search-selected-region)
 
 ;; eval expression or region [v]
 (global-set-key (kbd "C-x C-e") 'max/eval-last-expression-or-region)
@@ -244,6 +262,13 @@
 (global-set-key (kbd "C-c +") 'max/increment-number-decimal)
 (global-set-key (kbd "C-c -") 'max/decrement-number-decimal)
 
+;; helm keys
+(global-set-key (kbd "M-x") 'helm-M-x)
+(global-set-key (kbd "C-,") 'helm-mini)
+
+;; swap buffers with drag and drop
+(global-set-key (kbd "<C-S-drag-mouse-1>") #'max/swap-window-buffers-by-dnd)
+
 ;;; ===================================================================
 
 
@@ -300,6 +325,8 @@
          (add-to-list 'ido-ignore-buffers "*Buffer")
          (add-to-list 'ido-ignore-buffers "*fsm-debug")
          (add-to-list 'ido-ignore-buffers "*Completions")
+         (add-to-list 'ido-ignore-buffers "*helm mini")
+         (add-to-list 'ido-ignore-buffers "*helm M-x")
          (add-to-list 'ido-ignore-buffers "^[tT][aA][gG][sS]$")
          (use-package ido-ubiquitous
            :ensure t
@@ -324,6 +351,8 @@
     'ido-select-text)
   (define-key ido-completion-map "\C-j"
     'ido-exit-minibuffer)
+  (define-key ido-completion-map "\C-p"
+    'exit-minibuffer)
   (define-key ido-completion-map "\C-t"
     '(lambda ()
        (interactive)
@@ -348,17 +377,17 @@
 
 ;; mode for listing of recent opened files
 (use-package recentf
-  :init (setq recentf-auto-cleanup 'never
-              recentf-max-menu-items 50
-              recentf-max-saved-items 400
-              recentf-save-file
-              (expand-file-name "temp/.recentf" user-emacs-directory))
-  :config (recentf-mode t))
+    :config (progn (setq recentf-auto-cleanup 'never
+                         recentf-max-menu-items 50
+                         recentf-max-saved-items 400
+                         recentf-save-file
+                         (expand-file-name "temp/.recentf" user-emacs-directory))
+                   (recentf-mode t)))
 
 ;; change default mode line [configure]
 (use-package smart-mode-line
-  :config (sml/setup))
-;(setq sml/theme 'respectful)
+  :config (progn (setq sml/no-confirm-load-theme t)
+                 (sml/setup)))
 
 ;; additional features to undo/redo system
 (use-package undo-tree
@@ -366,6 +395,7 @@
 
 ;; mode for auto complete words [read more][E]
 (use-package auto-complete
+  :defer 3
   :init (setq ac-comphist-file
               (expand-file-name "temp/.ac-comphist.dat" user-emacs-directory))
   :config (progn (ac-config-default)
@@ -400,6 +430,11 @@
     (let ((case-fold-search isearch-case-fold-search))
       (occur (if isearch-regexp isearch-string (regexp-quote isearch-string))))))
 
+;; isearch search like in eclipse (selected region)
+(define-key isearch-mode-map  (kbd "C-k") 'isearch-repeat-forward)
+(define-key isearch-mode-map  (kbd "C-S-k") 'isearch-repeat-backward)
+
+
 ;; mode for opening and editing files with sudo privileges
 (use-package sudo-save)
 
@@ -417,17 +452,8 @@
               (key-chord-mode 1)))
   
 ;; quick move cursor [E]
-(use-package ace-jump-mode
-  :bind ("M-z" . ace-jump-mode)
-  :init
-  (progn
-    (setq ace-jump-mode-case-fold t)
-    (autoload 'ace-jump-mode "ace-jump-mode" "Emacs quick move minor mode" t)
-    (autoload 'ace-jump-mode-pop-mark "ace-jump-mode" "Ace jump back:-)" t)
-    (eval-after-load "ace-jump-mode" '(ace-jump-mode-enable-mark-sync))
-    (setq ace-jump-mode-move-keys
-          (nconc (loop for i from ?a to ?z collect i)
-                 (loop for i from ?A to ?Z collect i)))))
+(use-package avy
+  :bind ("M-z" . avy-goto-word-or-subword-1))
 
 ;; Maggit - git interface
 (use-package magit
@@ -436,7 +462,7 @@
 ;; W3M - browser
 (use-package w3m
   :commands (w3m w3m-find-file w3m-goto-url-new-session)
-  :init
+  :config
   (progn (setq w3m-init-file
                (expand-file-name ".emacs-w3m" user-emacs-directory)
                w3m-home-page "http://www.google.com"
@@ -460,6 +486,7 @@
 
 ;; guide-key
 (use-package guide-key
+  :defer 4
   :init (setq guide-key/guide-key-sequence
               '("C-x r" "C-x 4" "C-x v" "C-x 8" "M-t" "M-g" "<f1>"))
   :config (progn (guide-key-mode 1)
@@ -481,6 +508,8 @@
 	    (setq dired-guess-shell-gnutar "gtar")
 	    (setq dired-x-hands-off-my-keys nil)
         (define-key dired-mode-map (kbd "TAB") 'diredp-up-directory)
+        ;; sudo privileges in dired
+        (define-key dired-mode-map "!" 'max/sudo-dired)
 	    ))
 (add-hook 'dired-mode-hook
 	  (lambda ()
@@ -491,27 +520,31 @@
 
 ;; support for CMake
 (use-package cmake-mode
-  :init
+  :config
   (progn
     (add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-mode))
     (add-to-list 'auto-mode-alist '("\\.cmake\\'" . cmake-mode))))
 
 ;; Org-mode
 (use-package org-agenda
-  :init (setq org-agenda-files (quote ("~/.emacs.d/org/foo.org")))
+  :defer 4
+  :init (setq org-agenda-files (quote ("~/.emacs.d/org/")))
   :config
   (add-hook 'org-mode-hook (lambda ()
                              ;(define-key org-mode-map (kbd "<C-tab>") nil)))
                              (local-set-key (kbd "<C-tab>") nil)
-                             (local-set-key (kbd "C-,") nil))))
+                             (local-set-key (kbd "C-'") nil)
+                             (local-set-key (kbd "C-,") nil)
+                             (local-set-key (kbd "C-c a") 'org-agenda)))
+  (setq org-log-done 'time))
 
 ;; Yasnippets
 (use-package yasnippet
-  :init (add-hook 'prog-mode-hook 'yas/minor-mode))
+  :config (add-hook 'prog-mode-hook 'yas/minor-mode))
 
 ;; Rainbow Delimiters
 (use-package rainbow-delimiters
-  :init (add-hook 'prog-mode-hook
+  :config (add-hook 'prog-mode-hook
                   (lambda ()
                     (rainbow-delimiters-mode)
                     (setq rainbow-delimiters-outermost-only-face-count 1)
@@ -519,14 +552,52 @@
                                         :foreground 'unspecified
                                         :inherit 'my-outermost-paren-face))))
 ;; helm
-(use-package helm-config)
+(use-package helm
+  :ensure helm
+  :config
+  (progn
+    (require 'helm-config)
+    (setq helm-candidate-number-limit 100)
+    ;; From https://gist.github.com/antifuchs/9238468
+    (setq helm-idle-delay 0.0 ; update fast sources immediately (doesn't).
+          helm-input-idle-delay 0.01  ; this actually updates things
+                                        ; reeeelatively quickly.
+          helm-quick-update t
+          helm-M-x-requires-pattern nil
+          helm-ff-skip-boring-files t)
+    ))
 
-;; highlights changes: undo, yank, kill line, ...
-(use-package volatile-highlights
-    :init (volatile-highlights-mode t))
+;; show all keybindings in helm
+(use-package helm-descbinds
+  :defer t
+  :bind (("C-h b" . helm-descbinds)
+         ("C-h w" . helm-descbinds)))
 
 ;; setting engine for vr
 (use-package visual-regexp-steroids)
+
+;; highlights changes: undo, yank, kill line, ...
+(use-package volatile-highlights
+    :config (volatile-highlights-mode t))
+
+(use-package ace-window)
+
+(use-package golden-ratio
+  :ensure t
+  :diminish golden-ratio-mode
+  :init
+  (progn (golden-ratio-mode 1)
+                  (add-to-list 'golden-ratio-extra-commands 'max/focus-other-window-ace)))
+
+;; calculator mode
+;; (use-package calc-mode
+;;     :init
+;;     (progn (setq calc-float-format '(fix 12))
+;;            (setq calc-full-float-format '(fix 12))
+;;            (message "ccc")))
+
+;; big files open
+(require 'vlf-setup)
 
 ;;; ===================================================================
 
@@ -535,6 +606,7 @@
 ;; kill emacs process [C-x c] 
 (defun max/kill-emacs ()
   (interactive)
+  (recentf-save-list)
   (save-some-buffers)
   (kill-emacs))
 
@@ -609,7 +681,7 @@ of windows in the frame simply by calling this command again."
 	    (goto-char current-point)
             (switch-to-buffer current-buff-name)))))))
 
-;; find a recent file using ido
+;; find a recent file using ido [obsolete]
 (defun recentf-ido-find-file ()
   "Find a recent file using ido."
   (interactive)
@@ -636,6 +708,16 @@ of windows in the frame simply by calling this command again."
       (progn (set-mark-command nil) 
 	     (move-end-of-line nil)
 	     (setq deactivate-mark nil)))))
+
+;; if selected search seelection, or delete line [C-k]
+(defun max/eclipse-search-selected-region (arg)
+  (interactive "p")
+  (if (region-active-p)
+      (let ((region (funcall region-extract-function nil)))
+          (deactivate-mark)
+          (isearch-mode t nil nil nil)
+          (isearch-yank-string region))
+      (progn (kill-line))))
 
 ;; if last command wasn't yank -> show kill ring [E]
 (defadvice yank-pop (around kill-ring-browse-maybe (arg))
@@ -755,6 +837,8 @@ of windows in the frame simply by calling this command again."
 ;; looking for Qt class documentation
 (setq max/qt-url-or-path "http://qt-project.org/doc/qt-4.8/")
 (setq max/java-url-or-path "/usr/share/doc/java8-openjdk/api/")
+(setq max/python-url-or-path "file:///usr/share/doc/python/html/library/")
+;(setq max/python-url-or-path "https://docs.python.org/3/library/")
 ;(setq max/qt-url-or-path "/usr/share/doc/qt/qtcore/")
 
 (defun max/read-lines (file)
@@ -777,8 +861,21 @@ of windows in the frame simply by calling this command again."
              (browse-url url)
            (w3m-goto-url-new-session url)))))
 
+(defun max/show-python-module-doc (arg)
+  "Show documentation of Python module in w3m or with C-u in browser"
+  (interactive "p")
+  (let ((class-name) (class-list))
+    (setq class-list (max/read-lines "~/.emacs.d/temp/python-modules-names"))
+    (setq module (downcase (ido-completing-read
+                                    "Select module: " class-list)))
+    (let ((url (concat max/python-url-or-path module
+                          ".html#module-" module)))
+         (if (= arg 4)
+             (browse-url url)
+           (w3m-goto-url-new-session url)))))
+
 (defun  max/show-java-class-doc (arg)
-  "Show documentation of Qt class in w3m or with C-u in browser"
+  "Show documentation of Java class in w3m or with C-u in browser"
   (interactive "p")
   (with-temp-buffer
     (insert-file-contents "~/.emacs.d/temp/class-names-list-file-java")
@@ -905,6 +1002,33 @@ Symbols matching the text at point are put first in the completion list."
        ((string-equal system-type "gnu/linux")
         (mapc (lambda (fPath) (let ((process-connection-type nil)) (start-process "" nil "xdg-open" fPath)) ) myFileList))))))
 
+;; open current dired directory with root privileges
+(defun max/sudo-dired ()
+  (interactive)
+  (require 'tramp)
+  (let ((dir (expand-file-name default-directory)))
+    (if (string-match "^/sudo:" dir)
+        (user-error "Already in sudo")
+      (dired (concat "/sudo::" dir)))))
+
+;; swap buffers with drag and drop
+(defun max/swap-window-buffers-by-dnd (drag-event)
+  "Swaps the buffers displayed in the DRAG-EVENT's start and end
+window."
+  (interactive "e")
+  (let ((start-win (cl-caadr drag-event))
+        (end-win   (cl-caaddr drag-event)))
+    (when (and (windowp start-win)
+               (windowp end-win)
+               (not (eq start-win end-win))
+               (not (memq (minibuffer-window)
+                          (list start-win end-win))))
+      (let ((bs (window-buffer start-win))
+            (be (window-buffer end-win)))
+        (unless (eq bs be)
+          (set-window-buffer start-win be)
+          (set-window-buffer end-win bs))))))
+
 ;;; ===================================================================
 
 
@@ -912,7 +1036,7 @@ Symbols matching the text at point are put first in the completion list."
 (use-package eshell
   :commands (eshell max/eshell)
   :bind ("C-x m" . max/eshell)
-  :init (setq eshell-history-size 99999
+  :config (setq eshell-history-size 99999
               eshell-history-file-name "/home/max/.histfile"
               eshell-cmpl-cycle-completions nil
               ehsell-save-history-on-exit t
@@ -1037,6 +1161,18 @@ Symbols matching the text at point are put first in the completion list."
 ;;; ===================================================================
 
 ;;; Python
+(use-package ein
+    :config
+    (progn
+        (setq ein:notebook-modes '(ein:notebook-mumamo-mode ein:notebook-python-mode))
+        (add-hook 'ein:notebook-mode-hook (lambda ()
+                              (define-key ein:notebook-mode-map (kbd ".") 'nil)))
+        (add-hook 'elpy-mode-hook (lambda ()  
+                              (define-key elpy-mode-map (kbd "C-c C-c") 'nil)
+                              (define-key elpy-mode-map (kbd "C-c C-b") 'nil)
+                              (define-key elpy-mode-map (kbd "C-c C-n") 'nil)
+                              (define-key elpy-mode-map (kbd "C-c C-p") 'nil)))))
+
 (use-package python
   :mode ("\\.py\\'" . python-mode)
   :interpreter ("python" . python-mode)
@@ -1045,14 +1181,18 @@ Symbols matching the text at point are put first in the completion list."
     (use-package info-look)
     (use-package flycheck)
     (use-package elpy
-      :init
-      (progn (define-key elpy-mode-map  (kbd "M-.") 'nil)
-             (define-key elpy-mode-map  (kbd "C-c C-j") 'elpy-goto-definition))
-      (add-hook 'ein:multilang-mode-hook (lambda () (configure-ein)))
       :config
-      (progn (elpy-enable)
-             (elpy-use-ipython)
-      ))
+      (progn (define-key elpy-mode-map  (kbd "M-.") 'nil)
+             (define-key elpy-mode-map  (kbd "C-c C-j") 'elpy-goto-definition)
+             (add-hook 'ein:multilang-mode-hook (lambda () (configure-ein)))
+             (setq elpy-disable-backend-error-display t)
+             (elpy-use-ipython)))
+    (elpy-enable)
+    (eldoc-mode -1)
+    (use-package company-backends)
+    (use-package company-jedi)
+    (use-package company-quickhelp
+        :config (company-quickhelp-mode 1))
     (setq ipython-completion-command-string
           "print(';'.join(get_ipython().Completer.complete('%s')[1])) #PYTHON-MODE SILENT\n"
           ; py-electric-colon-newline-and-indent-p t
@@ -1149,6 +1289,7 @@ Symbols matching the text at point are put first in the completion list."
   t)
 
 (use-package erc
+  :defer 4
   :config
   (setq erc-autojoin-channels-alist '(("freenode.net"
          "#org-mode"
