@@ -8,7 +8,7 @@
 (fringe-mode 6)
 
 ;; Scrolling settings
-(setq scroll-conservatively 10000
+(setq scroll-conservatively 100000
       scroll-margin 3
       scroll-step 1
       mouse-wheel-follow-mouse 't
@@ -22,6 +22,9 @@
 (electric-pair-mode t)
 (electric-indent-mode -1)
 (electric-layout-mode t)
+
+;; Show size of current file
+(size-indication-mode t)
 
 ;; Set history length
 (setq history-length 100)

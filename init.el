@@ -7,7 +7,11 @@
 ;(package-initialize)
 (setq package-enable-at-startup nil)
 
-(require 'cl)
+;; To correctly download packages
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+
+;; Always load newest byte code
+(setq load-prefer-newer t)
 
 ;; Turn off tool bar, menu bar, scroll bar
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
@@ -27,15 +31,23 @@
 (setq elpa-directory (expand-file-name "elpa" user-emacs-directory))
 (add-to-list 'load-path
              (expand-file-name "site-lisp" user-emacs-directory))
-; check
-;(add-to-list 'load-path
-;             (concat elpa-directory "org-plus-contrib-20140414/"))
+
+;; reduce the frequency of garbage collection by making it happen on
+;; each 50MB of allocated data (the default is on every 0.76MB)
+(setq gc-cons-threshold 50000000)
+
+;; warn when opening files bigger than 100MB
+(setq large-file-warning-threshold 100000000)
+
+;; warn when opening files bigger than 100MB
+(setq large-file-warning-threshold 100000000)
 
 ;; Keep emacs custom-settings in separate file
 (setq custom-file (expand-file-name "site-lisp/custom.el" user-emacs-directory))
 (load custom-file)
 
 ;; Load core appearence and behavior settings
+(require 'cl)
 (require 'appearence)
 
 ;; Package system settings
@@ -194,9 +206,8 @@
 (define-key esc-map (kbd "C-r") 'vr/isearch-backward) ;; C-M-r
 (define-key esc-map (kbd "C-s") 'vr/isearch-forward)  ;; C-M-s
 
-;; quick move cursor [v][E]
-;[v](define-key global-map (kbd "M-z") 'ace-jump-mode)
-;(define-key global-map (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
+;; Align your code in a pretty way.
+(global-set-key (kbd "C-x \\") 'align-regexp)
 
 ;; if region - copy region, end of line - copy line, else copy to the end [v]
 (global-set-key (kbd "M-w") 'max/kill-ring-save)
@@ -213,7 +224,7 @@
 (global-set-key (kbd "C-x t") 'max/translate-word-or-region)
 
 ;; menu with pointers to functions definitions
-(global-set-key (kbd "M-[") 'ido-imenu)
+(global-set-key (kbd "M-[") 'helm-imenu)
 
 ;; shift+arrow to move between windows
 (windmove-default-keybindings)
@@ -243,6 +254,10 @@
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 (global-set-key (kbd "C-c C->") 'set-rectangular-region-anchor)
+
+;; Cycle through buffers 
+(global-set-key (kbd "<C-M-tab>") 'next-buffer)
+(global-set-key (kbd "<C-M-iso-lefttab>") 'previous-buffer)
 
 ;; expand region
 (global-set-key (kbd "C-=") 'er/expand-region)
@@ -380,6 +395,7 @@
     :config (progn (setq recentf-auto-cleanup 'never
                          recentf-max-menu-items 50
                          recentf-max-saved-items 400
+                         recentf-auto-cleanup 'never
                          recentf-save-file
                          (expand-file-name "temp/.recentf" user-emacs-directory))
                    (recentf-mode t)))
@@ -507,6 +523,8 @@
 	    ;; Set dired-x global variables here.  For example:
 	    (setq dired-guess-shell-gnutar "gtar")
 	    (setq dired-x-hands-off-my-keys nil)
+        (setq dired-recursive-deletes 'always)
+        (setq dired-recursive-copies 'always)
         (define-key dired-mode-map (kbd "TAB") 'diredp-up-directory)
         ;; sudo privileges in dired
         (define-key dired-mode-map "!" 'max/sudo-dired)
@@ -916,50 +934,6 @@ of windows in the frame simply by calling this command again."
 	  (forward-line 0)
 	  (delete-region (point) beg)))))
 
-;; ido for imenu
-(defun ido-imenu ()
-  "Update the imenu index and then use ido to select a symbol to navigate to.
-Symbols matching the text at point are put first in the completion list."
-  (interactive)
-  (imenu--make-index-alist)
-  (let ((name-and-pos '())
-        (symbol-names '()))
-    (cl-flet ((addsymbols (symbol-list)
-                       (when (listp symbol-list)
-                         (dolist (symbol symbol-list)
-                           (let ((name nil) (position nil))
-                             (cond
-                              ((and (listp symbol) (imenu--subalist-p symbol))
-                               (addsymbols symbol))
-
-                              ((listp symbol)
-                               (setq name (car symbol))
-                               (setq position (cdr symbol)))
-
-                              ((stringp symbol)
-                               (setq name symbol)
-                               (setq position (get-text-property 1 'org-imenu-marker symbol))))
-
-                             (unless (or (null position) (null name))
-                               (add-to-list 'symbol-names name)
-                               (add-to-list 'name-and-pos (cons name position))))))))
-      (addsymbols imenu--index-alist))
-    ;; If there are matching symbols at point, put them at the beginning of `symbol-names'.
-    (let ((symbol-at-point (thing-at-point 'symbol)))
-      (when symbol-at-point
-        (let* ((regexp (concat (regexp-quote symbol-at-point) "$"))
-               (matching-symbols (delq nil (mapcar (lambda (symbol)
-                                                     (if (string-match regexp symbol) symbol))
-                                                   symbol-names))))
-          (when matching-symbols
-            (sort matching-symbols (lambda (a b) (> (length a) (length b))))
-            (mapc (lambda (symbol) (setq symbol-names (cons symbol (delete symbol symbol-names))))
-                  matching-symbols)))))
-    (let* ((selected-symbol (ido-completing-read "Function: " symbol-names))
-           (position (cdr (assoc selected-symbol name-and-pos))))
-      (push-mark (point))
-      (goto-char position))))
-
 (defun max/increment-number-decimal (&optional arg)
   "Increment the number forward from point by 'arg'."
   (interactive "p*")
@@ -1178,42 +1152,42 @@ window."
   :interpreter ("python" . python-mode)
   :config
   (progn
-    (use-package info-look)
-    (use-package flycheck)
-    (use-package elpy
-      :config
-      (progn (define-key elpy-mode-map  (kbd "M-.") 'nil)
-             (define-key elpy-mode-map  (kbd "C-c C-j") 'elpy-goto-definition)
-             (add-hook 'ein:multilang-mode-hook (lambda () (configure-ein)))
-             (setq elpy-disable-backend-error-display t)
-             (elpy-use-ipython)))
-    (elpy-enable)
+    ; (use-package info-look)
+    ; (use-package flycheck)
+    ;; (use-package elpy
+    ;;   :config
+    ;;   (progn (define-key elpy-mode-map  (kbd "M-.") 'nil)
+    ;;          (define-key elpy-mode-map  (kbd "C-c C-j") 'elpy-goto-definition)
+    ;;          (add-hook 'ein:multilang-mode-hook (lambda () (configure-ein)))
+    ;;          (setq elpy-disable-backend-error-display t)
+    ;;          (elpy-use-ipython)))
+    ;; (elpy-enable)
     (eldoc-mode -1)
     (use-package company-backends)
     (use-package company-jedi)
-    (use-package company-quickhelp
-        :config (company-quickhelp-mode 1))
-    (setq ipython-completion-command-string
-          "print(';'.join(get_ipython().Completer.complete('%s')[1])) #PYTHON-MODE SILENT\n"
-          ; py-electric-colon-newline-and-indent-p t
-	  ; switch to the interpreter after executing code
-          py-shell-switch-buffers-on-execute-p t
-          py-switch-buffers-on-execute-p t
-	  ; don't split windows
-          py-split-windows-on-execute-p nil)
+    ;; (use-package company-quickhelp
+    ;;     :config (company-quickhelp-mode 1))
+    ;; (setq ipython-completion-command-string
+    ;;       "print(';'.join(get_ipython().Completer.complete('%s')[1])) #PYTHON-MODE SILENT\n"
+    ;;       ; py-electric-colon-newline-and-indent-p t
+	;;   ; switch to the interpreter after executing code
+    ;;       py-shell-switch-buffers-on-execute-p t
+    ;;       py-switch-buffers-on-execute-p t
+	;;   ; don't split windows
+    ;;       py-split-windows-on-execute-p nil)
     
     ;; F1-S - look in info documentation
-    (info-lookup-add-help
-     :mode 'python-mode
-     :regexp "[[:alnum:]_]+"
-     :doc-spec
-     '(("(python)Index" nil "")))
+    ;; (info-lookup-add-help
+    ;;  :mode 'python-mode
+    ;;  :regexp "[[:alnum:]_]+"
+    ;;  :doc-spec
+    ;;  '(("(python)Index" nil "")))
   ))
 
 ;            (define-key company-mode-map (kbd "M-h") 'company-show-doc-buffer)
 ;            (define-key company-mode-map (kbd "C-w") nil)))
 
-(add-hook 'python-mode-hook (lambda () (flycheck-mode)))
+;; (add-hook 'python-mode-hook (lambda () (flycheck-mode)))
 
 (defun max/music-tools-save-and-run ()
   (interactive)
