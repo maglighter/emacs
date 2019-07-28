@@ -266,7 +266,6 @@
 (global-set-key (kbd "M-C-z") 'zap-to-char)
 
 ;; key-chord mode keys
-(key-chord-define-global "q]" 'ace-jump-buffer)
 (key-chord-define-global "xx" 'er/expand-region)
 (key-chord-define-global "j1" 'delete-other-windows)
 (key-chord-define-global "j2" 'max/split-window-vertically)
@@ -450,7 +449,6 @@
 (define-key isearch-mode-map  (kbd "C-k") 'isearch-repeat-forward)
 (define-key isearch-mode-map  (kbd "C-S-k") 'isearch-repeat-backward)
 
-
 ;; mode for opening and editing files with sudo privileges
 (use-package sudo-save)
 
@@ -475,25 +473,6 @@
 (use-package magit
 :commands (magit-status magit-push))
 
-;; W3M - browser
-(use-package w3m
-  :commands (w3m w3m-find-file w3m-goto-url-new-session)
-  :config
-  (progn (setq w3m-init-file
-               (expand-file-name ".emacs-w3m" user-emacs-directory)
-               w3m-home-page "http://www.google.com"
-               w3m-use-cookies t
-               w3m-command-arguments '("-cookie" "-F")
-               w3m-show-graphic-icons-in-header-line t
-               w3m-show-graphic-icons-in-mode-line t
-               w3m-default-display-inline-images t)))
-
-;; AUCTeX
-;(load "auctex.el" nil t t)
-;(load "preview-latex.el" nil t t)
-;;(setq TeX-auto-save t)
-;;(setq TeX-parse-self t)
-
 ;; EMMS configuration
 (use-package emms-setup
   :commands (emmss emms-play-url emms-play-file emms-play-dired)
@@ -513,6 +492,20 @@
 (use-package god-mode
   :bind ("<print>" . god-local-mode)
   :config (define-key god-local-mode-map (kbd "h") 'backward-delete-char))
+
+(use-package all-the-icons)
+
+;; Centaur tabs
+(use-package centaur-tabs
+  :demand
+  :config
+  (progn
+      (centaur-tabs-mode t)
+      (setq centaur-tabs-style "slant"
+            centaur-tabs-set-icons t))
+  :bind
+  ("C-<prior>" . centaur-tabs-backward)
+  ("C-<next>" . centaur-tabs-forward))
 
 ;; Dired-x - extra dired mode
 ; show directory first
@@ -1147,42 +1140,47 @@ window."
                               (define-key elpy-mode-map (kbd "C-c C-n") 'nil)
                               (define-key elpy-mode-map (kbd "C-c C-p") 'nil)))))
 
-(use-package python
-  :mode ("\\.py\\'" . python-mode)
-  :interpreter ("python" . python-mode)
-  :config
-  (progn
-    ; (use-package info-look)
-    ; (use-package flycheck)
-    ;; (use-package elpy
-    ;;   :config
-    ;;   (progn (define-key elpy-mode-map  (kbd "M-.") 'nil)
-    ;;          (define-key elpy-mode-map  (kbd "C-c C-j") 'elpy-goto-definition)
-    ;;          (add-hook 'ein:multilang-mode-hook (lambda () (configure-ein)))
-    ;;          (setq elpy-disable-backend-error-display t)
-    ;;          (elpy-use-ipython)))
-    ;; (elpy-enable)
-    (eldoc-mode -1)
-    (use-package company-backends)
-    (use-package company-jedi)
-    ;; (use-package company-quickhelp
-    ;;     :config (company-quickhelp-mode 1))
-    ;; (setq ipython-completion-command-string
-    ;;       "print(';'.join(get_ipython().Completer.complete('%s')[1])) #PYTHON-MODE SILENT\n"
-    ;;       ; py-electric-colon-newline-and-indent-p t
-	;;   ; switch to the interpreter after executing code
-    ;;       py-shell-switch-buffers-on-execute-p t
-    ;;       py-switch-buffers-on-execute-p t
-	;;   ; don't split windows
-    ;;       py-split-windows-on-execute-p nil)
+;; (use-package python
+;;   :mode ("\\.py\\'" . python-mode)
+;;   :interpreter ("python" . python-mode)
+;;   :config
+;;   (progn
+;;     ; (use-package info-look)
+;;     ; (use-package flycheck)
+;;     ;; (use-package elpy
+;;     ;;   :config
+;;     ;;   (progn (define-key elpy-mode-map  (kbd "M-.") 'nil)
+;;     ;;          (define-key elpy-mode-map  (kbd "C-c C-j") 'elpy-goto-definition)
+;;     ;;          (add-hook 'ein:multilang-mode-hook (lambda () (configure-ein)))
+;;     ;;          (setq elpy-disable-backend-error-display t)
+;;     ;;          (elpy-use-ipython)))
+;;     ;; (elpy-enable)
+;;     (eldoc-mode -1)
+;;     (use-package company-backends)
+;;     (use-package company-jedi)
+;;     (use-package company-quickhelp
+;;         :config (company-quickhelp-mode 1))
+;;     ;; (setq ipython-completion-command-string
+;;     ;;       "print(';'.join(get_ipython().Completer.complete('%s')[1])) #PYTHON-MODE SILENT\n"
+;;     ;;       ; py-electric-colon-newline-and-indent-p t
+;; 	;;   ; switch to the interpreter after executing code
+;;     ;;       py-shell-switch-buffers-on-execute-p t
+;;     ;;       py-switch-buffers-on-execute-p t
+;; 	;;   ; don't split windows
+;;     ;;       py-split-windows-on-execute-p nil)
     
-    ;; F1-S - look in info documentation
-    ;; (info-lookup-add-help
-    ;;  :mode 'python-mode
-    ;;  :regexp "[[:alnum:]_]+"
-    ;;  :doc-spec
-    ;;  '(("(python)Index" nil "")))
-  ))
+;;     ;; F1-S - look in info documentation
+;;     ;; (info-lookup-add-help
+;;     ;;  :mode 'python-mode
+;;     ;;  :regexp "[[:alnum:]_]+"
+;;     ;;  :doc-spec
+;;     ;;  '(("(python)Index" nil "")))
+;;   ))
+
+(use-package elpy
+  :ensure t
+  :init
+  (elpy-enable))
 
 ;            (define-key company-mode-map (kbd "M-h") 'company-show-doc-buffer)
 ;            (define-key company-mode-map (kbd "C-w") nil)))

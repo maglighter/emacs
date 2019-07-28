@@ -62,5 +62,8 @@
 ;; Movement in words with different register
 (global-subword-mode)
 
+;; Cursor color
+(set-cursor-color "#CCCCFF")
+
 (provide 'appearence)
 
