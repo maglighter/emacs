@@ -13,7 +13,7 @@
  '(custom-enabled-themes (quote (wombat)))
  '(custom-safe-themes
    (quote
-    ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" "b9e9ba5aeedcc5ba8be99f1cc9301f6679912910ff92fdf7980929c2fc83ab4d" "84d2f9eeb3f82d619ca4bfffe5f157282f4779732f48a5ac1484d94d5ff5b279" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "c5a044ba03d43a725bd79700087dea813abcb6beb6be08c7eb3303ed90782482" "3a727bdc09a7a141e58925258b6e873c65ccf393b2240c51553098ca93957723" "6a37be365d1d95fad2f4d185e51928c789ef7a4ccf17e7ca13ad63a8bf5b922f" "756597b162f1be60a12dbd52bab71d40d6a2845a3e3c2584c6573ee9c332a66e" default)))
+    ("c5a044ba03d43a725bd79700087dea813abcb6beb6be08c7eb3303ed90782482" "3a727bdc09a7a141e58925258b6e873c65ccf393b2240c51553098ca93957723" "6a37be365d1d95fad2f4d185e51928c789ef7a4ccf17e7ca13ad63a8bf5b922f" "756597b162f1be60a12dbd52bab71d40d6a2845a3e3c2584c6573ee9c332a66e" default)))
  '(dired-dwim-target t)
  '(ein:url-or-port (quote ("http://localhost:8888")))
  '(ein:use-auto-complete t)
@@ -37,7 +37,7 @@
     (org-bbdb org-bibtex org-docview org-gnus org-info org-jsinfo org-irc org-mew org-mhe org-rmail org-vm org-wl org-w3m org-drill)))
  '(package-selected-packages
    (quote
-    (atom-one-dark-theme csv-mode esup attrap vlf go-mode smart-mode-line-powerline-theme zenburn-theme windresize w3m volatile-highlights visual-regexp-steroids use-package undo-tree typing tNFA sr-speedbar sokoban smex smart-mode-line rect-mark recentf-ext rainbow-mode rainbow-delimiters python-mode pymacs pylint php-mode paredit org-plus-contrib org nose neotree multiple-cursors monokai-theme memory-usage magit key-chord jabber isearch+ info+ iedit idomenu ido-ubiquitous icicles hydra help-mode+ help-fns+ help+ helm-descbinds helm-dash guide-key golden-ratio god-mode git-rebase-mode git-commit-mode fuzzy fringe-helper frame-cmds flymake-cursor flymake flycheck expand-region elpy ein dired-details+ dired+ dedicated company-quickhelp company-jedi browse-kill-ring+ ascii ag ace-window ac-python)))
+    (all-the-icons centaur-tabs shell-pop csv-mode esup attrap vlf go-mode smart-mode-line-powerline-theme zenburn-theme windresize volatile-highlights visual-regexp-steroids use-package undo-tree typing smex smart-mode-line rect-mark recentf-ext rainbow-mode rainbow-delimiters python-mode pymacs pylint php-mode paredit org-plus-contrib org nose neotree multiple-cursors monokai-theme memory-usage magit key-chord jabber isearch+ info+ iedit idomenu ido-ubiquitous hydra help-mode+ help-fns+ help+ helm-descbinds helm-dash guide-key golden-ratio god-mode git-rebase-mode git-commit-mode fuzzy fringe-helper frame-cmds flymake-cursor flymake flycheck expand-region elpy ein dired-details+ dired+ dedicated company-quickhelp company-jedi browse-kill-ring+ ascii ag ace-window ac-python)))
  '(py-shell-name "ipython")
  '(py-tab-shifts-region-p t)
  '(py-underscore-word-syntax-p nil)
@@ -167,8 +167,8 @@
  '(ace-jump-face-foreground ((t (:foreground "gold"))))
  '(avy-lead-face ((t (:background "dark red" :foreground "yellow"))))
  '(ein:cell-input-area ((t (:background "gray18"))))
- '(flymake-errline ((((class color)) (:underline "red"))))
- '(flymake-warnline ((((class color)) (:underline "yellow"))))
+ '(flymake-errline ((((class color)) (:underline "red"))) t)
+ '(flymake-warnline ((((class color)) (:underline "yellow"))) t)
  '(helm-selection ((t (:background "dark green" :distant-foreground "black"))))
  '(helm-source-header ((t (:background "dark slate gray" :foreground "white" :weight bold :family "Sans Serif"))))
  '(rainbow-delimiters-unmatched-face ((t (:foreground "chocolate"))))
