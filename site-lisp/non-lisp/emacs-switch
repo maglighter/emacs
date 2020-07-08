@@ -6,7 +6,7 @@
 # Switch to emacs and wait for editing to be completed.
 #emacsclient -c -a fe "$@";
 #emacsclient -c -a -e '(message ("$@");
-emacsclient -c --eval "(progn (set-cursor-color \"#CCCCFF\")(find-file \"$1\")(select-frame-set-input-focus (selected-frame)))";
+emacsclient -c --eval "(progn (find-file \"$1\")(select-frame-set-input-focus (selected-frame)))";
 wmctrl -xa emacs;
 
 #emacsclient -c "$@"

@@ -10,6 +10,8 @@
         indent-for-tab-command
         mark-sexp
         max/eclipse-search-selected-region
+        org-cycle
+        org-delete-char
         org-self-insert-command
         py-electric-colon
         skeleton-pair-insert-maybe

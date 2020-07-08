@@ -1,10 +1,29 @@
-;; load common lisp (loop)
+;; Emacs Init File
 
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
-;(package-initialize)
+;TODO: delete sml, ivy
+
+;; startup benchmarking
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "Emacs ready in %s with %d garbage collections."
+                     (format "%.2f seconds"
+                             (float-time
+                              (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
+
+;; Adjust garbage collection thresholds during startup, and thereafter
+(let ((init-gc-cons-threshold (* 128 1024 1024)))
+  (setq gc-cons-threshold init-gc-cons-threshold)
+  (add-hook 'emacs-startup-hook
+            (lambda () (setq gc-cons-threshold (* 20 1024 1024)))))
+
+;; Don’t compact font caches during GC.
+(setq inhibit-compacting-font-caches t)
+
+;; Enables basic packaging support
+(require 'package)
+(add-to-list 'package-archives (cons "melpa" "https://melpa.org/packages/") t)
+(package-initialize)
 (setq package-enable-at-startup nil)
 
 ;; To correctly download packages
@@ -19,25 +38,18 @@
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
 ;; Default font [old: Liberation Mono-12]
-(set-fontset-font "fontset-default" 'windows-1251 "Inconsolata LGC")
-(set-face-attribute 'default nil
-                    :family "Inconsolata LGC"
-                    :height 120
-                    :weight 'normal
-                    :width 'normal)
+;(set-fontset-font "fontset-default" 'windows-1251 "Inconsolata LGC")
+;(set-face-attribute 'default nil
+;                    :family "Inconsolata LGC"
+ ;                   :height 120
+  ;                  :weight 'normal
+   ;                 :width 'normal)
 
 ;; Add folders with elisp files to the load-path
 (setq default-directory "~/")
 (setq elpa-directory (expand-file-name "elpa" user-emacs-directory))
 (add-to-list 'load-path
              (expand-file-name "site-lisp" user-emacs-directory))
-
-;; reduce the frequency of garbage collection by making it happen on
-;; each 50MB of allocated data (the default is on every 0.76MB)
-(setq gc-cons-threshold 50000000)
-
-;; warn when opening files bigger than 100MB
-(setq large-file-warning-threshold 100000000)
 
 ;; warn when opening files bigger than 100MB
 (setq large-file-warning-threshold 100000000)
@@ -51,12 +63,20 @@
 (require 'appearence)
 
 ;; Package system settings
-(require 'setup-packages)
-(require 'use-package)
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(eval-when-compile (require 'use-package))
+;(setq use-package-always-ensure t)
+
+;; This package is useful for overriding major mode keybindings
+(use-package bind-key)
 
 ;; Registers point to files
 (set-register ?i (cons 'file (expand-file-name "init.el" user-emacs-directory)))
 (set-register ?f (cons 'file (concat user-emacs-directory "/org/foo.org")))
+(set-register ?j (cons 'file (concat user-emacs-directory "/org/java.org")))
 (set-register ?z '(file . "/home/max/.zshrc"))
 
 ;; Encoding, default to utf-8
@@ -76,27 +96,25 @@
       save-interprogram-paste-before-kill t)
 
 ;; Browser
-(setq browse-url-browser-function 'browse-url-chrome)
+(setq browse-url-browser-function 'browse-url-chromium)
+
 ;;; ===================================================================
-
-
 ;;; Backup and history
-(setq max/backup-directory "/data/.emacs_backup/")
-
-(setq backup-by-copying t
-      backup-directory-alist
-      `((".*" . ,(expand-file-name max/backup-directory)))
-      auto-save-file-name-transforms
-      `((".*", (expand-file-name max/backup-directory) t))
-      tramp-backup-directory-alist
-      `((".*" . ,(expand-file-name max/backup-directory)))
-      tramp-auto-save-directory (expand-file-name max/backup-directory)
-      vc-make-backup-files t
-      delete-old-versions t
-      kept-new-versions 8
-      kept-old-versions 2
-      version-control t)
-
+(setq-default max/backup-directory "~/data/.emacs_backup/"
+              backup-by-copying t
+              backup-directory-alist
+              `((".*" . ,(expand-file-name max/backup-directory)))
+              auto-save-file-name-transforms
+              `((".*", (expand-file-name (concat max/backup-directory "auto-save")) t))
+              tramp-backup-directory-alist
+              `((".*" . ,(expand-file-name max/backup-directory)))
+              tramp-auto-save-directory (expand-file-name max/backup-directory)
+              vc-make-backup-files t
+              delete-old-versions t
+              kept-new-versions 8
+              kept-old-versions 2
+              version-control t)
+    
 (defun force-backup-of-buffer ()
   (let ((buffer-backed-up nil))
     (backup-buffer)))
@@ -104,10 +122,10 @@
 (add-hook 'before-save-hook 'force-backup-of-buffer)
 
 ;; Savehist: save some history
-(setq savehist-additional-variables
-      '(kill-ring search ring regexp-search-ring)
-      savehist-autosave-interval 60
-      savehist-file (concat max/backup-directory "savehist"))
+(setq-default savehist-additional-variables
+              '(kill-ring search-ring regexp-search-ring extended-command-history)
+              savehist-autosave-interval 300
+              savehist-file (concat max/backup-directory "savehist"))
 (savehist-mode 1)
 
 ;;; ===================================================================
@@ -163,7 +181,7 @@
 ;(global-set-key (kbd "M-t p") 'transpose-params)
 
 ;; joins the following line onto this one
-(global-set-key (kbd "M-j") (lambda() (interactive)(join-line -1)))
+(global-set-key (kbd "M-j") 'max/smart-join-line)
 
 ;; when splitting window go to opened window
 (global-set-key (kbd "C-x 2") 'max/split-window-vertically)
@@ -171,9 +189,6 @@
 
 ;; switching between buffers
 (global-set-key (kbd "C-.") 'ido-switch-buffer)
-
-;; list of recent opened files
-(global-set-key (kbd "C-,") 'recentf-ido-find-file)
 
 ;; ibuffer
 (global-set-key (kbd "C-x C-b") 'ibuffer)
@@ -276,12 +291,12 @@
 (global-set-key (kbd "C-c +") 'max/increment-number-decimal)
 (global-set-key (kbd "C-c -") 'max/decrement-number-decimal)
 
-;; helm keys
-(global-set-key (kbd "M-x") 'helm-M-x)
-(global-set-key (kbd "C-,") 'helm-mini)
-
 ;; swap buffers with drag and drop
 (global-set-key (kbd "<C-S-drag-mouse-1>") #'max/swap-window-buffers-by-dnd)
+
+;; move line up/down
+(global-set-key (kbd "M-p") 'max/move-line-up)
+(global-set-key (kbd "M-n") 'max/move-line-down)
 
 ;;; ===================================================================
 
@@ -317,45 +332,38 @@
 (use-package ido
   :init
   (progn
-    (setq ido-enable-flex-matching t
-          ido-everywhere t)
+    (setq-default ido-enable-flex-matching t
+                  ido-everywhere t)
     (add-hook 'ido-setup-hook 'ido-vertical)
     (add-hook 'ido-setup-hook 'ido-go-home))
   :config
-  (progn (ido-mode t)
-         (setq ido-enable-last-directory-history t
-               ido-enable-work-directory-history t
-               ido-max-work-directory-list 10
-               ido-max-work-file-list 0
-               ; ido-auto-merge-work-directories-length -1
-               ido-save-directory-list-file
-               (expand-file-name "temp/.ido.last" user-emacs-directory)
-               default-ido-decorations ido-decorations)
-         ;; Buffer names completion
-         (add-to-list 'ido-ignore-buffers "*GNU Emacs*")
-         (add-to-list 'ido-ignore-buffers "*Messages*")
-         (add-to-list 'ido-ignore-buffers "*Backtrace")
-         (add-to-list 'ido-ignore-buffers "*Quail Com")
-         (add-to-list 'ido-ignore-buffers "*Buffer")
-         (add-to-list 'ido-ignore-buffers "*fsm-debug")
-         (add-to-list 'ido-ignore-buffers "*Completions")
-         (add-to-list 'ido-ignore-buffers "*helm mini")
-         (add-to-list 'ido-ignore-buffers "*helm M-x")
-         (add-to-list 'ido-ignore-buffers "^[tT][aA][gG][sS]$")
-         (use-package ido-ubiquitous
-           :ensure t
-           :init
-           ;; Fix ido-ubiquitous for newer packages
-           (defmacro ido-ubiquitous-use-new-completing-read (cmd package)
-             `(eval-after-load ,package
-                '(defadvice ,cmd (around ido-ubiquitous-new activate)
-                   (let ((ido-ubiquitous-enable-compatibility nil))
+  (ido-mode t)
+  (setq-default ido-enable-last-directory-history t
+                ido-enable-work-directory-history t
+                ido-max-work-directory-list 10
+                ido-max-work-file-list 0
+                ; ido-auto-merge-work-directories-length -1
+                ido-save-directory-list-file
+                (expand-file-name "temp/.ido.last" user-emacs-directory)
+                default-ido-decorations ido-decorations
+                ido-ignore-buffers '("\\` " "*GNU Emacs*" "*Messages*" "*Backtrace"
+                                     "*Quail Com" "*Buffer" "*fsm-debug" "*Completions"
+                                     "*helm mini" "*helm M-x" "^[tT][aA][gG][sS]$"))
+  
+  (use-package ido-ubiquitous
+      :ensure t
+      :init
+      ;; Fix ido-ubiquitous for newer packages
+      (defmacro ido-ubiquitous-use-new-completing-read (cmd package)
+          `(eval-after-load ,package
+               '(defadvice ,cmd (around ido-ubiquitous-new activate)
+                 (let ((ido-ubiquitous-enable-compatibility nil))
                      ad-do-it))))
-           :config
-           (ido-ubiquitous-use-new-completing-read webjump 'webjump)
-           (ido-ubiquitous-use-new-completing-read yas/expand 'yasnippet)
-           (ido-ubiquitous-use-new-completing-read yas/visit-snippet-file 'yasnippet)
-           (ido-ubiquitous-mode))))
+      :config 
+      (ido-ubiquitous-use-new-completing-read webjump 'webjump)
+      (ido-ubiquitous-use-new-completing-read yas/expand 'yasnippet)
+      (ido-ubiquitous-use-new-completing-read yas/visit-snippet-file 'yasnippet)
+      (ido-ubiquitous-mode)))
 
 (defun ido-vertical ()
   (setq ido-decorations default-ido-decorations)
@@ -391,198 +399,259 @@
 
 ;; mode for listing of recent opened files
 (use-package recentf
-    :config (progn (setq recentf-auto-cleanup 'never
-                         recentf-max-menu-items 50
-                         recentf-max-saved-items 400
-                         recentf-auto-cleanup 'never
-                         recentf-save-file
-                         (expand-file-name "temp/.recentf" user-emacs-directory))
-                   (recentf-mode t)))
+    :config
+    (setq-default recentf-max-menu-items 50
+                  recentf-max-saved-items 800
+                  recentf-auto-cleanup 'never
+                  recentf-save-file
+                  (expand-file-name "temp/.recentf" user-emacs-directory))
+    (recentf-mode t)
+    (run-at-time 60 (* 10 60) (lambda () (interactive) (recentf-save-list))))
+
+;; Default theme
+(use-package doom-themes
+    :ensure t
+    :init (setq-default doom-vibrant-comment-bg t)
+    :config
+    (load-theme 'doom-vibrant t)
+    (doom-themes-org-config))
 
 ;; change default mode line [configure]
-(use-package smart-mode-line
-  :config (progn (setq sml/no-confirm-load-theme t)
-                 (sml/setup)))
+;; (use-package smart-mode-line
+;;     :config
+;;     (setq-default sml/no-confirm-load-theme t)
+;;     (sml/setup))
+
+;; Mode-line
+(use-package all-the-icons)
+(use-package doom-modeline
+  :custom
+  (doom-modeline-minor-modes t)
+  :config
+  (doom-modeline-mode 1)
+  (setq doom-modeline-icon t))
+
 
 ;; additional features to undo/redo system
 (use-package undo-tree
-  :config (global-undo-tree-mode 1))
+    :config (global-undo-tree-mode 1))
 
 ;; mode for auto complete words [read more][E]
-(use-package auto-complete
-  :defer 3
-  :init (setq ac-comphist-file
-              (expand-file-name "temp/.ac-comphist.dat" user-emacs-directory))
-  :config (progn (ac-config-default)
-                 (global-auto-complete-mode t)
-                 (setq ac-expand-on-auto-complete nil)
-                 (setq ac-delay 0.125
-                       ac-auto-show-menu 0.25
-                       ac-auto-start 2
-                       ac-quick-help-delay 1.5
-                       ac-ignore-case nil
-                       ac-candidate-menu-min 2
-                       ac-use-quick-help t
-                       ac-limit 10
-                       ac-disable-faces nil
-                       ac-dwim nil)
-                 (setq-default ac-sources '(ac-source-semantic
-                                            ac-source-variables
-                                            ac-source-functions
-                                            ac-source-imenu
-                                            ac-source-words-in-buffer
-                                            ac-source-words-in-same-mode-buffers
-                                            ac-source-files-in-current-dir
-                                            ac-source-dictionary
-                                            ac-source-filename))))
+;; (use-package auto-complete
+;;     :defer 3
+;;     :init (setq-default ac-use-comphist nil
+;;                       ac-comphist-file
+;;                       (expand-file-name "temp/.ac-comphist.dat" user-emacs-directory))
+;;     :config
+;;     (ac-config-default)
+;;     (global-auto-complete-mode t)
+;;     (setq-default ac-expand-on-auto-complete nil
+;;                   ac-delay 0.925
+;;                   ac-auto-show-menu 0.25
+;;                   ac-auto-start 2
+;;                   ac-quick-help-delay 1.5
+;;                   ac-ignore-case nil
+;;                   ac-candidate-menu-min 2
+;;                   ac-use-quick-help t
+;;                   ac-limit 10
+;;                   ac-disable-faces nil
+;;                   ac-dwim nil
+;;                   ac-sources '(ac-source-semantic
+;;                                ac-source-variables
+;;                                ac-source-functions
+;;                                ac-source-imenu
+;;                                ac-source-words-in-buffer
+;;                                ac-source-words-in-same-mode-buffers
+;;                                ac-source-files-in-current-dir
+;;                                ac-source-dictionary
+;;                                ac-source-filename)))
+(use-package company
+  :bind (:map company-active-map ("C-w" . nil))
+  :config
+  (add-hook 'prog-mode-hook 'company-mode)
+  (add-hook 'python-mode-hook (lambda () (add-to-list 'company-backends 'company-jedi)))
+
+  (setq-default company-tooltip-align-annotations t
+                company-tooltip-limit 12
+                company-idle-delay 0.8
+                company-echo-delay (if (display-graphic-p) nil 0)
+                company-minimum-prefix-length 1
+                company-require-match nil
+                company-dabbrev-ignore-case nil
+                company-dabbrev-downcase nil))
 
 ;; draw documentation popups with kde
-(use-package popup-pos-tip)
+;(use-package popup-pos-tip)
 
-;; activate occur inside isearch
-(define-key isearch-mode-map (kbd "C-o")
-  (lambda () (interactive)
-    (let ((case-fold-search isearch-case-fold-search))
-      (occur (if isearch-regexp isearch-string (regexp-quote isearch-string))))))
-
-;; isearch search like in eclipse (selected region)
-(define-key isearch-mode-map  (kbd "C-k") 'isearch-repeat-forward)
-(define-key isearch-mode-map  (kbd "C-S-k") 'isearch-repeat-backward)
+; isearch configuration
+(use-package isearch
+    :ensure nil
+    :bind
+    (:map isearch-mode-map
+          ("C-o" . (lambda () (interactive)
+                           (let ((case-fold-search isearch-case-fold-search))
+                               (occur (if isearch-regexp isearch-string
+                                          (regexp-quote isearch-string))))))
+          ("C-k" . isearch-repeat-forward)
+          ("C-S-k" . isearch-repeat-backward))
+    :init
+    (setq-default
+     isearch-allow-scroll t
+     lazy-highlight-cleanup t
+     lazy-highlight-initial-delay 0))
 
 ;; mode for opening and editing files with sudo privileges
-(use-package sudo-save)
+;(use-package sudo-save)
 
 ;; auto revert buffer if file changed
 (global-auto-revert-mode t)
 
 ;; restore window position
 (use-package winner
-  :config (winner-mode 1))
+    :config (winner-mode 1))
 
 ;; enables mode for execute commands by pressing two buttons simultaneously
 (use-package key-chord
-  :config (progn
-              (setq key-chord-one-key-delay 0.16)
-              (key-chord-mode 1)))
+    :config
+    (setq key-chord-one-key-delay 0.16)
+    (key-chord-mode 1))
   
 ;; quick move cursor [E]
 (use-package avy
-  :bind ("M-z" . avy-goto-word-or-subword-1))
+    :bind ("M-z" . avy-goto-word-or-subword-1))
 
 ;; Maggit - git interface
 (use-package magit
-:commands (magit-status magit-push))
+    :commands (magit-status magit-push))
 
 ;; EMMS configuration
 (use-package emms-setup
-  :commands (emmss emms-play-url emms-play-file emms-play-dired)
-  :config (progn (emms-standard)
-                 (emms-default-players)))
+    :commands (emmss emms-play-url emms-play-file emms-play-dired)
+    :config
+    (emms-standard)
+    (emms-default-players))
 
-;; guide-key
-(use-package guide-key
-  :defer 4
-  :init (setq guide-key/guide-key-sequence
-              '("C-x r" "C-x 4" "C-x v" "C-x 8" "M-t" "M-g" "<f1>"))
-  :config (progn (guide-key-mode 1)
-                 (setq guide-key/recursive-key-sequence-flag t
-                       guide-key/popup-window-position 'right)))
+;; Show available keys
+(use-package which-key
+    :init (which-key-mode))
 
 ;; god mode
 (use-package god-mode
-  :bind ("<print>" . god-local-mode)
-  :config (define-key god-local-mode-map (kbd "h") 'backward-delete-char))
+    :bind (("<print>" . god-local-mode)
+           :map god-local-mode-map
+           ("h" . backward-delete-char)))
 
-(use-package all-the-icons)
+;; Dired
+(use-package dired
+    :bind (("C-x C-j" . dired-jump)
+           :map dired-mode-map
+                ("<tab>" . diredp-up-directory-reuse-dir-buffer)
+                ("!" . max/sudo-dired))
+    :config
+    (setq-default dired-listing-switches "-aBhl  --group-directories-first"
+                  dired-dwim-target t)
+    
+    (use-package dired-x
+        :config
+            (setq-default dired-omit-verbose nil
+                          dired-guess-shell-gnutar "gtar"
+                          dired-x-hands-off-my-keys nil
+                          dired-recursive-deletes 'always
+                          dired-recursive-copies 'always)
+            ;; hide backup, autosave, *.*~ files
+            ;; omit mode can be toggled using `M-o' in dired buffer
+            (add-hook 'dired-mode-hook #'dired-omit-mode))
 
-;; Centaur tabs
-(use-package centaur-tabs
-  :demand
-  :config
-  (progn
-      (centaur-tabs-mode t)
-      (setq centaur-tabs-style "slant"
-            centaur-tabs-set-icons t))
-  :bind
-  ("C-<prior>" . centaur-tabs-backward)
-  ("C-<next>" . centaur-tabs-forward))
-
-;; Dired-x - extra dired mode
-; show directory first
-(setq dired-listing-switches "-aBhl  --group-directories-first")
-(add-hook 'dired-load-hook
-	  (lambda ()
-	    (load "dired-x")
-	    ;; Set dired-x global variables here.  For example:
-	    (setq dired-guess-shell-gnutar "gtar")
-	    (setq dired-x-hands-off-my-keys nil)
-        (setq dired-recursive-deletes 'always)
-        (setq dired-recursive-copies 'always)
-        (define-key dired-mode-map (kbd "TAB") 'diredp-up-directory)
-        ;; sudo privileges in dired
-        (define-key dired-mode-map "!" 'max/sudo-dired)
-	    ))
-(add-hook 'dired-mode-hook
-	  (lambda ()
-	    ;; Set dired-x buffer-local variables here.  For example:
-					;(dired-omit-mode 1)
-	    ))
-(global-set-key (kbd "C-x C-j") 'dired-jump)
-
-;; support for CMake
-(use-package cmake-mode
-  :config
-  (progn
-    (add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-mode))
-    (add-to-list 'auto-mode-alist '("\\.cmake\\'" . cmake-mode))))
+    (use-package dired+)
+    
+    (use-package dired-details+
+        :config (setq-default dired-details-hidden-string "-- ")))
 
 ;; Org-mode
-(use-package org-agenda
-  :defer 4
-  :init (setq org-agenda-files (quote ("~/.emacs.d/org/")))
-  :config
-  (add-hook 'org-mode-hook (lambda ()
-                             ;(define-key org-mode-map (kbd "<C-tab>") nil)))
-                             (local-set-key (kbd "<C-tab>") nil)
-                             (local-set-key (kbd "C-'") nil)
-                             (local-set-key (kbd "C-,") nil)
-                             (local-set-key (kbd "C-c a") 'org-agenda)))
-  (setq org-log-done 'time))
+(use-package org
+    :defer 4
+    :hook (org-mode . (lambda() (visual-line-mode) (org-indent-mode)))
+    :bind (:map org-mode-map
+                ("C-<tab>" . nil)
+                ("C-'" . nil)
+                ("C-," . nil)
+                ("C-c a" . org-agenda))
+    :config
+    (setq-default org-agenda-files (quote ("~/.emacs.d/org/"))
+          org-log-done 'time
+          org-startup-indented t
+          org-catch-invisible-edits 'error
+          calendar-week-start-day 1
+          org-ellipsis "⤵")
+
+    ;; Prettify UI
+    (use-package org-bullets
+        :if (char-displayable-p ?⚫)
+        :hook (org-mode . org-bullets-mode))
+
+    (use-package org-drill))
 
 ;; Yasnippets
 (use-package yasnippet
-  :config (add-hook 'prog-mode-hook 'yas/minor-mode))
+    :hook (prog-mode . yas/minor-mode))
 
 ;; Rainbow Delimiters
 (use-package rainbow-delimiters
-  :config (add-hook 'prog-mode-hook
-                  (lambda ()
-                    (rainbow-delimiters-mode)
-                    (setq rainbow-delimiters-outermost-only-face-count 1)
-                    (set-face-attribute 'rainbow-delimiters-depth-1-face nil
-                                        :foreground 'unspecified
-                                        :inherit 'my-outermost-paren-face))))
-;; helm
+    :hook (prog-mode . (lambda ()
+                           (rainbow-delimiters-mode)
+                           (setq rainbow-delimiters-outermost-only-face-count 1)
+                           (set-face-attribute 'rainbow-delimiters-depth-1-face nil
+                                               :foreground 'unspecified
+                                               :inherit 'my-outermost-paren-face))))
+
+;; Helm
 (use-package helm
-  :ensure helm
+    :ensure helm
+    :bind (("M-x" . helm-M-x)
+           ("C-," . helm-mini))
+    :config
+    (progn
+        (use-package helm-config)
+        ;; From https://gist.github.com/antifuchs/9238468
+        (setq-default helm-idle-delay 0.0 ; update fast sources immediately (doesn't).
+              helm-input-idle-delay 0.01  ; this actually updates things
+              ; reeeelatively quickly.
+              helm-quick-update t
+              helm-candidate-number-limit 100
+              helm-M-x-requires-pattern nil
+              helm-ff-skip-boring-files t
+              helm-M-x-fuzzy-match t)))
+
+(use-package projectile
+  :bind (:map projectile-mode-map
+         ("s-t" . projectile-find-file)) ; `cmd-t' or `super-t'
+  :hook (after-init . projectile-mode)
+  :init
+  (setq-default projectile-keymap-prefix (kbd "C-c p")
+                projectile-mode-line-prefix ""
+                projectile-sort-order 'recentf
+                projectile-use-git-grep t
+                projectile-completion-system 'helm
+                projectile-indexing-method 'alien)
   :config
-  (progn
-    (require 'helm-config)
-    (setq helm-candidate-number-limit 100)
-    ;; From https://gist.github.com/antifuchs/9238468
-    (setq helm-idle-delay 0.0 ; update fast sources immediately (doesn't).
-          helm-input-idle-delay 0.01  ; this actually updates things
-                                        ; reeeelatively quickly.
-          helm-quick-update t
-          helm-M-x-requires-pattern nil
-          helm-ff-skip-boring-files t)
-    ))
+  ;; (projectile-update-mode-line)         ; Update mode-line at the first time
+
+  ;; Use the faster searcher to handle project files: ripgrep `rg'.
+  (when (and (not (executable-find "fd"))
+             (executable-find "rg"))
+    (setq projectile-generic-command
+          (let ((rg-cmd ""))
+            (dolist (dir projectile-globally-ignored-directories)
+              (setq rg-cmd (format "%s --glob '!%s'" rg-cmd dir)))
+            (concat "rg -0 --files --color=never --hidden" rg-cmd)))))
+
+(use-package helm-projectile)
 
 ;; show all keybindings in helm
 (use-package helm-descbinds
-  :defer t
-  :bind (("C-h b" . helm-descbinds)
-         ("C-h w" . helm-descbinds)))
+    :after helm
+    :bind (("C-h b" . helm-descbinds)
+           ("C-h w" . helm-descbinds)))
 
 ;; setting engine for vr
 (use-package visual-regexp-steroids)
@@ -594,11 +663,11 @@
 (use-package ace-window)
 
 (use-package golden-ratio
-  :ensure t
-  :diminish golden-ratio-mode
-  :init
-  (progn (golden-ratio-mode 1)
-                  (add-to-list 'golden-ratio-extra-commands 'max/focus-other-window-ace)))
+    :ensure t
+    :diminish golden-ratio-mode
+    :config
+    (golden-ratio-mode 1)
+    (add-to-list 'golden-ratio-extra-commands 'max/focus-other-window-ace))
 
 ;; calculator mode
 ;; (use-package calc-mode
@@ -607,8 +676,35 @@
 ;;            (setq calc-full-float-format '(fix 12))
 ;;            (message "ccc")))
 
+;; terminal
+(use-package term
+    :bind (("C-c t" . term)
+           :map term-mode-map
+           ("M-p" . term-send-up)
+           ("M-n" . term-send-down)
+           :map term-raw-map
+           ("C-x" . nil)
+           ("C-x k" . kill-current-buffer)
+           ("C-<tab>" . other-window)
+           ("M-p" . term-send-up)
+           ("M-n" . term-send-down))
+    :config (progn (setq-default explicit-shell-file-name "/usr/bin/zsh")))
+
+;; ripgrep replaces ag, grep
+(use-package rg
+    :commands rg)
+
 ;; big files open
-(require 'vlf-setup)
+(use-package vlf)
+(use-package vlf-setup
+  :ensure nil
+  :after vlf)
+
+;; documentaion using helm-dash
+(use-package dash-docs
+    :config
+    (setq-default dash-docs-common-docsets
+                  '("Python 3" "Spring Framework" "Java")))
 
 ;;; ===================================================================
 
@@ -692,18 +788,6 @@ of windows in the frame simply by calling this command again."
 	    (goto-char current-point)
             (switch-to-buffer current-buff-name)))))))
 
-;; find a recent file using ido [obsolete]
-(defun recentf-ido-find-file ()
-  "Find a recent file using ido."
-  (interactive)
-  (let ((default-ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]"))))
-  (let (
-	(file
-	 (ido-completing-read "Recent opened files: " recentf-list nil t))
-	)
-    (when file
-      (find-file file)))))
-
 ;; if region copy region, end of line, select line, else select to the end [M-w]
 (defun max/kill-ring-save (arg)
   (interactive "p")
@@ -732,9 +816,9 @@ of windows in the frame simply by calling this command again."
 
 ;; if last command wasn't yank -> show kill ring [E]
 (defadvice yank-pop (around kill-ring-browse-maybe (arg))
-  "If last action was not a yank, run `browse-kill-ring' instead."
+  "If last action was not a yank, run `helm-show-kill-ring' instead."
   (if (not (eq last-command 'yank))
-      (browse-kill-ring)
+      (helm-show-kill-ring)
     ad-do-it))
 
 (ad-activate 'yank-pop)
@@ -845,12 +929,9 @@ of windows in the frame simply by calling this command again."
       (concat (expand-file-name "site-lisp/non-lisp/translate_arg" user-emacs-directory) " \"" myStr "\"")))
     (message "%s" (substring translate 0 (- (length translate) 1)))))
 
-;; looking for Qt class documentation
-(setq max/qt-url-or-path "http://qt-project.org/doc/qt-4.8/")
 (setq max/java-url-or-path "/usr/share/doc/java8-openjdk/api/")
 (setq max/python-url-or-path "file:///usr/share/doc/python/html/library/")
 ;(setq max/python-url-or-path "https://docs.python.org/3/library/")
-;(setq max/qt-url-or-path "/usr/share/doc/qt/qtcore/")
 
 (defun max/read-lines (file)
   "Return a list of lines in FILE."
@@ -859,18 +940,6 @@ of windows in the frame simply by calling this command again."
     (split-string
      (buffer-string) "\n" t)
     ))
-
-(defun max/show-qt-class-doc (arg)
-  "Show documentation of Qt class in w3m or with C-u in browser"
-  (interactive "p")
-  (let ((class-name) (class-list))
-    (setq class-list (max/read-lines "~/.emacs.d/temp/class-names-list-file"))
-    (let ((url (concat max/qt-url-or-path
-                         (downcase (ido-completing-read
-                                    "Select class: " class-list)) ".html")))
-         (if (= arg 4)
-             (browse-url url)
-           (w3m-goto-url-new-session url)))))
 
 (defun max/show-python-module-doc (arg)
   "Show documentation of Python module in w3m or with C-u in browser"
@@ -996,19 +1065,43 @@ window."
           (set-window-buffer start-win be)
           (set-window-buffer end-win bs))))))
 
+;; move linues up/down
+(defun max/move-line-up ()
+  (interactive)
+  (transpose-lines 1)
+  (forward-line -2))
+
+(defun max/move-line-down ()
+  (interactive)
+  (forward-line 1)
+  (transpose-lines 1)
+  (forward-line -1))
+
+(defun max/smart-join-line (beg end)
+    "If in a region, join all the lines in it. If not, join the current line with the next line. [M-j]"
+    (interactive "r")
+    (if mark-active
+        (if mark-active
+            (let ((beg (region-beginning))
+                  (end (copy-marker (region-end))))
+                (goto-char beg)
+                (while (< (point) end)
+                    (join-line 1))))
+        (delete-indentation 1)))
+
 ;;; ===================================================================
 
 
 ;;; Eshell
 (use-package eshell
-  :commands (eshell max/eshell)
-  :bind ("C-x m" . max/eshell)
-  :config (setq eshell-history-size 99999
-              eshell-history-file-name "/home/max/.histfile"
-              eshell-cmpl-cycle-completions nil
-              ehsell-save-history-on-exit t
-              eshell-cmpl-dir-ignore
-              "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'"))
+    :commands (eshell max/eshell)
+    :bind ("C-x m" . max/eshell)
+    :config (setq-default eshell-history-size 99999
+                          eshell-history-file-name "/home/max/.histfile"
+                          eshell-cmpl-cycle-completions nil
+                          ehsell-save-history-on-exit t
+                          eshell-cmpl-dir-ignore
+                          "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'"))
 
 (eval-after-load 'esh-opt
   '(progn
@@ -1224,13 +1317,6 @@ window."
 ;;; Test code
 (setq toe-treat-words 'downcase)
 
-;; load dired+
-(require 'dired+)
-
-;; hide additional info in dired buffers
-(require 'dired-details+)
-(setq-default dired-details-hidden-string "--- ")
- 
 ;;--------------------------------------------------------------------
 ;; Lines enabling gnuplot-mode
 

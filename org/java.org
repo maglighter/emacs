@@ -1,4 +1,9 @@
+*Java Learning*
+
+* changes across versions
+https://habr.com/ru/post/500468/
 * equals, hashCode implementation
+  
   1) Reflexive : Object must be equal to itself.
   2) Symmetric : if a.equals(b) is true then b.equals(a) must be true.
   3) Transitive : if a.equals(b) is true and b.equals(c) is true then
@@ -63,3 +68,793 @@
         return result;
     }
   #+END_SRC     
+* blogs
+  [[https://deepakvadgama.com/]] Spring
+  [[https://vladmihalcea.com/]] Hibernate, JPA performance
+* to learn
+  * executor framework
+    + A Future that may be explicitly completed (setting its value and status), and may be used as a CompletionStage, supporting dependent functions and actions that trigger upon its completion.
+      #+BEGIN_SRC java
+      public Future<String> calculateAsync() throws InterruptedException {
+    CompletableFuture<String> completableFuture = new CompletableFuture<>();
+ 
+    Executors.newCachedThreadPool().submit(() -> {
+        Thread.sleep(500);
+        completableFuture.complete("Hello");
+        return null;
+    });
+ 
+    return completableFuture;
+}
+      #+END_SRC
+      [[https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html]]
+* core
+** repo
+[[https://github.com/DeepakVadgama/java-interview/blob/master/topics/core/]]
+
+*** Default init values
+
+- For fields (class level variables), values are auto assigned default values. 
+- Method local variables should be manually assigned. 
+- Default values (references = null, primitives = 0, boolean = false)
+- Arrays initialize its elements: int[] numbers = new int[10]; will assign all ints in the array to 0.
+
+*** String pool
+
+- String constants are placed in a memory pool 
+- When retrieved, returns reference to string in the pool. 
+- Pool saves memory. New string constants with same value share same instance in the pool.
+- String is immutable thus these values are never changed. For any updates, new string constant is created.  
+- String s = "abc" will place "abc" in pool and return its reference.
+- String s = new String("abc") will also place "abc" in pool, as well as allocate new memory
+- [implementation details](jvm-internals.md#string-interning)
+
+*** Wrapper class pool
+
+- Boolean
+- Byte
+- Character from \u0000 to \u007f (7f is 127 in decimal)
+- Short and Integer from –128 to 127
+
+*** Singleton options
+
+- Using: static final variable (init guarantee)
+- Using: Lazy loading (double checked) 
+- Using: Enums (by default lazy, and init guarantee)
+
+*** Override method rules
+
+- Same method name and parameter types
+- Same or a subset of super methods' checked exceptions
+- Any number of runtime exceptions
+- Same or covariant return type 
+
+*** Covariant variables
+
+- Variable types which are compatible. 
+- Eg: an int is covariant of long
+- Eg: an Lion class is covariant of Animal class (only if Lion extends Animal)
+- Can be used in parameters, return types or assignments
+
+*** Varargs, boxing, widening
+
+- Primitive Widening > Boxing > Varargs. [Example](http://stackoverflow.com/a/2128068/3494368). 
+- Widening then Boxing not allowed. 
+- Boxing then Widening allowed.   
+- Widening between wrapper classes not allowed (eg: Long n = new Integer(10); not allowed)
+ 
+*** Inner classes
+
+Personally I find this part of Java to be super annoying, unnecessary and hardly ever used in real-life (especially after Java 8). 
+Also, this topic does not come up a lot in interviews, so just skimp through. 
+
+- Inner class: Can access enclosing class's variables (even private ones)
+- Method local inner class: Same as above. Plus, it can access final variables in encapsulating method. 
+- Anonymous inner class: Just no name, otherwise same as above. 
+- Static inner class: No special relationship with outer class. 
+
+*** Reference types
+
+- **Weak reference** - Eligible for GC if object not referenced by any other variables. Good for caches. Are enqueued in ReferenceQueue just before GC (object can be resurrected in finalize). Returns null once object is eligible for GC, even if object is resurrected, the weak-reference still is dead, and will return null. 
+- **Soft reference** - Same as above, but its GC’ed only when memory is low. Excellent for caches.
+- **Phantom reference** - Even after GC, it references the object, until the memory is reclaimed. Enqueued in ReferenceQueue after complete reclamation. Always returns null, so that you cannot resurrect it. Can be helpful to check when memory is reclaimed so that you can load next large object. 
+- **WeakHashMap** - Weak keys. Removes entry once key is GC’ed.
+ 
+*** Cloning  
+
+- clone method (protected) of Object class returns shallow copy. Need to be explicitly cast back.
+- Requires class to implement Cloneable marker interface. Else returns CloneNotSupportedException
+- Singletons should override clone method and throw CloneNotSupportedException
+- [More details](../design/effective-java.md#
+* DI
+** Definition
+Dependency injection (DI) is a process whereby objects define their dependencies, that is, the other objects they work with, only through constructor arguments, arguments to a factory method, or properties that are set on the object instance after it is constructed or returned from a factory method. The container then injects those dependencies when it creates the bean. This process is fundamentally the inverse, hence the name Inversion of Control (IoC), of the bean itself controlling the instantiation or location of its dependencies on its own by using direct construction of classes, or the Service Locator pattern.
+
+The Spring Framework Inversion of Control (IoC) component is the nucleus of the framework. It uses dependency injection to assemble Spring-provided (also called infrastructure components) and development-provided components in order to rapidly wrap up an application.
+
+** Advantages of Dependency Injection
+The advantages of DI are as follows:
+*** Loosely coupled architecture.
+*** Separation of responsibility.
+*** Configuration and code are separate.
+*** A different implementation can be supplied using configuration without changing the code dependent.
+*** Improves testability.
+*** DI allows you to replace actual objects with mock objects. This improves testability by writing simple JUnit tests that use mock objects.
+* Debugging
+[[https://www.jetbrains.com/help/idea/tutorial-java-debugging-deep-dive.html]]
+* Basic
++ encapsulation
+is the idea of combining fields and methods in
+a class such that the methods operate on the data, as opposed to the users of the class
+accessing the fields directly. In Java, it is commonly implemented with private instance
+members that have public methods to retrieve or modify the data, commonly referred to
+as getters and setters, respectively.
+* Concurrency
+Николай Алименков — Прикладная многопоточность
+https://www.youtube.com/watch?v=8piqauDj2yo
+
+** Theory
+work - time to execute all steps in all graph
+span - maximum length of edge
+work / span - ideal parallelism
+
+Tp (execution time on p number of processes)
+T1 = work, Tinf = span, Tinf <= Tp <= T1
+
+speedup = T1 / Tp, speedup <= P
+speedup <= work / span = ideal parallelism
+
+*** Amdahls's Law
+
+q = fraction of WORK in a parrallel program that must be executed sequentialy
+[ best speedup(P) <= 1 / q ]
+
+Ex:
+q = 0.5 -> speedup <= 2
+q = 0.1 -> speedup <= 10
+
+span >= q * work
+speedup = T1 /Tp <= work / q * work <= 1/q>
+
+*** Memoization
+remembering Feature values instead of the values and when they are needed - calculate them
+if they weren't calculated or return calculated
+
+Pascal's triangle as an example
+
+*** Determinism
+functionally deterministic if it always computes the same answer when given the same input
+structurally deterministic if it always computes the same computation graph, when given the same input.
+
+** ForkJoinPool
+compute method, extends RecursiveAction
+invokeAll(left, right)
+
+or:
+L.fork
+R.compute
+L.join
+res = L.sum + R.sum
+* Spring
+** Useful Annotations
+@Autowired
+@Component, @Service, @Repository, @Configuration, @RestController
+@Primary - mark default Bean implementation if there are several
+
+** Test Annotations
+• @BootstrapWith - Class-level annotation to configure how the test context is bootstrapped
+• @ContextConfiguration - Class-level annotation to configure the application context
+• @WebAppConfigurtation - Class-level annotation to configure a web application context
+• @ContextHiearchy - Class-level annotation to set multiple @ContextConfigurations
+• @ActiveProfiles - Class-level annotation to set active profiles for test
+• @TestPropertySource - Class-level annotation to set property sources for test
+• @DirtiesContext - Class or method level annotation which tells Spring to re-load context after test - (slows down your tests)
+• @TestExecutionListeners - Used to configure test execution listeners
+• @Commit - Class or method level annotation to commit action of test to database.
+• @Rollback - Class or method level annotation to rollback action of test from database.
+• @BeforeTransaction - run a method which returns void before a transaction is started
+• @AfterTransaction - run a method which returns void after a transaction has completed
+• @Sql - Used to configure SQL scripts to run before a test
+• @SqlConfig - Configuration for the parsing of SQL scripts
+• @SqlGroup - Configure a grouping of SQL scripts
+
+Junit
+
+• @SpringJUnitConfig - Combines @ContextConfiguration with
+@ExtendWith(SpringExtension.class) to configure the Spring Context for the test
+• @SpringJUnitWebConfig - Combines @ContextConfiguration and @WebAppConfiguration with
+@ExtendWith(SpringExtension.class) to configure the Spring Context for the test
+• @EnabledIf - Conditional execution of test
+• @DisabledIf - Conditional execution of test
+
+** Example matcher
+ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreCase()
+				.withMatcher("email", GenericPropertyMatcher::contains)
+				.withMatcher("role", GenericPropertyMatcher::contains)
+				.withMatcher("enabled", GenericPropertyMatcher::exact);
+		Example<User> example = Example.of(user, matcher);
+		return userRepository.findOne(example);
+** Transactions
+
++ Learn ACID
+  - Atomicity
+  - Consistency
+  - Isolation
+  - Durability
+
++ transactions, hibernate, locking (pes, opt)    
+https://www.youtube.com/watch?v=dFASbaIG-UU
+
+[[https://codete.com/blog/5-common-spring-transactional-pitfalls/]]
+
++ When method is @Transactional - changed entities are saved automatically, no need to call save()
++ The invocation of @Transactional method  must come from outside of the bean. It should be =public=
+
+The way to handle this situation:
+#+begin_src java
+@Service
+public class UserService {
+   @PersistenceContext
+   private EntityManager entityManager;
+ 
+   @Autowired
+   private UserService _self; // proxy reference injected
+ 
+   public User createUser(String name) {
+       User newUser = new User(name);
+       return _self.saveUser(newUser);
+   }
+ 
+   @Transactional
+   public User saveUser(User newUser) {
+       entityManager.persist(newUser);
+       return newUser;
+   }
+}
+#+end_src
++ By default a transaction will be rolled back if any unchecked exception is thrown within it, whereas checked exceptions don’t trigger rollbacks.
+  Customize this behaviour with parameters:
+  =noRollbackFor= – to specify runtime exception, which shouldn’t cause rollback
+  =rollbackFor= – to indicate which checked exception should trigger rollbacks
+
+*** Propagation
+=REQUIRED= is the default propagation. Spring checks if there is an active transaction, then it creates a new one if nothing existed. Otherwise, the business logic appends to the currently active transaction
+
+For SUPPORTS, Spring first checks if an active transaction exists. If a transaction exists, then the existing transaction will be used. If there isn't a transaction, it is executed non-transactional
+
+When the propagation is =MANDATORY=, if there is an active transaction, then it will be used. If there isn't an active transaction, then Spring throws an exception
+
+For transactional logic with =NEVER= propagation, Spring throws an exception if there's an active transaction:
+
+=NOT_SUPPORTED= Propagation - Spring at first suspends the current transaction if it exists, then the business logic is executed without a transaction.
+
+When the propagation is =REQUIRES_NEW=, Spring suspends the current transaction if it exists and then creates a new one
+
+NESTED propagation, Spring checks if a transaction exists, then if yes, it marks a savepoint. This means if our business logic execution throws an exception, then transaction rollbacks to this savepoint. If there's no active transaction, it works like REQUIRED.
+
+*** Isolation
++ =Default= - default for RDBMS (PostgreSQL - Read Commited)
++ =Read Committed= - does not allow dirty reads.
++ =Read Uncommitted= - allows dirty reads.
++ =Repeatable Read= - if a row is read twice in the same transaction, the result will always be the same.
++ =Serializable= - Performs all transactions in a sequence.
+
+*Dirty read*
+
+  thread 1   thread 2      
+      |         |
+    write(x)    |
+      |         |
+      |        read(x)
+      |         |
+    rollback    |
+      v         v 
+
+value (x) is now dirty (incorrect)
+
+*** Examples
+[[https://stackoverflow.com/questions/8490852/spring-transactional-isolation-propagation]]
+PROPAGATION_REQUIRED = 0; If DataSourceTransactionObject T1 is already started for Method M1.If for another Method M2 Transaction object is required ,no new Transaction object is created .Same object T1 is used for M2
+
+PROPAGATION_MANDATORY = 2; method must run within a transaction. If no existing transaction is in progress, an exception will be thrown
+
+PROPAGATION_REQUIRES_NEW = 3; If DataSourceTransactionObject T1 is already started for Method M1 and it is in progress(executing method M1) .If another method M2 start executing then T1 is suspended for the duration of method M2 with new DataSourceTransactionObject T2 for M2.M2 run within its own transaction context
+
+PROPAGATION_NOT_SUPPORTED = 4; If DataSourceTransactionObject T1 is already started for Method M1.If another method M2 is run concurrently .Then M2 should not run within transaction context. T1 is suspended till M2 is finished.
+
+PROPAGATION_NEVER = 5; None of the methods run in transaction context.
+
+An isolation level: It is about how much a transaction may be impacted by the activities of other concurrent transactions.It a supports consistency leaving the data across many tables in a consistent state. It involves locking rows and/or tables in a database.
+
+The problem with multiple transaction
+
+Scenario 1.If T1 transaction reads data from table A1 that was written by another concurrent transaction T2.If on the way T2 is rollback,the data obtained by T1 is invalid one.E.g a=2 is original data .If T1 read a=1 that was written by T2.If T2 rollback then a=1 will be rollback to a=2 in DB.But,Now ,T1 has a=1 but in DB table it is changed to a=2.
+
+Scenario2.If T1 transaction reads data from table A1.If another concurrent transaction(T2) update data on table A1.Then the data that T1 has read is different from table A1.Because T2 has updated the data on table A1.E.g if T1 read a=1 and T2 updated a=2.Then a!=b.
+
+Scenario 3.If T1 transaction reads data from table A1 with certain number of rows. If another concurrent transaction(T2) inserts more rows on table A1.The number of rows read by T1 is different from rows on table A1
+
+Scenario 1 is called Dirty reads.
+
+Scenario 2 is called Non-repeatable reads.
+
+Scenario 3 is called Phantom reads.
+
+So, isolation level is the extend to which Scenario 1, Scenario 2, Scenario 3 can be prevented. You can obtain complete isolation level by implementing locking.That is preventing concurrent reads and writes to the same data from occurring.But it affects performance .The level of isolation depends upon application to application how much isolation is required.
+
+ISOLATION_READ_UNCOMMITTED :Allows to read changes that haven’t yet been committed.It suffer from Scenario 1, Scenario 2, Scenario 3
+
+ISOLATION_READ_COMMITTED:Allows reads from concurrent transactions that have been committed. It may suffer from Scenario 2 and Scenario 3. Because other transactions may be updating the data.
+
+ISOLATION_REPEATABLE_READ:Multiple reads of the same field will yield the same results untill it is changed by itself.It may suffer from Scenario 3.Because other transactions may be inserting the data
+
+ISOLATION_SERIALIZABLE: Scenario 1,Scenario 2,Scenario 3 never happens.It is complete isolation.It involves full locking.It affets performace because of locking.
+
+*** Testing transactions
+#+begin_src java
+@Component
+public class ExampleClient {
+    @Autowired
+    private ArticleRepository repo;
+    @Autowired
+    private Tasks tasks;
+
+    public ExecutorService run() {
+        //creating and persisting an Article
+        Article article = new Article("test article");
+        repo.save(article);
+
+        ExecutorService es = Executors.newFixedThreadPool(2);
+
+        //user 1, reader
+        es.execute(tasks::runUser1Transaction);
+
+        //user 2, writer
+        es.execute(tasks::runUser2Transaction);
+
+        return es;
+    }
+
+    @Service
+    @Transactional
+    public class Tasks {
+        public void runUser1Transaction() {
+            System.out.println(" -- user 1 reading Article entity --");
+            long start = System.currentTimeMillis();
+            Article article1 = null;
+            try {
+                article1 = repo.findArticleForRead(1L);
+            } catch (Exception e) {
+                System.err.println("User 1 got exception while acquiring the database lock:\n " + e);
+                return;
+            }
+            System.out.println("user 1 got the lock, block time was: " + (System.currentTimeMillis() - start));
+            //delay for 2 secs
+            ThreadSleep(3000);
+            System.out.println("User 1 read article: " + article1);
+        }
+
+        public void runUser2Transaction() {
+            ThreadSleep(500);//let user1 acquire optimistic lock first
+            System.out.println(" -- user 2 writing Article entity --");
+            long start = System.currentTimeMillis();
+            Article article2 = null;
+            try {
+                article2 = repo.findArticleForWrite(1L);
+            } catch (Exception e) {
+                System.err.println("User 2 got exception while acquiring the database lock:\n " + e);
+                return;
+            }
+            System.out.println("user 2 got the lock, block time was: " + (System.currentTimeMillis() - start));
+            article2.setContent("updated content by user 2.");
+            repo.save(article2);
+            System.out.println("User 2 updated article: " + article2);
+        }
+
+        private void ThreadSleep(long timeout) {
+            try {
+                Thread.sleep(timeout);
+            } catch (InterruptedException e) {
+                System.err.println(e);
+            }
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        AnnotationConfigApplicationContext context =
+                new AnnotationConfigApplicationContext(AppConfig.class);
+        ExampleClient exampleClient = context.getBean(ExampleClient.class);
+        ExecutorService es = exampleClient.run();
+        es.shutdown();
+        es.awaitTermination(5, TimeUnit.MINUTES);
+        EntityManagerFactory emf = context.getBean(EntityManagerFactory.class);
+        emf.close();
+    }
+}
+#+end_src
+
+** ApplicationContext vs BeanFactory
+The Spring Framework comes with two IOC containers – BeanFactory and ApplicationContext. The BeanFactory is the most basic version of IOC containers, and the ApplicationContext extends the features of BeanFactory.
+
+ApplicationContext enhances BeanFactory in a more framework-oriented style and provides several features that are suitable for enterprise applications.
+
+For instance, it provides messaging (i18n or internationalization) functionality, event publication functionality, annotation-based dependency injection, and easy integration with Spring AOP features.
+
+Apart from this, the ApplicationContext supports almost all types of bean scopes, but the BeanFactory only supports two scopes — Singleton and Prototype. Therefore, it's always preferable to use ApplicationContext when building complex enterprise applications.
+** Angular integration and Security
+Single page application
+https://spring.io/guides/tutorials/spring-security-and-angular-js/
+* Hibernate
+[[https://thoughts-on-java.org/ultimate-guide-association-mappings-jpa-hibernate/]]
+*ManyToOne, OneToMany with examples*
+https://docs.jboss.org/hibernate/orm/5.1/userguide/html_single/chapters/domain/associations.html
+* Testing
++ Junit5
+@Before/AfterAll static method
+@Before/AfrerEach void setUp() {}
+
++ Mockito
+@ExtendsWith(MockitoExtension.class) [class-level]
+@Mock MockingDep dep;
+@InjectMocks MockingService service; [will inject MockingDep]
+
+// given
+given(service.findById(anyLong())).willReturn(5L);
+
+// when
+
+Long result = service.findById(3L);
+
+// then
+then(service).should().someMethod();
+* kafka                                                               :drill:
+SCHEDULED: <2020-05-12 Tue>
+:PROPERTIES:
+:ID:       a3dae03c-2e7a-484d-b970-cb5114cb9797
+:DRILL_LAST_INTERVAL: 3.86
+:DRILL_REPEATS_SINCE_FAIL: 2
+:DRILL_TOTAL_REPEATS: 1
+:DRILL_FAILURE_COUNT: 0
+:DRILL_AVERAGE_QUALITY: 3.0
+:DRILL_EASE: 2.36
+:DRILL_LAST_QUALITY: 3
+:DRILL_LAST_REVIEWED: [2020-05-08 Fri 16:50]
+:END:
+Kafka is a distributed streaming platform that stores records in a durable way through replicating records across multiple servers.
+
+To divide a topic between multiple servers, we need a way to split a topic into smaller substreams. These substreams are called =partitions=. Whenever a service produces a new record, this service gets to decide which partition the record should land on.
+
+The default partitioner hashes the message key and modulos that over the number of partitions: That way messages with the same key always end up on the same partition.
+
+Each consumer keeps track of which records it has processed. Since records are processed in order, a simple offset is enough. Every once in a while (5 seconds by default), a consumer will commit its offset to Kafka.
+
+Topics consist of =partitions=, that store records in order. Partitioners decide which records belong on which partitions. Consumer groups are optional, and help distribute partitions among consumers for scalability. Offsets are committed as checkpoints for when consumers crash.
+
+[[https://hackernoon.com/understanding-kafka-with-factorio-74e8fc9bf181][kafka]] blog post
+* example projects
+https://github.com/vogellacompany/codeexamples-javaweb
+* Spring Microservices in Action                                       :book:
+** Type of clouds
+
+[[./attachments/type-of-clouds.png]]
+** Microservices properties
+**A microservice architecture has the following characteristics**
++ Application logic is broken down into small-grained components with welldefined boundaries of responsibility that coordinate to deliver a solution. 
++ Each component has a small domain of responsibility and is deployed com pletely independently of one another. Microservices should have responsibility for a single part of a business domain. Also, a microservice should be reusable across multiple applications.
++ Microservices communicate based on a few basic principles (notice I said principles, not standards) and employ lightweight communication protocols such as HTTP and JSON (JavaScript Object Notation) for exchanging data between the service consumer and service provider. 
++ The underlying technical implementation of the service is irrelevant because the applications always communicate with a technology-neutral protocol (JSON is the most common). This means an application built using a microservice application could be built with multiple languages and technologies.
++ Microservices—by their small, independent, and distributed nature—allow organizations to have small development teams with well-defined areas of responsibility. These teams might work toward a single goal such as delivering an application, but each team is responsible only for the services on which they’re working.
+  **properties**
++ /Flexible—Decoupled/ services can be composed and rearranged to quickly deliver new functionality. The smaller the unit of code that one is working with, the less complicated it is to change the code and the less time it takes to test deploy the code.
+  
++ /Resilient—Decoupled/ services mean an application is no longer a single “ball of mud” where a degradation in one part of the application causes the whole application to fail. Failures can be localized to a small part of the application and contained before the entire application experiences an outage. This also enables the applications to degrade gracefully in case of an unrecoverable error.
+  
++ /Scalable—Decoupled/ services can easily be distributed horizontally across multiple servers, making it possible to scale the features/services appropriately. With a monolithic application where all the logic for the application is intertwined, the entire application needs to scale even if only a small part of the application is the bottleneck. Scaling on small services is localized and much more cost- effective.
+  
+** Request processing
+
+[[./attachments/request-processing.png]]
+** Security
+*** Token security
+[[./attachments/token-security.png]]
+* java options
+https://success.docker.com/article/java-app-is-killed-by-docker
++ Java 8
+docker run -m 400MB openjdk:8 java -XX:MaxRAM=400m -Xmx300m -XX:MaxRAMFraction=1 -XshowSettings:vm
+*or*
+docker run -m 400MB openjdk:8 java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -XshowSettings:vm
+
++ Java 10
+docker run -m 400MB openjdk:10 java -XshowSettings:vm -XX:MaxRAMFraction=1
+* Patterns
++ will collect all components that implement Handler
+@Autowired
+List<Handler> handlers;
+* REST
+Аббревиатура =REST= расшифровывается как representational state transfer — «передача состояния представления» или, лучше сказать, представление данных в удобном для клиента формате. Термин “REST” был введен Роем Филдингом в 2000 г. Основная идея REST в том, что каждое обращение к сервису переводит клиентское приложение в новое состояние. По сути, REST — не протокол и не стандарт, а подход, архитектурный стиль проектирования API. 
+
+Любой ресурс имеет ID, по которому можно получить данные.
+Сервер не хранит состояние — это значит, сервер не отделяет один вызов от другого, не сохраняет все сессии в памяти.
+Методы POST и PUT должны возвращать обратно объект, который они изменили или создали, — это позволит сократить время обращения к сервису вдвое.
+
+*Коды статусов*
+
+Возвращайте соответствующие http коды статуса в каждом ответе. Успешные ответы должны содержать следующие коды:
+200 — для GET запроса и для синхронных DETELE и PATCH
+201 — для синхронного POST запроса
+202 — для асинхронных POST, DELETE и PATCH запросов
+206 — для успешного частичного ответа на GET запрос
+
+Уделите внимание ошибкам аутентификации и прав доступа:
+
+401 Unautorized — пользователь не авторизован
+403 Forbidden — доступ запрещен из-за недостатка прав
+Дополнительные коды, указывающие на ошибки:
+
+422 Unprocessable Entity — запрос корректный, но содержит неверные параметры
+429 Too Many Requests — превышено лимит частоты подключений, попробуйте позже
+500 Internal Server Error — Внутренняя ошибка сервера, можно обращаться к администратору
+
+*Headers*
+
+Рекомендуется при проектировании REST-сервисов явно указывать заголовки, в которых обозначен формат обмена данными:
+Content-Type - формат запроса;
+Accept - список форматов ответа.
+
+Используйте пути и имена только в нижнем регистре и только тире в качестве разделителя слов:
+myservice-api.ru/users
+myservice-api.ru/app-setups
+
+Для атрибутов также желательно использование нижнего регистра, но необходимо использование символа подчеркивания в качестве разделителя, для совместимости с JavaScript. Например:
+service_class: "first"
+
+Форматируйте время по стандарту ISO8601
+Прием и отправка даты/времени должны осуществляться только в UTC. Формат должен соответствовать ISO8601:
+"finished_at": "2014-01-01T15:00:00Z"
+
+*Структурируйте информацию об ошибках*
+
+Создавайте последовательные и структурированные ответы при возникновении ошибок. Включайте идентификатор id типа ошибки, краткое описание message и url, указывающий на подробную информацию по данной ошибке:
+HTTP/1.1 429 Too Many Requests
+{
+  "id":      "rate_limit",
+  "message": "Account reached its API rate limit.",
+  "url":     "https://docs.service.com/rate-limits"
+}
+Документируйте формат сообщений об ошибках и все возможные типы ошибок, которые может получить клиент.
+
+
+Действия над ресурсами, обычно, определяются стратегией CRUD и соответствуют HTTP-методам следующим образом:
+
+GET /api/users — получить список пользователей;
+GET /api/users/123 — получить указанного пользователя;
+POST /api/users — создать нового пользователя;
+PUT /api/users/123 — обновить все данные указанного пользователя;
+PATCH /api/users/123 — частично обновить данные пользователя;
+DELETE /api/users/123 — удалить пользователя.
+Если ресурс существует только в контексте другого ресурса, то URL может быть составным:
+
+GET /api/posts/9/comments — получить список комментариев к записи №9;
+GET /api/posts/9/comments/3 — получить комментарий №3 к записи №9.
+Когда действие над объектом не соответствует CRUD операции, то его можно рассматривать как составной ресурс:
+
+POST /api/posts/9/like — отметить запись №9 как понравившуюся;
+DELETE /api/posts/9/like — снять отметку «понравилось» с записи №9.
+Действия по созданию и обновлению ресурсов должны возвращать ресурс
+
+Методы POST, PUT или PATCH могут изменять поля ресурса, которые не были включены в запрос (например, ID, дата создания или дата обновления). Чтобы не вынуждать пользователя API выполнять ещё один запрос на получение обновлённых данных, такие методы должны вернуть их в ответе.
+
+URL по сути является первичным ключом для единицы данных. То есть, например, вторая книга с книжной полки будет иметь вид /books/2, а 41 страница в этой книге — /books/2/pages/41. Отсюда и получается строго заданный формат. Причем совершенно не имеет значения, в каком формате находятся данные по адресу /books/2/pages/41 – это может быть и HTML, и отсканированная копия в виде jpeg-файла, и документ Word.
+Рекомендуется при определении имени REST-сервиса использовать имена ресурсов во множественном числе. Такой подход позволяет добавлять новые REST-сервисы лишь расширяя имена уже существующих. Например, сервис /books вернёт нам список всех книг, /books/3 вернёт информацию о 3-ей книге, а сервис /books/3/pages вернёт все страницы 3-ей книги.
+
+Фильтрация
+Например, чтобы вывести все красные книги необходимо выполнить запрос:
+GET /books?color=red
+
+Сортировка
+Например, чтобы вывести все книги, отсортированные по году публикации по убыванию и по названию по возрастанию нужно выполнить следующий запрос:
+GET /books?sort=-year,+name
+
+Пагинация
+ в REST API должен быть предусмотрен функционал пагинации. Реализуется он с помощью знакомых нам по SQL параметрам limit и offset. Например:
+GET /books?offset=10&limit=5
+
+Поммо того хорошим тоном является вывод ссылок на предыдущую, следующую, первую и последнюю страницы в хидере Link. Например:
+Link: <http://localhost/api/books?offset=15&limit=5>; rel="next",
+<http://localhost/api/books?offset=50&limit=3>; rel="last",
+<http://localhost/api/books?offset=0&limit=5>; rel="first",
+<http://localhost/api/books?offset=5&limit=5>; rel="prev"
+Рекомендуется также возвращать общее количество ресурсов в хидере X-Total-Count.
+
+Выбор полей ресурса
+Для более удобного использования сервиса, для экономии трафика можно предоставить возможность управлять форматом вывода данных. Реализуется предоставлением возможности выбора полей ресурса, которые должен вернуть REST сервис. Например, если необходимо получить только id книг и их цвета, необходимо выполнить следующий запрос:
+GET /books?fields=id,color
+
+*Версионность*
+
+Хорошим тоном является поддержка версионности REST API. Это позволит в дальнейшем легко расширять API, без обязательного внесения изменений в клиенты, которые уже пользуются им.
+Имеются несколько подходов реализации версионности:
+
+С использованием Accept хидера. В данном случае версия API указывается в Accept - Accept:text/v2+json
+С использованием URI. В таком подходе версия API указывается прямо в URI - http://localhost/api/v2/books
+Использование кастомного хидера. Можно использовать собственный хидер, который будет отвечать только за передачу версии API - API-Version:v2
+Использование параметра запроса. Можно использовать параметр запроса для передачи версии API - /books?v=2
+
+*Обработка исключений*
+
+{
+   "code" : 1234,
+   "message" : "Something bad happened :(",
+   "description" : "More details about the error here",
+   “moreInfo”: “http:/localhost/api/v2/errors/1234”
+}
+
+
+// Full URL, with query string
+$request->fullUrl()
+
+// Just the path part of the URL 
+$request->path()
+
+// Just the root (protocol and domain) part of the URL)
+$request->root()
+* CI/CD
+Процесс CI/CD (Continuous Integration / Continuous Delivery) нацелен на максимально
+автономную, полную и быструю сборку приложений из исходного кода (далее, «CI») и
+разворачивание его на специализированном под определённые задачи серверном
+оборудовании (далее, «CD»).
+
+*Процесс CI строиться в следующем порядке:*
+1. Написание и хранение исходного кода
+2. Сборка приложения из исходного кода
+3. Тестирование сборки (полное и частичное)
+4. Хранение сборки под некой версией
+5. Сборка и хранение сборки в виде Docker-образа.
+   
+*Процесс СD, кроме выполнения части СI, также имеет дополнительные этапы:*
+1. Разворачивание экземпляра приложения на серверном оборудовании
+2. DEV-стенд
+3. TEST-стенд
+4. DEMO-стенд
+5. PROD-зона. 
+* SOLID
+*Single responsibility (SRP)*
+Принцип единственной ответственности 
+*Open-closed (OCP)*
+Принцип открытости/закрытости 
+*Liskov substitution (LSP)*
+Принцип подстановки Барбары Лисков - замена в коде экземпляров класов на экземпляры их подклассов (наследников) не должна влиять на правильность работы 
+*Interface segregation (ISP)*
+Принцип разделения интерфейса - много интерфейсов, предназначенных для разных пользователей (других классов) лучше одного большого интерфейса, в который свален весь функционал
+*Dependency inversion (DIP)*
+Принцип инверсии зависимости - зависимости классов должны опираться на абстракцию, зависимости не должны опираться на конкретную реализацию
+
+* Collections
+
+[[./attachments/java-collections.jpeg]]
+
+* Interview questions
+RDBMS  базовый SQL, join, limit
+RDBMS  индексы
+RDBMS  агрегаты, группировка
+RDBMS  триггеры, хранимки, constraints
+RDBMS  анализ запроса и состояния БД
+RDBMS  нестандартные возможности RDBMS
+Data Access  Spring Data, JPA, jpql
+Data Access  Транзакции
+Data Access  NoSQL
+Java core  ООП, constructors, overloading
+Java core  Типы исключений, try-finally 
+Java core  Java Collections, O(n)
+Java core  JVM, Garbage Collector
+Java core  Потокобезопасность, volatile
+Java core  java 8, lambdas
+Бизнес-логика  proxy, beans, components
+Бизнес-логика  GoF, SOLID, DI
+Security  Spring security, ACL
+Security  OAuth2, JWT
+Security  Хранение паролей
+Web, Network  SpringMVC, WebFlux
+Web, Network  HTTP, TLS, WebSocket
+Web, Network  Browser, cors, cookies
+Web, Network  REST
+Web, Network  React, JS
+Интеграции  Spring Integration
+Интеграции  SOAP, WebServices
+Интеграции  JMS, MQ, Kafka
+Архитектура  Spring Cloud, Microservices
+Архитектура  Проектирование API и БД, версионирование
+Архитектура  Кэширование, горизонтальное масштабирование
+Сборка и деплой  Spring Boot
+Сборка и деплой  Gradle, Maven, AppServer
+Сборка и деплой  Docker, k8s
+Сборка и деплой  CI/CD инструменты
+Сборка и деплой  bash, ssh, Linux, nginx
+Процесс разработки  git, gitflow, squash
+Процесс разработки  unit-tests, api-tests, e2e
+Процесс разработки  code-review, code-style
+Процесс разработки  Поддержка, мониторинг
+Общее  Задача на сообразительность
+Общее  Предыдущий проект
+* Docker & Kubernetes
+FROM, ADD, EXPOSE
+ 
+*building*
+docker build -t name:tag -p host_port:container_port
+-d - run in detached mode
+ 
+*terminate and remove container*
+docker rm -f <id>
+ 
+*view*
+docker ls
+ 
+Jib - separate resouces, codebase and dependencies of java application in different layers, not requires docker daemon
+
+** multistage docker example
+FROM maven:3.5-jdk-8 as BUILD
+ 
+#ADD repository.tar.gz /usr/share/maven/ref/
+ 
+COPY . /usr/src/app
+WORKDIR /usr/src/app
+RUN mvn -s /usr/share/maven/ref/settings-docker.xml package
+ 
+FROM openjdk:8-jre
+EXPOSE 8080 5005
+COPY --from=BUILD /usr/src/app/target /opt/target
+WORKDIR /opt/target
+ENV _JAVA_OPTIONS '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
+ 
+CMD ["java", "-jar", "greeting.war"]
+ 
+** pom.xml example:
+<profile>
+            <id>docker</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.20.1</version>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>hellojava</name>
+                                    <build>
+                                        <from>openjdk:latest</from>
+                                        <assembly>
+                                            <descriptorRef>artifact</descriptorRef>
+                                        </assembly>
+                                        <cmd>java -jar maven/${project.name}-${project.version}.jar</cmd>
+                                    </build>
+                                    <run>
+                                        <wait>
+                                            <log>Hello World!</log>
+                                        </wait>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>docker:build</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>docker:start</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                    <goal>logs</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+ 

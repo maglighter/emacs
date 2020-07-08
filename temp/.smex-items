@@ -1,13 +1,13 @@
 
 ;; ----- smex-history -----
 (
- find-name-dired
- ag
  shell
- sh
- dired-find-file-other-window
- dns-lookup-host
- grep-find
+ eww
+ golden-ratio
+ helm-M-x
+ helm-mode
+ compile
+ delete-duplicate-lines
 )
 
 ;; ----- smex-data -----
@@ -24,7 +24,7 @@
  (eb . 2)
  (gdb . 47)
  (gud-gdb . 17)
- (fundamental-mode . 33)
+ (fundamental-mode . 34)
  (calc . 3)
  (ee . 170)
  (message-reply . 1)
@@ -57,7 +57,7 @@
  (dired-diff . 1)
  (ediff . 2)
  (qrr . 3)
- (w3m . 41)
+ (w3m . 44)
  (visual-line-mode . 20)
  (replace-regexp . 3)
  (rgrep . 16)
@@ -93,7 +93,7 @@
  (font-lock-mode . 7)
  (windresize . 9)
  (sokoban . 5)
- (magit-status . 30)
+ (magit-status . 31)
  (magit-log . 1)
  (magit-show . 1)
  (line-number-mode . 12)
@@ -143,7 +143,7 @@
  (perldb . 3)
  (vi-mode . 2)
  (gnuplot-mode . 1)
- (package-list-packages . 45)
+ (package-list-packages . 46)
  (python-mode . 14)
  (ipyhton . 27)
  (pdb . 7)
@@ -200,7 +200,7 @@
  (c-mode . 16)
  (gdb-breakpoints-mode . 5)
  (gud-break . 7)
- (shell . 31)
+ (shell . 34)
  (sh . 5)
  (c-macro-expand . 1)
  (edit-kbd-macro . 1)
@@ -336,7 +336,7 @@
  (sr-speedbar-toggle . 6)
  (ediff-quit . 1)
  (ag-regexp . 2)
- (ag . 171)
+ (ag . 172)
  (ag-kill-buffers . 5)
  (landmark . 1)
  (mc/sort-regions . 1)
@@ -426,7 +426,7 @@
  (shell-mode . 3)
  (max/open-qt-documentation-w3m . 17)
  (w3m-goto-new-session-url . 1)
- (w3m-goto-url-new-session . 8)
+ (w3m-goto-url-new-session . 9)
  (browse-url . 2)
  (dddd . 3)
  (max/show-qt-class-doc . 56)
@@ -500,7 +500,7 @@
  (toggle-truncate-lines . 2)
  (kill-emacs . 1)
  (view-emacs-news . 1)
- (eww . 16)
+ (eww . 20)
  (icicle-font . 9)
  (toggle-frame-fullscreen . 1)
  (menu-set-font . 1)
@@ -543,10 +543,10 @@
  (gdb-toggle-breakpoint . 5)
  (c-toggle-auto-state . 4)
  (c-toggle-auto-newline . 3)
- (helm-M-x . 2)
+ (helm-M-x . 5)
  (picture-mode . 1)
  (reverse-region . 2)
- (helm-mode . 1)
+ (helm-mode . 2)
  (helm-top . 1)
  (helm-gentoo . 1)
  (helm-mini . 1)
@@ -578,4 +578,8 @@
  (dedicated-mode . 11)
  (dns-lookup-host . 1)
  (dired-find-file-other-window . 2)
+ (sublimity-mode . 5)
+ (table-insert . 3)
+ (table-span-cell . 1)
+ (golden-ratio . 2)
 )

@@ -2,24 +2,12 @@
 
 ;; ----- ido-last-directory-list -----
 (
- ("/data/sandbox/firefox/profile/" . "extensions/")
- ("/data/sandbox/" . "firefox/")
- ("/tmp/" . "max-firefox-fwl2jq2b.default/")
- ("/home/max/.mozilla/" . "firefox/")
- ("/home/max/" . ".mozilla/")
- ("/home/" . "max/")
- ("/" . "home/")
- ("/data/sandbox/firefox/mozilla-release/obj-x86_64-unknown-linux-gnu/dist/bin/distribution/bundles/" . "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/")
- ("/data/sandbox/firefox/mozilla-release/obj-x86_64-unknown-linux-gnu/dist/bin/distribution/" . "bundles/")
- ("/data/sandbox/firefox/mozilla-release/obj-x86_64-unknown-linux-gnu/dist/bin/" . "extensions/")
- ("/data/sandbox/firefox/" . "random-agent-spoofer/")
+ ("/home/max/.emacs.d/" . "site-lisp/")
 )
 
 ;; ----- ido-work-directory-list -----
 (
- "/data/sandbox/firefox/profile/extensions/"
- "/data/sandbox/firefox/random-agent-spoofer/lib/"
- "/data/sandbox/firefox/mozilla-release/obj-x86_64-unknown-linux-gnu/dist/bin/"
+ "/home/max/.emacs.d/site-lisp/"
 )
 
 ;; ----- ido-work-file-list -----
@@ -29,65 +17,9 @@
 
 ;; ----- ido-dir-file-cache -----
 (
- ("/data/sandbox/firefox/random-agent-spoofer/lib/" (21723 45479 413365 268000) "PageMod.js" "Ras.js" "PrefServ.js" "ActionButton.js" "Timer.js" "Chrome.js" "ContextMenu.js" "Notifications.js" "../" "./" "Localization.js" "Data.js" "Panel.js" "Tabs.js" "main.js")
+ ("/home/max/.emacs.d/site-lisp/" (24220 46779 738917 75000) "popup-pos-tip.el" "powerline/" "custom.el" "setup-packages.el" "./" "non-lisp/" "../" "sudo-save.el" "appearence.el")
 
- ("/data/sandbox/firefox/random-agent-spoofer/" (21723 43567 473953 365000) ".git/" "README.md" "LICENSE" "doc/" "locale/" "package.json" "../" "test/" "./" "data/" "lib/")
-
- ("/data/sandbox/firefox/profile/extensions/" (21723 44884 800869 987000) "../" "./")
-
- ("/data/sandbox/firefox/profile/" (21723 43467 782451 868000) "OfflineCache/" "bookmarkbackups/" "cache2/" "crashes/" "datareporting/" "extensions/" "gmp-gmpopenh264/" "gmp/" "healthreport/" "minidumps/" "sessionstore-backups/" "startupCache/" "storage/" "thumbnails/" "webapps/" ".parentlock" "SiteSecurityServiceState.txt" "_CACHE_CLEAN_" "addons.json" "blocklist.xml" "cert8.db" "compatibility.ini" "content-prefs.sqlite" "cookies.sqlite" "directoryLinks.json" "extensions.ini" "formhistory.sqlite" "healthreport.sqlite" "key3.db" "mimeTypes.rdf" "permissions.sqlite" "places.sqlite" "places.sqlite-shm" "places.sqlite-wal" "pluginreg.dat" "search.json" "secmod.db" "times.json" "webappsstore.sqlite" ".flagged" "lock" "cookies.sqlite-wal" "cookies.sqlite-shm" "webappsstore.sqlite-wal" "webappsstore.sqlite-shm" "extensions.json" "sessionCheckpoints.json" "healthreport.sqlite-wal" "healthreport.sqlite-shm" "safebrowsing/" "xulstore.json" "prefs.js" "../" "./")
-
- ("/data/sandbox/firefox/mozilla-release/obj-x86_64-unknown-linux-gnu/dist/bin/extensions/" (21723 42960 71269 881000) "jid1-AVgCeF1zoVzMjA@jetpack.xpi" "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/" "../" "jid1-AVgCeF1zoVzMjA@jetpack/" "./")
-
- ("/home/max/" (21723 43005 25360 419000) ".emacs.d/" ".slime/" "Documents/" ".covers/" ".dia/" ".openvpn/" ".xinitrc" ".directory" ".gtkrc-2.0" ".zenmap/" ".swt/" ".git-credential-cache/" ".macromedia/" ".goldendict/" ".audacity-data/" ".argouml/" ".mplayer/" ".dropbox/" ".config/" ".dropbox-dist/" ".visualvm/" ".gconf/" ".gnupg/" ".w3m/" ".dbus/" "xmacro.ini" ".Mathematica/" ".designer/" ".kde4/" ".cxoffice/" ".m2/" "Downloads/" ".pip/" ".kde/" ".java/" "src/" ".httpie/" ".eeschema" ".face.icon" ".mime.types" ".local/" ".subversion/" ".virtualenvs/" ".mozilla/" ".yEd/" "My Games/" ".FBReader/" ".kderc" ".brainworkshop/" "xmacroplay" ".nbprofiler/" ".zshrc" ".wireshark/" ".themes/" ".FontForge/" ".gnome/" ".dosbox/" ".qt/" ".android/" "hs_err_pid12369.log" ".celestiarc" ".gtkrc-2.0-kde4" ".python_history" ".gtk-bookmarks" ".thumbnails/" ".icons/" ".ssh/" ".gimp-2.8/" ".p7zip" ".thunderbird/" ".parallel/" ".wcm/" ".packettracer" ".gstreamer-0.10/" ".steampid" ".ipython/" ".npm/" "../" ".bashrc" "translate?key=trnsl.1.1.20150128T194057Z.785e99e3cebbe5df.341e2bc1db062a052e2835b573370c33c0f24997&text=hello&lang=en-ru" "pt/" "Anki/" ".distlib/" ".gksu.lock" ".adobe/" ".git-credentials" "powder.pref" ".idlwave/" ".gitconfig" ".dmrc" ".bash_profile" ".Xauthority" ".histfile" ".compose-cache/" ".xsession-errors" ".esd_auth" ".recently-used" ".pulse-cookie" ".magick/" "books/" ".git/" ".cr3/" ".cache/" "Desktop/" ".bash_history" ".steam/" ".kchmviewer/" ".VirtualBox/" ".Skype/" "./" ".steampath" "UMLet/" ".zcompdump" ".eclipse/" ".pki/" ".Osmos/")
-
- ("/tmp/max-firefox-fwl2jq2b.default/healthreport/" (21402 45651 843497 718000) "state.json" "../" "./")
-
- ("/home/max/.mozilla/firefox/" (21723 33549 349264 644000) "fwl2jq2b.default-backup-crashrecovery-20141112_154906/" "fwl2jq2b.default/" "fwl2jq2b.default-backup-crashrecovery-20141029_231025/" "profiles.ini" "fwl2jq2b.default-backup-crashrecovery-20140321_060107/" "Crash Reports/" "fwl2jq2b.default-backup-crashrecovery-20150206_203054/" "fwl2jq2b.default-backup/" "../" "fwl2jq2b.default-backup-crashrecovery-20141029_114915/" "fwl2jq2b.default-backup-crashrecovery-20150205_195218/" "fwl2jq2b.default-backup-crashrecovery-20140525_190549/" "./")
-
- ("/tmp/max-firefox-fwl2jq2b.default/jetpack/" (21318 24230 680272 198000) "firefox@ghostery.com/" "jid1-79nQAfjhUybb3A@jetpack/" "../" "./")
-
- ("/tmp/max-firefox-fwl2jq2b.default/" (21723 39238 646479 634000) "HTTPSEverywhereUserRules/" "OfflineCache/" "OxygenKDE/" "ReadItLater/" "ScrapBook/" "YouTubeCenterStorage/" "adblockplus/" "bookmarkbackups/" "cache2/" "chrome/" "crashes/" "datareporting/" "dictionarytip/" "downloadbar/" "extensions/" "gm_scripts/" "gmp-gmpopenh264/" "gmp/" "healthreport/" "jetpack/" "minidumps/" "searchplugins/" "sessionstore-backups/" "storage/" "thumbnails/" "weave/" "webapps/" ".flagged" ".parentlock" "SiteSecurityServiceState.txt" "_CACHE_CLEAN_" "adblockplus-rules.json" "addons.sqlite" "cert8.db" "cert_override.txt" "compatibility.ini" "content-prefs.sqlite" "cookies.sqlite" "extensions.sqlite" "feedly.cache" "feedly.featured" "feedly.session" "feedly.shelf" "firegestures.sqlite" "formhistory.sqlite" "healthreport.sqlite" "instantFoxPlugins.js" "key3.db" "localstore-safe.rdf" "localstore.rdf" "logins.json" "marionette.log" "mimeTypes.rdf" "netpredictions.sqlite" "permissions.sqlite" "places.sqlite" "places.sqlite-shm" "places.sqlite-wal" "readItLater.sqlite" "search-metadata.json" "secmod.db" "sessionstore.bak" "sessionstore.bak-20140925003805" "signons.sqlite" "stylish.sqlite" "times.json" "urlclassifierkey3.txt" "webappsstore.sqlite" "blocklist.xml" "pluginreg.dat" "directoryLinks.json" "xulstore.json" "startupCache/" "addons.json" "extensions.json" "extensions.ini" "search.json" "safebrowsing/" "sessionstore.js" "sessionCheckpoints.json" "prefs.js" "../" "./")
-
- ("/tmp/" (21723 40775 729540 2000) ".font-unix/" ".Test-unix/" ".X11-unix/" ".XIM-unix/" ".ICE-unix/" ".X0-lock" "max-firefox-fwl2jq2b.default/" "kde-max/" "babel-588IM4/" "emacs1000/" "akonadi-max.4Qlvis/" "systemd-private-5134fbd5ce3c469bb05606cf29f6cf40-ntpd.service-arr3wl/" "qtsingleapp-Golden-86bf-3e8-lockfile" "qtsingleapp-Golden-86bf-3e8" ".esd-1000/" "qtsingleapp-smplay-ca73-3e8-lockfile" "max-firefox-profile/" "../" "./")
-
- ("/home/max/.mozilla/extensions/" (20741 37580 237377 643000) "../" "./")
-
- ("/home/max/.mozilla/" (21723 41825 768547 856000) "blocklist.xml" "cookies.sqlite" "xulstore.json" "extensions/" "SiteSecurityServiceState.txt" "safebrowsing/" "sessionCheckpoints.json" "places.sqlite-shm" "firefox/" "datareporting/" "places.sqlite-wal" "sessionstore.js" "key3.db" "places.sqlite" "webappsstore.sqlite" "permissions.sqlite" "healthreport.sqlite" "extensions.ini" "bookmarkbackups/" "thumbnails/" "cache2/" "mimeTypes.rdf" "extensions.json" "healthreport/" "pluginreg.dat" "search.json" "../" "webapps/" "directoryLinks.json" "compatibility.ini" "sessionstore-backups/" "storage/" ".parentlock" "content-prefs.sqlite" "secmod.db" "./" "cert8.db" "prefs.js" "startupCache/")
-
- ("/home/" (21697 53165 401143 941000) "lost+found/" "max/" "../" "./")
-
- ("/data/" (21699 54449 292372 923000) "virtualbox_vms/" ".emacs_backup/" "Dropbox/" ".if_something_wrong" "sandbox/" "Downloads/" ".Trash-1000/" "elements/" "lost+found/" "boot/" "maxdir/" "../" "./" "#.if_something_wrong#" ".if_something_wrong~" ".cpan/" "wineprefixes/")
-
- ("/data/sandbox/" (21722 21359 709742 622000) "blink.sh" "LingvoUniversalEnRu.dict" "words_for_anki" "git_game/" "cnee.data" "boot.svg" "Untitled.epf" "Untitled2.epf" "pkg.list" "android/" "src/" "GraphStream/" "etc-backup.tar.bz2" "dot/" "pacman-database.tar.bz2" "local_music/" "x3/" "latex_exmpl/" "favorite_tracks" "flacon/" "firefox/" "calise.sh" "nar/" "google-python-exercises/" "log" "spritz-cmd-master/" "yapps2-2.1.1-17.1/" "pyqt/" "dd/" "../" "./" "powertop_logs/" "local_torrents_db/" "qosdnotification-master/" "ddb_gui_Qt.so" "ddd" "python-tutorial.zip" "deadbeef/" "konsole/")
-
- ("/data/sandbox/firefox/" (21723 40775 892876 443000) "profile-backup/" "random-agent-spoofer.xpi" "profile/" "mozilla-release/" "firefox-35.0.1.tar.bz2" "firefox-35.0.1.source.tar.bz2" "../" "./" "random-agent-spoofer/")
-
- ("/data/sandbox/firefox/mozilla-release/obj-x86_64-unknown-linux-gnu/dist/" (21723 41895 843101 435000) "distribution/" "xpi-stage/" "cppunittests/" "host/" "plugins/" "include/" "system_wrappers/" "stl_wrappers/" "extensions/" "sdk/" "bin/" "../" "./" "idl/" "lib/" "nspr-include/" "public/" "private/" "branding/")
-
- ("/data/sandbox/firefox/mozilla-release/obj-x86_64-unknown-linux-gnu/dist/bin/" (21723 41765 334158 744000) "distribution/" "Throbber-small.gif" "plugin-container" "updater" "TestPipe" "TestFile" "greprefs.js" "update.locale" "application.ini" "test_service_init_background_thread" "TestThreadUtils" "TestTypeTraits" "TestIncrementalDownload" "TestURLParser" "res/" "sockettransportservice_unittest" "TestCOMPtr" "GenerateOCSPResponse" "ice_unittest" "dictionaries/" "mozilla-xremote-client" "TestOpen" "update-settings.ini" ".lldbinit" "TestSplayTree" "fix_linux_stack.py" "TestAudioEventTimeline" "TestCountZeroes" ".gdbinit" "fix_stack_using_bpsyms.py" "urltest" "rlogringbuffer_unittest" "chrome.manifest" "test_statement_scoper" "TestRefPtr" "WriteArgument" "TestTextFormatter" "jsapi-tests" "TestWebGLElementArrayCache" "TestPair" "TestMacroForEach" "gdb-tests" "triplescat" "TestCasting" "gdb-tests-gdb.py" "TestObserverArray" "components/" "libnssdbm3.so" "TestTArray" "TestThreadPoolListener" "run-mozilla.sh" "platform.ini" "TestBind" "nrappkit_unittest" "TestJemalloc" "TestPRIntN" "test_StatementCache" "test_async_callbacks_with_spun_event_loops" ".mkdir.done" "TestSHA1" "test_IHistory" "TestObserverService" "modutil" "TestUpload" "TestFloatingPoint" "TestCeilingFloor" "TestPageLoad" "simpletokenbucket_unittest" "TestSTSParser" "TestSyncRunnable" "screentopng" "TestAutoPtr" "TestAudioBuffers" "libsmime3.so" "libssl3.so" "TestHashtables" "modules/" "TestAUSReadStrings" "test_transaction_helper" "libplds4.so" "test_mutex" "test_true_async" "NormalizationTest" "gmp-clearkey/" "TestCallTemplates" "TestLineBreak" "rdfcat" "mangle" "icons/" "TestStringAPI" "libfreebl3.so" "TestAudioMixer" "webapprt-stub" "chrome/" "libnspr4.so" "TestStreamConv" "sctp_unittest" "TestTypedEnum" "test_audio" "TestUnicodeArguments" "TestWeakPtr" "firefox-bin" "libnss3.so" "TestCSPParser" "certutil" "TestStandardURL" "webapprt/" "pk12util" "TestEndian" "TestPLDHash" "TestAUSHelper" "dependentlibs.list" "libsoftokn3.so" "TestVolatileBuffer" "test_file_perms" "TestDeque" "crashreporter" "libclearkey.so" "TestRollingMean" "TestBinarySearch" "TestAppShellSteadyState" "libplc4.so" "TestCountPopulation" "TestCallbacks" "TestAudioChannelService" "TestUDPSocket" "TestUniquePtr" "mediapipeline_unittest" "firefox" "js" "TestDNS" "buffered_stun_socket_unittest" "test_AsXXX_helpers" "hyphenation/" "TestPlainTextSerializer" "TestArrayUtils" "defaults/" "libmozalloc.so" "ShowSSEConfig" "TestCOMArray" "xpcshell" "TestArguments" "libnssckbi.so" "nsinstall" "TestBlockingSocket" "extensions/" "TestBloomFilter" "test_asyncStatementExecution_transaction" "TestCheckedInt" "rdfpoll" "test_binding_params" "turn_unittest" "TestGetURL" "test_sanity" "BadCertServer" "TestNativeXMLHttpRequest" "gmp-fake/" "runnable_utils_unittest" "nsIFileEnumerator" "sdp_unittests" "test_latency" "TestCookie" "TestProtocols" "updater.ini" "TestTXMgr" "OCSPStaplingServer" "TestRegistrationOrder" "test_unlock_notify" "TestMacroArgs" "js-gdb.py" "libmozsqlite3.so" "SimpleTypeLib" "browser/" "TestNsRefPtr" "libnssutil3.so" "TestCOMPtrEq" "PrimitiveTest" "TestStreamLoader" "libxul.so" "TestRacingServiceManager" "ShowAlignments" "TestServ" "ClientAuthServer" "UnicharSelfTest" "TestMaybe" "TestStartupCache" "TestBlockingProcess" "PropertiesTest" "nsTestSample" "TestINIParser" "shlibsign" "mediaconduit_unittests" "TestPoisonArea" "signaling_unittests" "TestID" "ssltunnel" "TestMinStringAPI" "TestEnumSet" "TestAtomics" "crashreporter.ini" "test_tone" "TestQuickReturn" "transport_unittests" "TestJSONWriter" "libmozsandbox.so" "TestIntegerPrintfMacros" "TestSTLWrappers" "TestAutoRef" "TestCertDB" "TestTimers" "ReadNTLM" "../" "./")
-
- ("/data/sandbox/firefox/mozilla-release/obj-x86_64-unknown-linux-gnu/dist/bin/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/" (21723 41785 481177 739000) ".git/" "bootstrap.js" "icon64.png" "harness-options.json" "locale/" "defaults/" "icon.png" "locales.json" "../" "./" "install.rdf" "resources/")
-
- ("/data/sandbox/firefox/mozilla-release/obj-x86_64-unknown-linux-gnu/dist/bin/extensions/jid1-AVgCeF1zoVzMjA@jetpack/" (21723 41785 481177 739000) ".git/" "bootstrap.js" "icon64.png" "harness-options.json" "locale/" "defaults/" "icon.png" "locales.json" "../" "./" "install.rdf" "resources/")
-
- ("/data/sandbox/firefox/mozilla-release/obj-x86_64-unknown-linux-gnu/dist/bin/distribution/bundles/jid1-AVgCeF1zoVzMjA@jetpack/" (21723 40580 689273 269000) ".git/" "bootstrap.js" "icon64.png" "harness-options.json" "locale/" "defaults/" "icon.png" "locales.json" "../" "./" "install.rdf" "resources/")
-
- ("/data/sandbox/firefox/mozilla-release/obj-x86_64-unknown-linux-gnu/dist/bin/distribution/bundles/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/" (21723 40491 894321 621000) ".git/" "bootstrap.js" "icon64.png" "harness-options.json" "locale/" "defaults/" "icon.png" "locales.json" "../" "./" "install.rdf" "resources/")
-
- ("/data/sandbox/firefox/mozilla-release/obj-x86_64-unknown-linux-gnu/dist/bin/distribution/bundles/" (21711 56943 882476 931000) "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/" "../" "./")
-
- ("/data/sandbox/firefox/mozilla-release/obj-x86_64-unknown-linux-gnu/dist/bin/distribution/" (21711 50283 491087 993000) "bundles/" "../" "./")
-
- ("/data/sandbox/firefox/mozilla-release/" (21711 50369 552484 220000) "dom/" "distribution/" "embedding/" "mach" "README.txt" "obj-x86_64-unknown-linux-gnu/" ".lldbinit" "other-licenses/" "db/" ".gdbinit" "python/" "memory/" "testing/" "config/" "profile/" "client.py" "view/" "tools/" "hal/" "gfx/" "rdf/" "xulrunner/" "xpfe/" "widget/" "LICENSE" "layout/" ".reviewboardrc" "modules/" "mfbt/" ".gitignore" "LEGAL" ".clang-format" "mobile/" "chrome/" "parser/" "Makefile.in" "media/" "editor/" "caps/" "configure" "webapprt/" "security/" "storage/" "CLOBBER" "moz.build" "docshell/" "js/" "netwerk/" "extensions/" "Android.mk" ".clang-format-ignore" "uriloader/" "AUTHORS" "configure.in" "accessible/" "mozilla-config.h.in" "aclocal.m4" "b2g/" "client.mk" "../" "build/" "browser/" "ipc/" "./" "services/" "intl/" "addon-sdk/" "toolkit/" "probes/" "content/" "mozglue/" "startupcache/" "image/" "nsprpub/" "xpcom/")
-
- ("/data/sandbox/firefox/mozilla-release/obj-x86_64-unknown-linux-gnu/" (21719 49466 112556 823000) "dom/" "distribution/" "embedding/" ".lldbinit" "other-licenses/" "Makefile" "root.mk" "db/" ".gdbinit" "backend.RecursiveMakeBackend.pp" "mozinfo.json" "python/" "memory/" "testing/" "config/" "profile/" "view/" ".mkdir.done" "tools/" "hal/" "gfx/" "rdf/" "xpfe/" "mozilla-config.h" "config.cache" "widget/" ".mozbuild/" "layout/" "all-tests.json" "modules/" "mfbt/" "_build_manifests/" "chrome/" "parser/" "media/" "editor/" "caps/" "webapprt/" "security/" "storage/" "_virtualenv/" "CLOBBER" "docshell/" "dist/" "js/" ".mozconfig.json" "backend.RecursiveMakeBackend" "netwerk/" "extensions/" "config.status" "subconfigures" "uriloader/" "backend.mk" "accessible/" "../" "root-deps.mk" "build/" "browser/" ".mozconfig.mk" "ipc/" "./" "services/" "intl/" "config.statusc" "addon-sdk/" "toolkit/" "probes/" "content/" "mozglue/" "startupcache/" "image/" "nsprpub/" "xpcom/" "_tests/" "config.log")
-
- ("/data/sandbox/firefox/mozilla-release/obj-x86_64-unknown-linux-gnu/dom/plugins/test/" (21711 50414 476546 384000) "Makefile" "testplugin/" "backend.mk" "../" "./" "testaddon/")
-
- ("/data/sandbox/firefox/mozilla-release/obj-x86_64-unknown-linux-gnu/dom/plugins/test/testplugin/" (21711 53763 960887 118000) ".deps/" "secondplugin/" "Makefile" "libnptest.so" "nptest_name.o" "nptest.o" "nptest_gtk2.o" "javaplugin/" "backend.mk" "../" "./" "nptest_utils.o")
-
- ("/data/sandbox/firefox/mozilla-release/obj-x86_64-unknown-linux-gnu/dom/plugins/test/testplugin/secondplugin/" (21711 53756 854105 153000) ".deps/" "Makefile" "nptest_name.o" "libnpsecondtest.so" "nptest.o" "nptest_gtk2.o" "backend.mk" "../" "./" "nptest_utils.o")
+ ("/home/max/.emacs.d/" (24225 63050 81623 785000) "auto-save-list/" "image-dired/" "init.el" "snippets/" "request/" "bookmarks" ".gitignore" "transient/" "./" ".mc-lists.el" "url/" "../" ".org-id-locations" "eproject.lst" "notes" "site-lisp/" "network-security.data" "temp/" "nov-places" ".python-environments/" "emms/" ".git/" "elpy/" "tramp" "jabber-history/" "elpa/" "org/" "eshell/")
 )
 
 ;; ----- ido-unc-hosts-cache -----

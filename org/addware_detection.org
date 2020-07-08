@@ -1,3 +1,0 @@
-* Add ware detection
-** TODO Starting logging normal usage
-   Date started: 11:04

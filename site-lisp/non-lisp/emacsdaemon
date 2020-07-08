@@ -3,5 +3,5 @@
 #emacsclient -c -e "(set-cursor-color \"#656565\")";
 wmctrl -R emacs@
 if [ $? -ne 0 ]; then
-	emacsclient -c -e "(set-cursor-color \"#CCCCFF\") (select-frame-set-input-focus (selected-frame))"
+	emacsclient -c -e "(select-frame-set-input-focus (selected-frame))"
 fi

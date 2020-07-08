@@ -1,0 +1,71 @@
+hi
+
+** Sun Apr  5 15:36:54 2020 (klss)
+
+klss
+
+/home/max/.emacs.d/org/java.org
+
+** Thu Apr  9 13:58:24 2020 (package ru.org.cprm.appeal.service.mapping;)
+
+package ru.org.cprm.appeal.service.mapping;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import ru.org.cprm.appeal.model.Appeal;
+import ru.org.cprm.appeal.model.AppealStatus;
+import ru.org.cprm.rest.model.appeal.AppealDto;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class DtoToModelMapperImplTest {
+
+    DtoToModelMapperImpl instance;
+
+    @BeforeEach
+    void setUp() {
+        instance = new DtoToModelMapperImpl();
+    }
+
+    @Test
+    void map() {
+        Appeal appeal = Appeal.builder()
+                .id(2l)
+                .appealStatus(AppealStatus.builder().code("test").id(1).build())
+                .fromBa(true)
+                .fullName("name")
+                .build();
+        AppealDto converted = instance.map(appeal);
+        System.out.println(converted);
+        assertEquals(new Long(2l), converted.getId());
+        assertEquals("test" , converted.getAppealStatus().getCode());
+        assertThat(appeal)
+        assertTrue(converted.isFromBa());
+    }
+}
+
+** Thu Apr  9 14:00:15 2020 (@Override)
+
+@Override
+    public Page<AgreementSearchResultDto> searchAgreements(UUID partyId, UUID categoryId) {
+        String searchQuery = Objects.isNull(categoryId) ? String.format("partnerPartyId:%s", partyId)
+                : String.format("( partnerPartyId:%s and categoryId:%s )", partyId, categoryId);
+        return restClient.getRestClientFactory().get(MicroserviceEndpoints.AGREEMENT)
+                .path("/agreements")
+                .queryParam("search", searchQuery)
+                .queryParam("page", "0")
+                .queryParam("size", String.valueOf(Integer.MAX_VALUE))
+                .get(new GenericType<Page<AgreementSearchResultDto>>() {
+                });
+    }
+
+** Thu Apr  9 18:47:51 2020 (2. Спасибо, прочитал. Мне кажется сложно выйти за границы 4-)
+
+2. Спасибо, прочитал. Мне кажется сложно выйти за границы 4-8кб при отправке GET запроса на поиск. Логические операции в текущей реализации передаются не в виде символов '&' или '|' а в виде ключевых слов (and и or), так что тоже не должно возникнуть проблем. Переделка на POST метод на данном этапе потребует переписывание некоторой части микросервиса.
+
+4. Он в US этой задачи в комментариях. Другого типа PATCH запроса, кроме того который с операцией и merge patch, в котором отправляются только измененные атрибуты - нет. Если передавать всю DTO - то это уже получается PUT запрос, а не PATCH.  Вызывающая система посмотрит наш swagger, увидит тип Content-Type, который данный метод принимает и будет его отправлять, иначе зачем мы пишем swagger?
+
+
+** Mon Apr 20 22:39:07 2020 (delete ranger for emacs)
+
+delete ranger for emacs
