@@ -68,9 +68,20 @@ https://habr.com/ru/post/500468/
         return result;
     }
   #+END_SRC     
+* Optional
+https://blogs.oracle.com/javamagazine/12-recipes-for-using-the-optional-class-as-its-meant-to-be-used
+* Streams
+*example of chunking to groups {0=[12, 11, 10], 1=[9, 8, 7], 2=[6, 5]}*
+#+begin_src java
+AtomicInteger counter = new AtomicInteger();
+Map<Integer, List<Integer>> collect = Arrays.stream(a)
+.boxed() // convert from IntStream
+.sorted(Comparator.reverseOrder()) // reversing
+.collect(Collectors.groupingBy(x -> counter.getAndIncrement()/3));
+#+end_src
 * blogs
-  [[https://deepakvadgama.com/]] Spring
-  [[https://vladmihalcea.com/]] Hibernate, JPA performance
+[[https://deepakvadgama.com/]] Spring
+ [[https://vladmihalcea.com/]] Hibernate, JPA performance
 * to learn
   * executor framework
     + A Future that may be explicitly completed (setting its value and status), and may be used as a CompletionStage, supporting dependent functions and actions that trigger upon its completion.
@@ -89,6 +100,31 @@ https://habr.com/ru/post/500468/
       #+END_SRC
       [[https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html]]
 * core
+** memory model
+*** reference escaping
+When the method of a class returns a reference to a collection - it is called reference escaping:
+
+#+begin_src java
+public Map<String, Customer> getCustomers() {
+		return this.records;
+}
+#+end_src
+
+It is possible to solve it partially by providing iterator (=implements Iterable<Customer>= and provede iterator() method) but changes to collections are still possible (ex. remove()).
+
+The best way is to return =Collection.unmodifiebleMap(records)= which will prevent collection modification.
+
+For other objects it is possible to return read-only interfaces of an object.
+*** garbage collection
+*Mark and Sweep strategy*
+During mark stage all threads are stoped (stop the world event) and all object linked from stack variables marked as "live". All other objects marked as "dead"
+
+*Generational garbage collection*
+More complex model based on assumptions:
++ Most objects don't live for long
++ If an objec survives it is likely to live forever
+
+The heap divided on two halves: young ([Eden,s0,s1], very small size, easy to clear) and old (big one). When gc happens it finds survived objects from the young and moves it to the old. Old gc happens only if memory is full.
 ** repo
 [[https://github.com/DeepakVadgama/java-interview/blob/master/topics/core/]]
 
@@ -189,6 +225,44 @@ a class such that the methods operate on the data, as opposed to the users of th
 accessing the fields directly. In Java, it is commonly implemented with private instance
 members that have public methods to retrieve or modify the data, commonly referred to
 as getters and setters, respectively.
+* Regexp
+{n} - number of matches
+
+/s - matches any whitespace characters such as space and tab
+/S - matches any non-whitespace characters
+/d - matches any digit character
+/D - matches any non-digit characters
+/w - matches any word character (basically alpha-numeric)
+/W - matches any non-word character
+/b - matches any word boundary (this would include spaces, dashes, commas, semi-colons, etc)
+[abc], [^abc] - range and negative range
+
+*Java Examples*
+#+begin_src java
+Pattern p = Pattern.compile("a*b");
+Matcher m = p.matcher("aaaaab");
+boolean b = m.matches();
+String[] parts = pattern.split("aaaaab");
+// single execution
+boolean b = Pattern.matches("a*b", "aaaaab");
+// groups
+if (m.find()) {
+    m.group(1);
+}
+// replace
+String text = "Егор Алла Анна";
+Pattern pattern = Pattern.compile("А.+?а");
+Matcher matcher = pattern.matcher(text);
+while (matcher.find()) {
+    int start=matcher.start();
+    int end=matcher.end();
+    System.out.println("Найдено совпадение " + text.substring(start,end) + " с "+ start + " по " + (end-1) + " позицию");
+}
+System.out.println(matcher.replaceFirst("Ира")); // Егор Ира Анна
+System.out.println(matcher.replaceAll("Ольга")); // Егор Ольга Ольга
+
+#+end_src
+
 * Concurrency
 Николай Алименков — Прикладная многопоточность
 https://www.youtube.com/watch?v=8piqauDj2yo
@@ -236,6 +310,8 @@ R.compute
 L.join
 res = L.sum + R.sum
 * Spring
+https://reflectoring.io/spring-boot-12-factor-app/
+
 ** Useful Annotations
 @Autowired
 @Component, @Service, @Repository, @Configuration, @RestController
@@ -320,7 +396,7 @@ public class UserService {
 *** Propagation
 =REQUIRED= is the default propagation. Spring checks if there is an active transaction, then it creates a new one if nothing existed. Otherwise, the business logic appends to the currently active transaction
 
-For SUPPORTS, Spring first checks if an active transaction exists. If a transaction exists, then the existing transaction will be used. If there isn't a transaction, it is executed non-transactional
+For =SUPPORTS=, Spring first checks if an active transaction exists. If a transaction exists, then the existing transaction will be used. If there isn't a transaction, it is executed non-transactional
 
 When the propagation is =MANDATORY=, if there is an active transaction, then it will be used. If there isn't an active transaction, then Spring throws an exception
 
@@ -484,14 +560,52 @@ Apart from this, the ApplicationContext supports almost all types of bean scopes
 ** Angular integration and Security
 Single page application
 https://spring.io/guides/tutorials/spring-security-and-angular-js/
+
+https://www.marcobehler.com/guides/spring-security
+
+https://vaadin.com/learn/tutorials/modern-web-apps-with-spring-boot-and-vaadin/adding-a-login-screen-to-a-vaadin-app-with-spring-security
+#+begin_src java
+@Override
+protected void configure(HttpSecurity http) throws Exception {
+    http.csrf().disable()  
+        .requestCache().requestCache(new CustomRequestCache()) 
+        .and().authorizeRequests() 
+        .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()  
+
+        .anyRequest().authenticated()  
+
+        .and().formLogin()  
+        .loginPage(LOGIN_URL).permitAll()
+        .loginProcessingUrl(LOGIN_PROCESSING_URL)  
+        .failureUrl(LOGIN_FAILURE_URL)
+        .and().logout().logoutSuccessUrl(LOGOUT_SUCCESS_URL); 
+}
+#+end_src
+* SQL
+normal forms,
+ACID,
+isolation levels,
+index anatomy
 * Hibernate
 [[https://thoughts-on-java.org/ultimate-guide-association-mappings-jpa-hibernate/]]
 *ManyToOne, OneToMany with examples*
 https://docs.jboss.org/hibernate/orm/5.1/userguide/html_single/chapters/domain/associations.html
 * Testing
++ Isolated beans loading
+  #+begin_src java
+  @SpringBootTest(classes = TestEnv.class)
+  public class TestClass {
+
+  }
+
+  @Configuration
+  @ComponentScan(lazyInit = true)
+  public class TestEnv {}
+  #+end_src
+  
 + Junit5
 @Before/AfterAll static method
-@Before/AfrerEach void setUp() {}
+@BeforeEach/AfrerEach void setUp() {}
 
 + Mockito
 @ExtendsWith(MockitoExtension.class) [class-level]
@@ -733,7 +847,18 @@ $request->root()
 
 [[./attachments/java-collections.jpeg]]
 
+*HashMap*
+map.merge(word, 1, (prev, one) -> prev + one)
+map.putIfAbsent(key, value)
+map.getOrDefault(key, default)
 * Interview questions
++ =Fail-fast= (ArrayList, HashMap, etc) and =Fail-safe= (creates a copy of the original collection or object array and iterates over that copied collection, ConcurrentHashMap, CopyOnWriteArrayList) iterators in Java
++ =Closures= (lambdas which could access variables defined out of scope of a function)
++ =Coupling= refers to the knowledge or information or dependency of another class. It arises when classes are aware of each other. If a class has the details information of another class, there is strong coupling. In Java, we use private, protected, and public modifiers to display the visibility level of a class, method, and field. You can use interfaces for the weaker coupling because there is no concrete implementation.
++ =Cohesion= refers to the level of a component which performs a single well-defined task. A single well-defined task is done by a highly cohesive method. The weakly cohesive method will split the task into separate parts. The java.io package is a highly cohesive package because it has I/O related classes and interface. However, the java.util package is a weakly cohesive package because it has unrelated classes and interfaces.
++ https://www.toptal.com/java/interview-questions
++ https://www.omni-academy.com/java-interview-questions-and-answers-in-germany/
+** EPAM  
 RDBMS  базовый SQL, join, limit
 RDBMS  индексы
 RDBMS  агрегаты, группировка
@@ -776,7 +901,38 @@ Web, Network  React, JS
 Процесс разработки  Поддержка, мониторинг
 Общее  Задача на сообразительность
 Общее  Предыдущий проект
+* Garbage Collector
++ Serial Garbage Collector. Single thread. Stop the world event
++ Parallel Garbage Collector. Multiple threads. Stop the world event
++ Concurrent Mark Sweep (CMS) Garbage Collector
++ Garbage First (G1) Garbage Collector. The Eden, survivors, and old areas use this equal-sized regions
+* JVM
++ A specification where working of Java Virtual Machine is specified. But implementation provider is independent to choose the algorithm. Its implementation has been provided by Oracle and other companies.
++ An implementation Its implementation is known as JRE (Java Runtime Environment).
++ Runtime Instance Whenever you write java command on the command prompt to run the java class, an instance of JVM is created.
+
+*The JVM performs following operation:*
++ Loads code
++ Verifies code
++ Executes code
++ Provides runtime environment
+*JVM provides definitions for the:*
++ Memory area
++ Class file format
++ Register set
++ Garbage-collected heap
++ Fatal error reporting etc.
+
+*Classloader*
++ =Bootstrap ClassLoader= - This is the first classloader which is the super class of Extension classloader. It loads the rt.jar file which contains all class files of Java Standard Edition like java.lang package classes, java.net package classes, java.util package classes, java.io package classes, java.sql package classes etc.
++ =Extension ClassLoader= - This is the child classloader of Bootstrap and parent classloader of System classloader. It loades the jar files located inside $JAVA_HOME/jre/lib/ext directory.
++ =System/Application ClassLoader= - This is the child classloader of Extension classloader. It loads the classfiles from classpath. By default, classpath is set to current directory. You can change the classpath using "-cp" or "-classpath" switch. It is also known as Application classloader.
+
+=Just-In-Time(JIT)= compiler - it is used to improve the performance. JIT compiles parts of the byte code that have similar functionality at the same time, and hence reduces the amount of time needed for compilation. Here, the term "compiler" refers to a translator from the instruction set of a Java virtual machine (JVM) to the instruction set of a specific CPU.
+https://www.javatpoint.com/jvm-java-virtual-machine
 * Docker & Kubernetes
+[[https://platform9.com/blog/kubernetes-service-discovery-principles-in-practice/]]
+
 FROM, ADD, EXPOSE
  
 *building*
@@ -787,11 +943,16 @@ docker build -t name:tag -p host_port:container_port
 docker rm -f <id>
  
 *view*
-docker ls
+docker ps
+docker ps -a [even stopped containers]
+
+*reclaim*
+docker system prune [removes all not used containers data]
  
 Jib - separate resouces, codebase and dependencies of java application in different layers, not requires docker daemon
 
 ** multistage docker example
+#+begin_src docker
 FROM maven:3.5-jdk-8 as BUILD
  
 #ADD repository.tar.gz /usr/share/maven/ref/
@@ -807,6 +968,8 @@ WORKDIR /opt/target
 ENV _JAVA_OPTIONS '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
  
 CMD ["java", "-jar", "greeting.war"]
+#+end_src
+
  
 ** pom.xml example:
 <profile>
@@ -858,3 +1021,309 @@ CMD ["java", "-jar", "greeting.war"]
             </build>
         </profile>
  
+* Maven
+https://cguntur.me/2020/06/03/understanding-apache-maven-part-5/
+*Google Best Practices for Java Libraries*
+https://jlbp.dev/
+
+*run only project_to_build and all transitive deps*
+mvn -am -pl :path_of_project_to_build compile
+
+* Liquibase
+https://mydeveloperplanet.com/2020/04/21/easy-database-migration-with-liquibase/
+* Jackson
+Using @JsonTypeInfo annotation to handle polymorphic types
+[[https://www.logicbig.com/tutorials/misc/jackson/jackson-json-type-info-annotation.html]]
+* Versioning
+[[https://helpercode.com/2020/12/29/versioning-multiple-micro-services-in-a-monorepo-using-maven/]]
+* DDD
+[[http://www.odrotbohm.de/2020/03/Implementing-DDD-Building-Blocks-in-Java/]]
+* Algorithms
+** Java Data Structures
+=ArayDeque= add[Last](E) add to the end, remove[First]() - removes first element (head)), peek())
+** BIg O
+- 2^(logN) = N
+
+- tree structure (ex: Fibonachi): O(branches^tree depth) (ex: Fibonachi - O(2^N)) called exponential
+
+- for i .. N: for i+1 .. N
+  N(N-1)/2 -> O(N^2)
+
+- String sorting adds comparison complexity - O(s), s - max string length
+
+- Factorial: N! -> O(N)
+
+- multiple recursive calls, memoization could be used to store previous results of calculation O(N)
+** Fibonachi
+#+begin_src python
+def fib(n, mem, k):
+    if n < 0: return (0, k)
+    if n == 0 or n == 1: return (n, k)
+    if n in mem: return (mem[n], k)
+    mem[n] = fib(n-2, mem, k+1)[0] + fib(n-1, mem, k+1)[0]
+    return (mem[n], k)
+
+mem = {}
+for i in range(10):
+    v = fib(i, mem, 0)
+    print(" "*v[1], v[0])
+#+end_src
+** Trees
+=Binary search tree= - binary tree in which evey node fits a specific ordering property: all left descendents <= n < all right descendents for each node n.
+#+begin_src java
+public static void traverseInOrder(TreeNode n) {
+        if (n != null) {
+            traverseInOrder(n.left);
+            visit(n.val);
+            traverseInOrder(n.right);
+        }
+    }
+#+end_src
+=Min heap= - min-heaps complete binary tree with each node smaller than it's children (root node - smalest value). =Max heap= is opposite. Operations: *insert* at the bottom right and then swap, *extract_min* - removing with replacing with bottomness right and swapping. Both O(log n) time.
+** Graphs
+=BFS= - when tree is not too wide, uses queue, =DFS= - recursion, always mark visited.
+
+Bi-directional BFS for finding shortest path between 2 nodes
+* resume words
+https://ep-advisory.com/ru/statii/250-gotovyh-fraz-dlya-rezyume-i-sobesedovaniya-na-anglijskom/
+more https://www.themuse.com/advice/185-powerful-verbs-that-will-make-your-resume-awesome
+
+* RabbitMQ / AMQP
+https://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-by-rabbitmq/
+https://habr.com/ru/company/itsumma/blog/416629/
+RPC example https://github.dev/janitham/rabbitmq-spring-boot-rpc-worker, https://reflectoring.io/amqp-request-response/
+
+Exchange'и и очереди
++ Паблишеры (publishers) отправляют сообщения на exchange’и
++ Exchange’и отправляют сообщения в очереди и в другие exchange’и на основе биндингов
++ RabbitMQ отправляет подтверждения паблишерам при получении сообщения
++ Получатели (consumers) поддерживают постоянные TCP-соединения с RabbitMQ и объявляют, какую очередь(-и) они получают
++ RabbitMQ проталкивает (push) сообщения получателям
++ Получатели отправляют подтверждения успеха/ошибки
++ После успешного получения, сообщения удаляются из очередей
+
+Существует четыре типа exchange’ей и связанные с ними биндинги:
+
++ Fanout (разветвляющий). Направляет во все очереди и обменники, имеющие привязку к exchange’у Стандартная подмодель Pub.
++ Direct (прямой). Маршрутизирует сообщения на основе ключа маршрутизации, который несет с собой сообщение, задается паблишером. Ключ маршрутизации — короткая строка. Прямые обменники отправляют сообщения в очереди/exchange’и, у которых есть ключ сопряжения, который точно соответствует ключу маршрутизации.
++ Topic (тематический). Маршрутизирует сообщения на основе ключа маршрутизации, но позволяет использовать неполное соответствие (wildcard). '#' matches zero or more dot-delimited words and '*' matches exactly one such word
++ Header (заголовочный). RabbitMQ позволяет добавлять к сообщениям заголовки получателей. Заголовочные exchange’и передают сообщения в соответствии с этими значениями заголовка. Каждая привязка включает в себя точное соответствие значений заголовка. К привязке можно добавить несколько значений с ЛЮБЫМИ или ВСЕМИ значениями, необходимыми для соответствия.
++ Consistent Hashing (консистентное хэширование). Это обменник, который хэширует либо ключ маршрутизации, либо заголовок сообщения, и отправляет только в одну очередь. Это полезно, когда вам нужно соблюсти гарантии порядка обработки и при этом иметь возможность масштабировать получателей.
+
+*Message content*
+Headers
+Properties
+byte[] data
+  
++ One queue and multiple consumers - concurrent consumers
++ Each queue will recieve same message (but filtered by bindings)
+
+
+#+DOWNLOADED: screenshot @ 2022-01-09 22:55:36
+[[file:attachments/RabbitMQ_/_AMQP/2022-01-09_22-55-36_screenshot.png]]
+
+* Microservices questions
+Асинхронность/Обработка ошибок;
+Трафик/Кэши;
+Распределенные транзакции/Согласованность;
+Логи/Отладка;
+Версионирование;
+Люди/Шаринг/Рефакторинг
+
+
+* Behavioral interview
++ Questions
+  
+Conflicts - In a team, with a customer, with another developer/team, with a manager.
+How you worked with a final customer
+Example of Failure
+Example of Brave decision
+Example of Latest Challenging task
+Work with Ambiguity
+How you express difficult concepts for non technical people
+
+истории про последние два проекта и вашу роль в  них
+
+"Tell me about your recently implemented task." рассказал о своей одной из последних тасок которую считал наиболее подходящей, немного в красках и с восторгом
+" Imagine you work with someone in a team with who it is really hard to talk. How would you collaborate with him and try to get consensus for some task?" Сказал что говорил бы с этим человеком через кого кто для нее авторитет, или выносил бы эти вопросы на митинг со всей командой
+" Imagine you work in a company with a bad culture, what would you do in this situation?" сказал что не молчал бы а рассказывал бы начальству о том какая культура в компании, может он об этом даже не знает, если бы меня не слушали то присоединился поддержкой людей, которые разделывают мои взгляды
+"Imagine you are a director of a company with a bad culture, what would you do in this situation?" Сказал что говорил бы с подчиненными чтобы узнать что им не нравится, старался бы решить эти проблемы, трансформировать компанию как-то, если бы не получалось, то приобщился бы помощью специалистов - соответствующих консультантов
+" Describe how organized development process in your team." описал процесс как есть, только в красках и с эпитетами
+
+* System design
+
+Questions
++ Who is going to use it?
++ How are they going to use it?
++ How many users are there?
++ What does the system do?
++ What are the inputs and outputs of the system?
++ How much data do we expect to handle?
++ How many requests per second do we expect?
++ What is the expected read to write ratio?
+
+Систем дизайн.
+Пришел парень, тимлид, 10 лет в гугле. Попросил спроектировать key/value storage из которого только читают. Постановка задачи звучала ровно так.
+
+Я начал задавать уточняющие вопросы:
+ 1) Какой размер ключей и значений, какой тип данных? key 1КB string и val 10KB binary
+ 2) Сколько всего пар будем хранить в нашем сторадже? 5 млрд.
+ 3) Какая нагрузка на чтение? 100к запросов в секунду.
+ 4) Какое железо у меня есть? 32CPU/256GB RAM/10 Gbit net/ 10 * 6 Tb HDD
+ 5) Какие к сервису предъявлены SLO? 95% req < 50 ms и availability 99.99%
+
+Далее начали считать цифры, сколько всего нужно места для хранения такого объема, сколько сети. На это было потрачено больше всего времени, было разрешено юзать калькулятор в телефоне. В итоге вышло, что для ключей надо 51.2 Tb  и для значений в районе 500Tb. Затем начался разговор про то, как будем хранить на диске или в памяти. Далее речь зашла про время позиционирования головки жесткого диска и количество iops на каждый диск. Я предложил для старта хранить все в RAM. Расчеты показали, что при текущем железе, надо 2.3к серверов, предложенной конфигурации. 
+Далее сказал, что мы можем сэкономить потребление памяти и часть данных хранить на диске или использовать SSD, вместо HDD. Сказал про LRU кэш и на этом время закончилось.
+
+* What to ask
+How big is the company?
+Why did you choose to work here?
+Do you enjoy this particular project?
+Is there flexibility within the org to move around to different projects?
+What's a typical day like?
+Software dev process? (agile/tdd/pairing?)
+Bug tracking system?
+Version control system?
+Dev. desktop vs server OS? Developer machine hardware?
+Is the product live in production? If not, what's the schedule for developing it?
+How often are releases done?
+Who supports the product once it's released? Pager duty? Monitoring email?
+Where do feature + bugfix requests come from?
+Who does the "design" of the product? Internal designers, devs, both?
+Would my work be full-stack, or focused on backend/frontend?
+How big is the code base? Lots of ties to external/legacy projects?
+Typical working hours? Flexibility? Crunch times?
+Working from home? Regularly vs. Snow days?
+Do you have a favorite part of the job? Least favorite?
+Do you have a time tracking system?
+Centralized IT dept?
+Gov’t contractor? Clearance required? Potential for clearance?
+Regulatory compliance? PCI, SOX, etc. Annual training?
+Do people hang out outside work? Company outings? Lunch?
+Budget for conferences?
+Internal lightning talks/brown bag lunches?
+Does the company seem stable? Profitable? Any plans to sell?
+Bonus structure?
+Management style/structure? Frequent catch-ups aka one-on-ones? Something else?
+Room for advancement?
+Learning opportunities?
+
+* Designing Data intensive applications book
++ Reliability
+The system should continue to work correctly (performing the correct function at
+the desired level of performance) even in the face of adversity (hardware or soft‐
+ware faults, and even human error). See “Reliability” on page 6.
++ Scalability
+As the system grows (in data volume, traffic volume, or complexity), there should
+be reasonable ways of dealing with that growth. See “Scalability” on page 10.
++ Maintainability
+Over time, many different people will work on the system (engineering and oper‐
+ations, both maintaining current behavior and adapting the system to new use
+cases), and they should all be able to work on it productively. See “Maintainabil‐
+ity” on page 18.
+
+** Performance
+- througput - number of request which we can proceed per sec | total time to run a jub of a certain size
+- latency - duration that request is waiting to be handling
+
+For calculate average response time it's Better to use *percentiles*. Median is *p50* 50th percentile.
+
+For example, if the 95th percentile response time is 1.5 seconds, that means 95 out of 100 requests take less than 1.5 seconds, and 5 out of 100 requests take 1.5 seconds or more.
+
+An application has to meet various requirements in order to be useful. There are
+*functional requirements* (what it should do, such as allowing data to be stored,
+retrieved, searched, and processed in various ways), and some *nonfunctional requirements* (general properties like security, reliability, compliance, scalability, compatibility, and maintainability)
+
+=Reliability= means making systems work correctly, even when faults occur (Fault-tolerance techniques can hide certain types of faults)
+=Scalability= means having strategies for keeping performance good, even when load
+increases
+=Maintainability= has many facets, but in essence it’s about making life better for the engineering and operations teams. pGood abstractions can help reduce complexity and make the system easier to modify and adapt for new use cases. Good operability means having good visibility into the system’s health
+
+** Data Models
+*** SQL
+*** NoSql
+**** Document (MongoDb)
++ A need for greater scalability than relational databases can easily achieve
++ Specialized query operations that are not well supported by the relational model
++ Frustration with the restrictiveness of relational schemas, and a desire for a more dynamic and expressive data model (ex: JSON model reduces the impedance mismatch between the application code and the storage layer)
+
+The main arguments in favor of the document data model are schema flexibility, better performance due to locality, and that for some applications it is closer to the data structures used by the application. The relational model counters by providing better support for joins, and many-to-one and many-to-many relationships.
+
+**** Graph-Like (Neo4j)
+A graph consists of two kinds of objects: vertices (also known as nodes or entities) and edges (also known as relationships or arcs). Many kinds of data can be modeled as a graph. Typical examples include: Social graphs, The web graph, Road or rail networks (Neo4j)
+
+*** Quering types
+=Declerative= (sql)
+=MapReduce= is a programming model for processing large amounts of data in bulk
+across many machines, popularized by Google (Mongodb)
+
+** Storage and retrieval
+*** Indexes
+**** Hash Indexes
+Let’s say our key-value data storage consists only of appending to a file, then the simplest possible indexing strategy is this: keep an in-memory hash map where every key is mapped to a byte offset in the data file.
+Whenever you append a new key-value pair to the file, you also update the hash map to reflect the offset of the data you just wrote (same for updating)
+
+We only ever append to a file, so how do we avoid eventually running out of disk space? A good solution is to break the log into segments of a certain size by closing a segment file when it reaches a certain size, and making subsequent writes to a new segment file. We can then perform *compaction* on these segments. Compaction means throwing away duplicate keys in the log, and keeping only the most recent update for each key.
+
+The merging and compaction of frozen segments can be done in a background thread, and while it is going on, we can still continue to serve read and write requests as normal, using the old segment files. After the merging process is complete, we switch read requests to using the new merged segment instead of the old segments—and then the old segment files can simply be deleted.
+**** SSTables and LSM-Trees
+Store graph of keys in graph (maintaining sorted order) first in-memory and then save on disk.
+**** B-Trees
+B-trees break the database down into fixed-size blocks or pages, traditionally 4 KB in size (sometimes bigger), and read or write one page at a time. This design corresponds more closely to the underlying hardware, as disks are also arranged in fixed-size blocks.
+B-trees keep key-value pairs sorted by key, which allows efficient key-value
+lookups and range queries
+One page is designated as the root of the B-tree; whenever you want to look up a key in the index, you start here. The page contains several keys and references to child pages. Each child is responsible for a continuous range of keys, and the keys between the references indicate where the boundaries between those ranges lie.
+
+write-ahead log
+*** Modes of Dataflow
+**** REST
+REST is not a protocol, but rather a design philosophy that builds upon the principles of HTTP. It emphasizes simple data formats, using URLs for identifying resources and using HTTP features for cache control, authentication, and content type negotiation. REST has been gaining popularity compared to SOAP, at least in the context of cross-organizational service integration, and is often associated with microservices. An API designed according to the principles of REST is called RESTful.
+**** SOAP
+SOAP is an XML-based protocol for making network API requests.
+Although it is most commonly used over HTTP, it aims to be independent from
+HTTP and avoids using most HTTP features. Instead, it comes with a sprawling and complex multitude of related standards (the web service framework, known as WS-) that add various features.
+**** RPC
+**** Messaging
+=Message broker=
++ It can act as a buffer if the recipient is unavailable or overloaded, and thus improve system reliability.
++ It can automatically redeliver messages to a process that has crashed, and thus prevent messages from being lost.
++ It avoids the sender needing to know the IP address and port number of the recipient (which is particularly useful in a cloud deployment where virtual machines often come and go).
++ It allows one message to be sent to several recipients.
++ It logically decouples the sender from the recipient (the sender just publishes messages and doesn’t care who consumes them).
+*** Distributed Data
+Reasons why you might want to distribute a database across multi‐
+ple machines:
++ Scalability
+If your data volume, read load, or write load grows bigger than a single machine can handle, you can potentially spread the load across multiple machines.
++ Fault tolerance/high availability
+If your application needs to continue working even if one machine (or several machines, or the network, or an entire datacenter) goes down, you can use multiple machines to give you redundancy. When one fails, another one can take over.
++ Latency
+If you have users around the world, you might want to have servers at various locations worldwide so that each user can be served from a datacenter that is geographically close to them. That avoids the users having to wait for network packets to travel halfway around the world.
+
+**** Scaling to higher load
+If all you need is to scale to higher load, the simplest approach is to buy a more powerful machine (sometimes called *vertical scaling* or *scaling up*).
+
+1. The problem with a *shared-memory approach* is that the cost grows faster than linearly: a machine with twice as many CPUs, twice as much RAM, and twice as much disk capacity as another typically costs significantly more than twice as much. And due to bottlenecks, a machine twice the size cannot necessarily handle twice the load.
+
+2. Another approach is the *shared-disk architecture*, which uses several machines with independent CPUs and RAM, but stores data on an array of disks that is shared between the machines, which are connected via a fast network.
+
+By contrast, *shared-nothing architectures* (*horizontal scaling* or *scaling out*) have gained a lot of popularity. In this approach, each machine or virtual machine running the database software is called a node. Each node uses its CPUs, RAM, and disks independently. Any coordination between nodes is done at the software level, using a conventional network.
+
+**** Replication
+There are two common ways data is distributed across multiple nodes: Rerlication and Partitioning
+
+=Replication= keeping a copy of the same data on several different nodes, potentially in different locations. Replication provides redundancy: if some nodes are unavailable, the data can still be served from the remaining nodes. Replication can also help improve performance.
+
++ To keep data geographically close to your users (and thus reduce latency)
++ To allow the system to continue working even if some of its parts have failed (and thus increase availability)
++ To scale out the number of machines that can serve read queries (and thus increase read throughput)
+
+Three popular algorithms for replicating changes between nodes: *single-leader*, *multi-leader*, and *leaderless* replication.
+
+1. One of the replicas is designated the *leader* (also known as master or primary). When clients want to write to the database, they must send their requests to the leader, which first writes the new data to its local storage.
+2. The other replicas are known as followers (read replicas, slaves, secondaries, or hot standbys). Whenever the leader writes new data to its local storage, it also sends the data change to all of its followers as part of a replication log or change stream. Each follower takes the log from the leader and updates its local copy of the database accordingly, by applying all writes in the same order as they were processed on the leader.
+3. When a client wants to read from the database, it can query either the leader or any of the followers. However, writes are only accepted on the leader (the followers are read-only from the client’s point of view).
+
+*Synchronous/assynchronous* - whenether master should wait untill all slaves applied changes. Usualy 1 sync and others assync.
+**** Partitioning
+Splitting a big database into smaller subsets called partitions so that different partitions can be assigned to different nodes (also known as *sharding*).

@@ -59,7 +59,6 @@
 (load custom-file)
 
 ;; Load core appearence and behavior settings
-(require 'cl)
 (require 'appearence)
 
 ;; Package system settings
@@ -298,6 +297,9 @@
 (global-set-key (kbd "M-p") 'max/move-line-up)
 (global-set-key (kbd "M-n") 'max/move-line-down)
 
+;; Draw strokes with RMB
+(global-set-key (kbd "<down-mouse-3>") 'strokes-do-stroke) 
+
 ;;; ===================================================================
 
 
@@ -329,42 +331,6 @@
 
 ;;; Modes
 ;; enable ido mode
-(use-package ido
-  :init
-  (progn
-    (setq-default ido-enable-flex-matching t
-                  ido-everywhere t)
-    (add-hook 'ido-setup-hook 'ido-vertical)
-    (add-hook 'ido-setup-hook 'ido-go-home))
-  :config
-  (ido-mode t)
-  (setq-default ido-enable-last-directory-history t
-                ido-enable-work-directory-history t
-                ido-max-work-directory-list 10
-                ido-max-work-file-list 0
-                ; ido-auto-merge-work-directories-length -1
-                ido-save-directory-list-file
-                (expand-file-name "temp/.ido.last" user-emacs-directory)
-                default-ido-decorations ido-decorations
-                ido-ignore-buffers '("\\` " "*GNU Emacs*" "*Messages*" "*Backtrace"
-                                     "*Quail Com" "*Buffer" "*fsm-debug" "*Completions"
-                                     "*helm mini" "*helm M-x" "^[tT][aA][gG][sS]$"))
-  
-  (use-package ido-ubiquitous
-      :ensure t
-      :init
-      ;; Fix ido-ubiquitous for newer packages
-      (defmacro ido-ubiquitous-use-new-completing-read (cmd package)
-          `(eval-after-load ,package
-               '(defadvice ,cmd (around ido-ubiquitous-new activate)
-                 (let ((ido-ubiquitous-enable-compatibility nil))
-                     ad-do-it))))
-      :config 
-      (ido-ubiquitous-use-new-completing-read webjump 'webjump)
-      (ido-ubiquitous-use-new-completing-read yas/expand 'yasnippet)
-      (ido-ubiquitous-use-new-completing-read yas/visit-snippet-file 'yasnippet)
-      (ido-ubiquitous-mode)))
-
 (defun ido-vertical ()
   (setq ido-decorations default-ido-decorations)
   (define-key ido-completion-map (kbd "M-d")
@@ -393,6 +359,32 @@
       (if (looking-back "/")
           (insert "~/")
         (call-interactively 'self-insert-command)))))
+
+(use-package ido
+  :init
+  (progn
+    (setq-default ido-enable-flex-matching t
+                  ido-everywhere t)
+    (add-hook 'ido-setup-hook 'ido-vertical)
+    (add-hook 'ido-setup-hook 'ido-go-home))
+  :config
+  (ido-mode t)
+  (setq-default ido-enable-last-directory-history t
+                ido-enable-work-directory-history t
+                ido-max-work-directory-list 10
+                ido-max-work-file-list 0
+                ; ido-auto-merge-work-directories-length -1
+                ido-save-directory-list-file
+                (expand-file-name "temp/.ido.last" user-emacs-directory)
+                default-ido-decorations ido-decorations
+                ido-ignore-buffers '("\\` " "*GNU Emacs*" "*Messages*" "*Backtrace"
+                                     "*Quail Com" "*Buffer" "*fsm-debug" "*Completions"
+                                     "*helm mini" "*helm M-x" "^[tT][aA][gG][sS]$"))
+  
+  (use-package ido-completing-read+
+    :ensure t
+    :config 
+    (ido-ubiquitous-mode 1)))
 
 ;; replace default M-x behavior with some stuff of ido
 (setq smex-save-file (expand-file-name "temp/.smex-items" user-emacs-directory))
@@ -545,11 +537,16 @@
 (use-package dired
     :bind (("C-x C-j" . dired-jump)
            :map dired-mode-map
-                ("<tab>" . diredp-up-directory-reuse-dir-buffer)
+                ("<down-mouse-3>" . nil)
                 ("!" . max/sudo-dired))
     :config
     (setq-default dired-listing-switches "-aBhl  --group-directories-first"
                   dired-dwim-target t)
+
+    (add-hook 'dired-mode-hook #'dired-hide-details-mode)
+    (add-hook 'dired-mode-hook 
+              (lambda () (define-key dired-mode-map (kbd "<tab>")
+                             (lambda () (interactive) (find-alternate-file "..")))))
     
     (use-package dired-x
         :config
@@ -560,12 +557,7 @@
                           dired-recursive-copies 'always)
             ;; hide backup, autosave, *.*~ files
             ;; omit mode can be toggled using `M-o' in dired buffer
-            (add-hook 'dired-mode-hook #'dired-omit-mode))
-
-    (use-package dired+)
-    
-    (use-package dired-details+
-        :config (setq-default dired-details-hidden-string "-- ")))
+            (add-hook 'dired-mode-hook #'dired-omit-mode)))
 
 ;; Org-mode
 (use-package org
@@ -583,13 +575,18 @@
           org-catch-invisible-edits 'error
           calendar-week-start-day 1
           org-ellipsis "⤵")
+    (add-function :after after-focus-change-function 'org-save-all-org-buffers)
 
     ;; Prettify UI
     (use-package org-bullets
         :if (char-displayable-p ?⚫)
         :hook (org-mode . org-bullets-mode))
 
-    (use-package org-drill))
+    (use-package org-drill)
+    
+    (use-package org-download
+        :config
+        (setq-default org-download-image-dir "~/.emacs.d/org/attachments")))
 
 ;; Yasnippets
 (use-package yasnippet

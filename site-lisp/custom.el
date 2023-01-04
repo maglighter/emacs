@@ -5,8 +5,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   (quote
-    (doom-modeline ranger helm-config dired-x dired emms-setup sudo-save popup-pos-tip helm-projectile projectile windresize which-key volatile-highlights vlf visual-regexp-steroids use-package undo-tree typing smex smart-mode-line skewer-mode shell-pop rg rect-mark recentf-ext rainbow-mode rainbow-delimiters python-mode pymacs pylint php-mode paredit org-plus-contrib org-drill org-bullets nov nose neotree multiple-cursors monokai-theme memory-usage markdown-mode magit key-chord jabber isearch+ info+ iedit idomenu ido-ubiquitous hydra help-mode+ help-fns+ help+ helm-descbinds helm-dash golden-ratio god-mode go-mode git-rebase-mode git-commit-mode fuzzy fringe-helper frame-cmds flymake-cursor flymake find-file-in-project expand-region esup elpy ein doom-themes dired-details+ dired+ dedicated csv-mode company-quickhelp company-jedi attrap ascii ace-window ac-python))))
+   '(ido-completing-read+ org-download logview k8s-mode doom-modeline ranger helm-config dired-x dired emms-setup sudo-save popup-pos-tip helm-projectile projectile windresize which-key volatile-highlights vlf visual-regexp-steroids use-package undo-tree typing smex smart-mode-line skewer-mode shell-pop rg rect-mark recentf-ext rainbow-mode rainbow-delimiters python-mode pymacs pylint php-mode paredit org-drill org-bullets nov nose neotree multiple-cursors monokai-theme memory-usage markdown-mode magit key-chord jabber isearch+ info+ iedit idomenu hydra help-mode+ help-fns+ help+ helm-descbinds helm-dash golden-ratio god-mode go-mode git-rebase-mode git-commit-mode fuzzy fringe-helper frame-cmds flymake-cursor flymake find-file-in-project expand-region esup elpy ein doom-themes dedicated csv-mode company-quickhelp company-jedi attrap ascii ace-window ac-python)))
 
 ;; faces
 (custom-set-faces
@@ -14,7 +13,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#242730" :foreground "#bbc2cf" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "JB  " :family "JetBrains Mono")))))
+ )
 
 (deftheme max-custom-theme
   "Created 2015-01-24.")

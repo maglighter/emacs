@@ -1,0 +1,2 @@
+;;; Generated package description from org-drill.el  -*- no-byte-compile: t -*-
+(define-package "org-drill" "20210427.2003" "Self-testing using spaced repetition" '((emacs "25.3") (seq "2.14") (org "9.3") (persist "0.3")) :commit "bf8fe812d44a3ce3e84361fb39b8ef28ca10fd0c" :authors '(("Paul Sexton" . "eeeickythump@gmail.com")) :maintainer '("Phillip Lord" . "phillip.lord@russet.org.uk") :keywords '("games" "outlines" "multimedia") :url "https://gitlab.com/phillord/org-drill/issues")
